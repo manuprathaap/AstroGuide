@@ -1,0 +1,105 @@
+<header class="astro-header">
+  <div class="astro-container nav-container">
+    <!-- Brand Logo Matching Figma -->
+    <a routerLink="/" class="brand-logo" (click)="closeMobileMenu()">
+      <span class="logo-sun">☀️</span>
+      <span class="brand-text">Astro<span class="gold-text">Guide</span></span>
+    </a>
+
+    <!-- Desktop Navigation Links -->
+    <nav class="desktop-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">{{ t().nav.home }}</a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">{{ t().nav.guidance }}</a>
+      <a routerLink="/" fragment="features" class="nav-link">{{ t().nav.birthChart }}</a>
+      <a routerLink="/" fragment="about" class="nav-link">{{ t().nav.palmistry }}</a>
+    </nav>
+
+    <!-- Desktop Actions -->
+    <div class="desktop-actions">
+      @if (isAuthenticated()) {
+        <!-- Language Switcher Pill -->
+        <a routerLink="/language" class="lang-pill" title="Change Language">
+          <span class="globe-icon">🌐</span>
+          <span>{{ currentLanguageLabel() }}</span>
+        </a>
+
+        <!-- User Greeting -->
+        <div class="user-chip">
+          <div class="user-avatar">
+            {{ currentUser()?.full_name ? (currentUser()?.full_name?.charAt(0) | uppercase) : 'U' }}
+          </div>
+          <span class="user-name">{{ currentUser()?.full_name || 'Seeker' }}</span>
+        </div>
+
+        <!-- Logout Button -->
+        <button type="button" class="btn btn-ghost btn-sm" (click)="logout()">
+          {{ t().nav.signOut }}
+        </button>
+      } @else {
+        <a routerLink="/auth/login" class="btn btn-ghost">{{ t().nav.signIn }}</a>
+        <a routerLink="/auth/register" class="btn btn-primary btn-sm">{{ t().nav.getStarted }}</a>
+      }
+    </div>
+
+    <!-- Mobile Hamburger Toggle -->
+    <button 
+      type="button" 
+      class="mobile-toggle-btn" 
+      [class.open]="mobileMenuOpen()"
+      (click)="toggleMobileMenu()" 
+      aria-label="Toggle navigation menu"
+      [attr.aria-expanded]="mobileMenuOpen()"
+    >
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Drawer Menu -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-drawer-backdrop" (click)="closeMobileMenu()"></div>
+    <div class="mobile-drawer" [class.open]="mobileMenuOpen()">
+      <div class="drawer-header">
+        <div class="brand-logo">
+          <span class="logo-sun">☀️</span>
+          <span class="brand-text">AstroGuide</span>
+        </div>
+        <button type="button" class="drawer-close" (click)="closeMobileMenu()" aria-label="Close menu">✕</button>
+      </div>
+
+      <nav class="mobile-nav-links">
+        <a routerLink="/" (click)="closeMobileMenu()" class="mobile-nav-link">{{ t().nav.home }}</a>
+        <a routerLink="/dashboard" (click)="closeMobileMenu()" class="mobile-nav-link highlight">✨ {{ t().nav.guidance }}</a>
+        <a routerLink="/language" (click)="closeMobileMenu()" class="mobile-nav-link">🌐 {{ t().nav.language }} ({{ currentLanguageLabel() }})</a>
+        <a routerLink="/" fragment="features" (click)="closeMobileMenu()" class="mobile-nav-link">{{ t().nav.birthChart }} & {{ t().nav.palmistry }}</a>
+      </nav>
+
+      <div class="mobile-drawer-footer">
+        @if (isAuthenticated()) {
+          <div class="drawer-user-info">
+            <div class="user-avatar">
+              {{ currentUser()?.full_name ? (currentUser()?.full_name?.charAt(0) | uppercase) : 'U' }}
+            </div>
+            <div>
+              <div class="user-name">{{ currentUser()?.full_name }}</div>
+              <div class="user-email">{{ currentUser()?.email }}</div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-secondary w-full" (click)="logout()">
+            {{ t().nav.signOut }}
+          </button>
+        } @else {
+          <div class="auth-buttons-stacked">
+            <a routerLink="/auth/register" (click)="closeMobileMenu()" class="btn btn-primary w-full">
+              {{ t().nav.getStarted }}
+            </a>
+            <a routerLink="/auth/login" (click)="closeMobileMenu()" class="btn btn-secondary w-full">
+              {{ t().nav.signIn }}
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</header>

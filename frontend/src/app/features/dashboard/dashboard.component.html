@@ -1,0 +1,250 @@
+<app-navbar></app-navbar>
+
+<main class="dashboard-main">
+  <div class="astro-container">
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="dashboard-loader">
+        <span class="spinner spinner-lg"></span>
+        <p class="loader-text">Loading your profile and celestial settings...</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @else if (errorMessage()) {
+      <div class="alert alert-error" role="alert">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ errorMessage() }}</span>
+        <button type="button" class="btn btn-secondary btn-sm retry-btn" (click)="loadProfileAndLanguages()">Retry</button>
+      </div>
+    }
+
+    <!-- Main Authenticated Experience -->
+    @else {
+      <!-- Top Action / Context Bar -->
+      <div class="dashboard-topbar">
+        <div class="topbar-user">
+          <span class="user-greeting">{{ t().dashboard.welcome }} <strong>{{ currentUser()?.full_name || 'Seeker' }}</strong></span>
+          <span class="account-pill badge badge-success">{{ t().dashboard.activeMember }}</span>
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Active Language Pill -->
+          <a routerLink="/language" class="lang-selector-pill" title="Change your preferred language">
+            <span class="lang-globe">🌐</span>
+            <span class="lang-name">{{ currentLanguageName() }}</span>
+            <span class="lang-change-hint">{{ t().dashboard.change }}</span>
+          </a>
+
+          @if (activeView() !== 'overview') {
+            <button type="button" class="btn btn-secondary btn-sm" (click)="resetToOverview()">
+              {{ t().dashboard.backToExplore }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- VIEW 1: Exploration Overview (Figma Desktop Screen 1 & Mobile Screen 2) -->
+      @if (activeView() === 'overview') {
+        <section class="explore-header">
+          <h1 class="explore-title">{{ t().dashboard.exploreTitle }}</h1>
+          <p class="explore-subtitle">{{ t().dashboard.exploreSubtitle }}</p>
+        </section>
+
+        <!-- 3 Main Exploration Cards Matching Figma -->
+        <section class="explore-grid">
+          @for (card of explorationCards(); track card.id) {
+            <div class="explore-card" (click)="openExploration(card.id)">
+              <div class="card-icon-wrap">
+                <span class="card-icon">{{ card.icon }}</span>
+              </div>
+              <h2 class="card-title">{{ card.title }}</h2>
+              <p class="card-desc">{{ card.subtitle }}</p>
+              <div class="card-footer">
+                <button type="button" class="btn btn-primary card-action-btn">
+                  {{ card.actionText }}
+                </button>
+              </div>
+            </div>
+          }
+        </section>
+
+        <!-- Quick Guidance Pill Ribbon -->
+        <section class="quick-ribbon-section">
+          <span class="ribbon-label">{{ t().dashboard.quickRibbonLabel }}</span>
+          <div class="ribbon-chips">
+            <button type="button" class="chip" (click)="openExploration('problem'); setTopic('career')">{{ t().dashboard.quickRibbon.career }}</button>
+            <button type="button" class="chip" (click)="openExploration('problem'); setTopic('marriage')">{{ t().dashboard.quickRibbon.marriage }}</button>
+            <button type="button" class="chip" (click)="openExploration('problem'); setTopic('money')">{{ t().dashboard.quickRibbon.money }}</button>
+            <button type="button" class="chip" (click)="openExploration('problem'); setTopic('family')">{{ t().dashboard.quickRibbon.family }}</button>
+          </div>
+        </section>
+
+        <!-- Member Profile Overview Bar -->
+        <section class="member-profile-bar">
+          <div class="profile-col">
+            <span class="meta-label">{{ t().dashboard.profile.fullName }}</span>
+            <span class="meta-val">{{ currentUser()?.full_name }}</span>
+          </div>
+          <div class="bar-divider"></div>
+          <div class="profile-col">
+            <span class="meta-label">{{ t().dashboard.profile.email }}</span>
+            <span class="meta-val">{{ currentUser()?.email }}</span>
+          </div>
+          <div class="bar-divider"></div>
+          <div class="profile-col">
+            <span class="meta-label">{{ t().dashboard.profile.languagePref }}</span>
+            <span class="meta-val">{{ currentLanguageName() }}</span>
+          </div>
+          <div class="bar-divider"></div>
+          <div class="profile-col">
+            <span class="meta-label">{{ t().dashboard.profile.authEngine }}</span>
+            <span class="meta-val">FastAPI + JWT Bearer</span>
+          </div>
+        </section>
+      }
+
+      <!-- VIEW 2: Interactive Problem & Life Guidance (Figma Desktop Screen 2) -->
+      @else if (activeView() === 'problem_guidance') {
+        <section class="guidance-layout">
+          <!-- Left Sidebar: Topics -->
+          <div class="topics-sidebar">
+            <h3 class="sidebar-heading">{{ t().dashboard.guidance.topicsHeading }}</h3>
+            <div class="topic-buttons">
+              @for (tItem of topics(); track tItem.id) {
+                <button 
+                  type="button" 
+                  class="topic-btn" 
+                  [class.active]="selectedTopicId() === tItem.id"
+                  (click)="setTopic(tItem.id)"
+                >
+                  <span>{{ tItem.label }}</span>
+                  @if (selectedTopicId() === tItem.id) {
+                    <span class="active-indicator">›</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Right Content: Conversational Guidance & Reading Preview -->
+          <div class="guidance-content">
+            <div class="guidance-card">
+              <h2 class="content-heading">{{ t().dashboard.guidance.dialogueTitle }}</h2>
+
+              <!-- Chat Conversation Bubbles -->
+              <div class="dialogue-container">
+                <!-- User Prompt Bubble -->
+                <div class="chat-bubble user-bubble">
+                  {{ currentTopic.userPrompt }}
+                </div>
+
+                <!-- AstroGuide Guidance Bubble (Gold pill bubble in Figma) -->
+                <div class="chat-bubble guide-bubble">
+                  {{ currentTopic.guideResponse }}
+                </div>
+              </div>
+
+              <!-- Quick Selection Chips -->
+              <div class="chips-group">
+                @for (opt of currentTopic.options; track opt) {
+                  <button 
+                    type="button" 
+                    class="option-chip"
+                    [class.selected]="selectedOption() === opt"
+                    (click)="selectOption(opt)"
+                  >
+                    {{ opt }}
+                  </button>
+                }
+              </div>
+
+              <!-- Text Input Field -->
+              <div class="query-input-wrap">
+                <input 
+                  type="text" 
+                  class="query-input"
+                  [placeholder]="t().dashboard.guidance.inputPlaceholder"
+                  [value]="customQuery()"
+                  (input)="customQuery.set($any($event.target).value)"
+                />
+              </div>
+
+              <!-- Continue Button -->
+              <button type="button" class="btn btn-primary continue-btn" (click)="submitGuidanceQuery()">
+                {{ t().dashboard.guidance.continueBtn }}
+              </button>
+
+              <!-- Personalized Reading Result Card (Figma Screen 4) -->
+              @if (showReadingResult()) {
+                <div class="personalized-reading-card">
+                  <div class="reading-header">
+                    <span class="badge badge-gold">{{ t().dashboard.guidance.previewBadge }}</span>
+                    <h3 class="reading-title">{{ t().dashboard.guidance.readingTitle }}</h3>
+                  </div>
+
+                  <div class="reading-box highlight-box">
+                    <span class="box-title">{{ t().dashboard.guidance.happeningTitle }}</span>
+                    <p class="box-body">{{ currentTopic.readingPreview.happening }}</p>
+                  </div>
+
+                  <div class="reading-box action-box">
+                    <span class="box-title">{{ t().dashboard.guidance.actionTitle }}</span>
+                    <p class="box-body">{{ currentTopic.readingPreview.action }}</p>
+                  </div>
+
+                  <div class="reading-status-notice">
+                    <span class="notice-icon">ℹ️</span>
+                    <span>{{ t().dashboard.guidance.statusNotice }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- VIEW 3: Birth Chart Mode (Preview / Coming Soon) -->
+      @else if (activeView() === 'birth_chart') {
+        <section class="placeholder-module-view">
+          <div class="preview-card">
+            <div class="preview-icon">🪐</div>
+            <span class="badge badge-gold">{{ t().dashboard.placeholders.birthChartBadge }}</span>
+            <h2 class="preview-title">{{ t().dashboard.placeholders.birthChartTitle }}</h2>
+            <p class="preview-desc">
+              {{ t().dashboard.placeholders.birthChartDesc }}
+            </p>
+            <div class="future-badge">{{ t().dashboard.placeholders.comingSoonBadge }}</div>
+            <button type="button" class="btn btn-secondary" (click)="resetToOverview()">
+              {{ t().dashboard.placeholders.returnBtn }}
+            </button>
+          </div>
+        </section>
+      }
+
+      <!-- VIEW 4: Palm Reading Mode (Preview / Coming Soon) -->
+      @else if (activeView() === 'palm_reading') {
+        <section class="placeholder-module-view">
+          <div class="preview-card">
+            <div class="preview-icon">✋</div>
+            <span class="badge badge-gold">{{ t().dashboard.placeholders.palmBadge }}</span>
+            <h2 class="preview-title">{{ t().dashboard.placeholders.palmTitle }}</h2>
+            <p class="preview-desc">
+              {{ t().dashboard.placeholders.palmDesc }}
+            </p>
+            <div class="future-badge">{{ t().dashboard.placeholders.comingSoonBadge }}</div>
+            <button type="button" class="btn btn-secondary" (click)="resetToOverview()">
+              {{ t().dashboard.placeholders.returnBtn }}
+            </button>
+          </div>
+        </section>
+      }
+    }
+  </div>
+</main>
+
+<app-footer></app-footer>

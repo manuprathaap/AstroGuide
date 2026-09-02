@@ -1,0 +1,111 @@
+.astro-footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  padding: 4rem 0 2rem;
+  margin-top: auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+
+  .brand-glyph {
+    color: var(--color-gold);
+    font-size: 1.25rem;
+  }
+
+  .brand-text {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+
+    .gold-text {
+      color: var(--color-gold-hover);
+    }
+  }
+}
+
+.brand-desc {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 320px;
+  margin-bottom: 1rem;
+}
+
+.cosmic-quote {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 0.825rem;
+  color: var(--color-gold-text);
+}
+
+.col-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  li a {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+
+    &:hover {
+      color: var(--color-gold-hover);
+      padding-left: 2px;
+    }
+  }
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+
+  .copyright {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .astronomy-disclaimer {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    max-width: 600px;
+  }
+}
