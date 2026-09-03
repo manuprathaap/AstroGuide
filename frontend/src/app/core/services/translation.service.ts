@@ -122,6 +122,41 @@ export interface AppTranslations {
     saving: string;
     retry: string;
   };
+  birthDetails: {
+    newTitle: string;
+    existingTitle: string;
+    subtitle: string;
+    backBtn: string;
+    dobLabel: string;
+    dobPlaceholder: string;
+    tobLabel: string;
+    tobPlaceholder: string;
+    tobHelper: string;
+    pobLabel: string;
+    pobPlaceholder: string;
+    locationInfoLabel: string;
+    latLabel: string;
+    lngLabel: string;
+    tzLabel: string;
+    saveContinueBtn: string;
+    saveChangesBtn: string;
+    savingBtn: string;
+    deleteBtn: string;
+    deleteModalTitle: string;
+    deleteModalMsg: string;
+    cancelBtn: string;
+    confirmDeleteBtn: string;
+    deletingBtn: string;
+    successSaved: string;
+    successDeleted: string;
+    errors: {
+      required: string;
+      validDate: string;
+      futureDate: string;
+      validTime: string;
+      placeRequired: string;
+    };
+  };
 }
 
 const EN_TRANSLATIONS: AppTranslations = {
@@ -244,6 +279,41 @@ const EN_TRANSLATIONS: AppTranslations = {
     continueBtn: 'Continue',
     saving: 'Saving preference...',
     retry: 'Retry'
+  },
+  birthDetails: {
+    newTitle: 'Tell us about your birth',
+    existingTitle: 'Your Birth Details',
+    subtitle: 'Your birth details help us create your personalized astrology experience.',
+    backBtn: '← Back to Dashboard',
+    dobLabel: 'Date of Birth',
+    dobPlaceholder: 'DD / MM / YYYY',
+    tobLabel: 'Time of Birth',
+    tobPlaceholder: 'HH : MM AM/PM',
+    tobHelper: 'Enter your birth time as accurately as possible.',
+    pobLabel: 'Place of Birth',
+    pobPlaceholder: 'Search your birth place (e.g. Kochi, Kerala, India)',
+    locationInfoLabel: 'Location Information',
+    latLabel: 'Latitude',
+    lngLabel: 'Longitude',
+    tzLabel: 'Timezone',
+    saveContinueBtn: 'Save & Continue',
+    saveChangesBtn: 'Save Changes',
+    savingBtn: 'Saving...',
+    deleteBtn: 'Delete Birth Details',
+    deleteModalTitle: 'Delete birth details?',
+    deleteModalMsg: 'This information is used to personalize your astrology experience. Are you sure you want to delete it?',
+    cancelBtn: 'Cancel',
+    confirmDeleteBtn: 'Delete',
+    deletingBtn: 'Deleting...',
+    successSaved: 'Birth details saved successfully.',
+    successDeleted: 'Birth details deleted successfully.',
+    errors: {
+      required: 'This field is required',
+      validDate: 'Please enter a valid date',
+      futureDate: 'Date of birth cannot be in the future',
+      validTime: 'Please enter a valid birth time',
+      placeRequired: 'Please select your birth place'
+    }
   }
 };
 
@@ -367,6 +437,41 @@ const ML_TRANSLATIONS: AppTranslations = {
     continueBtn: 'തുടരുക',
     saving: 'മുൻഗണന സംരക്ഷിക്കുന്നു...',
     retry: 'വീണ്ടും ശ്രമിക്കുക'
+  },
+  birthDetails: {
+    newTitle: 'നിങ്ങളുടെ ജനന വിവരങ്ങൾ നൽകുക',
+    existingTitle: 'നിങ്ങളുടെ ജനന വിവരങ്ങൾ',
+    subtitle: 'നിങ്ങളുടെ വ്യക്തിഗത ജ്യോതിഷ വിവരങ്ങൾ തയ്യാറാക്കാൻ ഈ വിവരങ്ങൾ സഹായിക്കുന്നു.',
+    backBtn: '← ഡാഷ്‌ബോർഡിലേക്ക് മടങ്ങുക',
+    dobLabel: 'ജനന തീയതി',
+    dobPlaceholder: 'DD / MM / YYYY',
+    tobLabel: 'ജനന സമയം',
+    tobPlaceholder: 'HH : MM AM/PM',
+    tobHelper: 'കഴിയുന്നത്ര കൃത്യമായി ജനന സമയം നൽകുക.',
+    pobLabel: 'ജനിച്ച സ്ഥലം',
+    pobPlaceholder: 'നിങ്ങൾ ജനിച്ച സ്ഥലം തിരയുക (ഉദാ: കൊച്ചി, കേരളം)',
+    locationInfoLabel: 'ഭൂമിശാസ്ത്ര വിവരങ്ങൾ',
+    latLabel: 'അക്ഷാംശം (Latitude)',
+    lngLabel: 'രേഖാംശം (Longitude)',
+    tzLabel: 'സമയ മേഖല (Timezone)',
+    saveContinueBtn: 'സംരക്ഷിച്ച് മുന്നോട്ട് പോകുക',
+    saveChangesBtn: 'മാറ്റങ്ങൾ സംരക്ഷിക്കുക',
+    savingBtn: 'സംരക്ഷിക്കുന്നു...',
+    deleteBtn: 'ജനന വിവരങ്ങൾ ഇല്ലാതാക്കുക',
+    deleteModalTitle: 'ജനന വിവരങ്ങൾ ഇല്ലാതാക്കണമോ?',
+    deleteModalMsg: 'നിങ്ങളുടെ ജ്യോതിഷ ഫലങ്ങൾ തയ്യാറാക്കാൻ ഈ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. ഇത് ഇല്ലാതാക്കാൻ നിങ്ങൾ തീർച്ചയായും ആഗ്രഹിക്കുന്നുണ്ടോ?',
+    cancelBtn: 'റദ്ദാക്കുക',
+    confirmDeleteBtn: 'ഇല്ലാതാക്കുക',
+    deletingBtn: 'ഇല്ലാതാക്കുന്നു...',
+    successSaved: 'ജനന വിവരങ്ങൾ വിജയകരമായി സംരക്ഷിച്ചു.',
+    successDeleted: 'ജനന വിവരങ്ങൾ നീക്കം ചെയ്തു.',
+    errors: {
+      required: 'ഈ ഫീൽഡ് പൂരിപ്പിക്കേണ്ടതുണ്ട്',
+      validDate: 'ശരിയായ തീയതി നൽകുക',
+      futureDate: 'ജനന തീയതി ഭാവിയിലാകാൻ പാടില്ല',
+      validTime: 'ശരിയായ ജനന സമയം നൽകുക',
+      placeRequired: 'ജനിച്ച സ്ഥലം തിരഞ്ഞെടുക്കുക'
+    }
   }
 };
 

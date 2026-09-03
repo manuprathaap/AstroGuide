@@ -10,7 +10,11 @@
     <nav class="desktop-nav">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">{{ t().nav.home }}</a>
       <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">{{ t().nav.guidance }}</a>
-      <a routerLink="/" fragment="features" class="nav-link">{{ t().nav.birthChart }}</a>
+      @if (isAuthenticated()) {
+        <a routerLink="/birth-details" routerLinkActive="active" class="nav-link">{{ t().nav.birthChart }}</a>
+      } @else {
+        <a routerLink="/" fragment="features" class="nav-link">{{ t().nav.birthChart }}</a>
+      }
       <a routerLink="/" fragment="about" class="nav-link">{{ t().nav.palmistry }}</a>
     </nav>
 
@@ -72,7 +76,11 @@
         <a routerLink="/" (click)="closeMobileMenu()" class="mobile-nav-link">{{ t().nav.home }}</a>
         <a routerLink="/dashboard" (click)="closeMobileMenu()" class="mobile-nav-link highlight">✨ {{ t().nav.guidance }}</a>
         <a routerLink="/language" (click)="closeMobileMenu()" class="mobile-nav-link">🌐 {{ t().nav.language }} ({{ currentLanguageLabel() }})</a>
-        <a routerLink="/" fragment="features" (click)="closeMobileMenu()" class="mobile-nav-link">{{ t().nav.birthChart }} & {{ t().nav.palmistry }}</a>
+        @if (isAuthenticated()) {
+          <a routerLink="/birth-details" (click)="closeMobileMenu()" class="mobile-nav-link">🪐 {{ t().nav.birthChart }}</a>
+        } @else {
+          <a routerLink="/" fragment="features" (click)="closeMobileMenu()" class="mobile-nav-link">{{ t().nav.birthChart }} & {{ t().nav.palmistry }}</a>
+        }
       </nav>
 
       <div class="mobile-drawer-footer">

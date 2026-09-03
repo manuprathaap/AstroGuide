@@ -1,0 +1,695 @@
+.birth-details-page {
+  position: relative;
+  min-height: calc(100vh - 72px);
+  padding: 2.5rem 1rem 4rem;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* Subtle Astrology Celestial Aura */
+.celestial-halo {
+  position: absolute;
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.celestial-halo-1 {
+  width: 420px;
+  height: 420px;
+  top: -80px;
+  right: -80px;
+  background: radial-gradient(circle, var(--color-gold-highlight) 0%, rgba(229, 169, 60, 0.15) 70%, transparent 100%);
+}
+
+.celestial-halo-2 {
+  width: 380px;
+  height: 380px;
+  bottom: 60px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(229, 169, 60, 0.2) 0%, rgba(244, 215, 125, 0.08) 60%, transparent 100%);
+}
+
+.content-container {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Top Action Bar */
+.page-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.back-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+
+  svg {
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover {
+    color: var(--text-primary);
+    background-color: rgba(0, 0, 0, 0.03);
+
+    svg {
+      transform: translateX(-3px);
+    }
+  }
+}
+
+.celestial-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.35rem 0.85rem;
+  background-color: var(--bg-tag);
+  border: 1px solid var(--color-gold-border);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-gold-text);
+
+  .star-icon {
+    font-size: 0.75rem;
+    color: var(--color-gold);
+  }
+}
+
+/* Header */
+.birth-header {
+  text-align: center;
+  margin-bottom: 2.25rem;
+
+  .header-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, #FFF9ED 0%, #FDF3DB 100%);
+    border: 1px solid var(--color-gold-border);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+
+    .header-constellation {
+      font-size: 1.85rem;
+    }
+  }
+
+  .birth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.625rem;
+    letter-spacing: -0.02em;
+  }
+
+  .birth-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+}
+
+/* Main Card */
+.birth-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-normal);
+}
+
+/* 2-Column Form Row for Desktop */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+
+  &.has-error {
+    .form-control {
+      border-color: var(--color-error);
+      background-color: var(--color-error-bg);
+
+      &:focus {
+        border-color: var(--color-error);
+        box-shadow: 0 0 0 3px rgba(217, 72, 86, 0.15);
+      }
+    }
+  }
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+
+  .required-star {
+    color: var(--color-error);
+  }
+}
+
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    font-size: 1.1rem;
+    pointer-events: none;
+    z-index: 2;
+    color: var(--text-muted);
+  }
+
+  .form-control.with-icon {
+    padding-left: 3rem;
+  }
+}
+
+.form-control {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-input);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+
+  &:hover:not(:focus) {
+    border-color: #D6D0C5;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--color-gold-glow);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+.form-helper-text {
+  display: block;
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  margin-top: 0.375rem;
+  line-height: 1.4;
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  color: var(--color-error);
+  margin-top: 0.375rem;
+}
+
+/* Place Search Auto-Complete */
+.place-search-group {
+  position: relative;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 50;
+  padding: 0.35rem 0;
+  animation: fadeInDown 0.18s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background-color: var(--bg-card-hover);
+  }
+
+  .suggestion-pin {
+    font-size: 1rem;
+    margin-top: 0.1rem;
+  }
+
+  .suggestion-info {
+    display: flex;
+    flex-direction: column;
+
+    .suggestion-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .suggestion-coords {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+  }
+}
+
+/* Geographical Metadata Card */
+.geo-info-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+
+  .geo-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+
+    .geo-icon {
+      font-size: 1.1rem;
+    }
+
+    .geo-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+  }
+
+  .geo-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .geo-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+
+      .geo-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        font-weight: 600;
+      }
+
+      .geo-value {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-family: monospace;
+
+        &.highlight {
+          color: var(--color-gold-text);
+          font-family: var(--font-body);
+        }
+      }
+    }
+
+    .geo-divider {
+      width: 1px;
+      height: 28px;
+      background-color: var(--border-subtle);
+      margin: 0 1rem;
+    }
+  }
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.5rem;
+
+  .submit-btn {
+    flex: 1;
+    min-height: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-gold);
+
+    .btn-arrow {
+      font-size: 1.15rem;
+      transition: transform var(--transition-fast);
+    }
+
+    &:hover:not(:disabled) .btn-arrow {
+      transform: translateX(4px);
+    }
+  }
+
+  .delete-trigger-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-error);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-md);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-error-bg);
+      color: var(--color-error);
+    }
+  }
+}
+
+/* Skeleton Loading State */
+.skeleton-card {
+  padding: 3rem 2.5rem;
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, #F0ECE4 25%, #F8F5F0 50%, #F0ECE4 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+  }
+
+  .skeleton-title {
+    height: 28px;
+    width: 60%;
+    margin-bottom: 1rem;
+  }
+
+  .skeleton-subtitle {
+    height: 16px;
+    width: 80%;
+    margin-bottom: 2rem;
+  }
+
+  .skeleton-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .skeleton-field {
+    height: 48px;
+  }
+
+  .skeleton-field-lg {
+    height: 72px;
+    margin-bottom: 2rem;
+  }
+
+  .skeleton-btn {
+    height: 50px;
+    width: 100%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Delete Confirmation Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 14, 12, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  max-width: 440px;
+  width: 100%;
+  padding: 2.25rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .modal-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.625rem;
+  }
+
+  .modal-message {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 1.75rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+
+    button {
+      flex: 1;
+      min-height: 46px;
+    }
+
+    .modal-delete-btn {
+      background-color: var(--color-error);
+      color: #FFFFFF;
+      border: none;
+
+      &:hover:not(:disabled) {
+        background-color: #C13845;
+      }
+    }
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Floating Success Toast */
+.success-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.85rem 1.5rem;
+  background-color: #1F1D1A;
+  color: #FFFFFF;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  z-index: 1100;
+  animation: toastSlideUp 0.25s ease-out;
+
+  .toast-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background-color: var(--color-success);
+    color: #FFFFFF;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+}
+
+@keyframes toastSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Responsive Mobile Layout (390 × 844 & 375 × 667) */
+@media (max-width: 640px) {
+  .birth-details-page {
+    padding: 1.25rem 0.875rem 3rem;
+  }
+
+  .birth-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .birth-header {
+    margin-bottom: 1.5rem;
+
+    .birth-title {
+      font-size: 1.55rem;
+    }
+
+    .birth-subtitle {
+      font-size: 0.875rem;
+    }
+  }
+
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-control {
+    min-height: 46px;
+    font-size: 0.9375rem;
+  }
+
+  .geo-info-card {
+    padding: 1rem;
+
+    .geo-grid {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+
+      .geo-divider {
+        display: none;
+      }
+
+      .geo-item {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.85rem;
+
+    .submit-btn {
+      width: 100%;
+      min-height: 48px;
+    }
+
+    .delete-trigger-btn {
+      width: 100%;
+      justify-content: center;
+      min-height: 44px;
+    }
+  }
+
+  .modal-container {
+    padding: 1.5rem 1.25rem;
+
+    .modal-actions {
+      flex-direction: column-reverse;
+      gap: 0.5rem;
+    }
+  }
+}

@@ -1,0 +1,320 @@
+<app-navbar></app-navbar>
+
+<main class="birth-details-page">
+  <!-- Subtle Astrology Background Elements -->
+  <div class="celestial-halo celestial-halo-1" aria-hidden="true"></div>
+  <div class="celestial-halo celestial-halo-2" aria-hidden="true"></div>
+
+  <div class="astro-container content-container">
+    <!-- Top Navigation Action Bar -->
+    <div class="page-topbar">
+      <button type="button" class="back-link-btn" (click)="goBack()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>{{ t().birthDetails.backBtn }}</span>
+      </button>
+
+      <!-- Celestial Badge -->
+      <div class="celestial-badge">
+        <span class="star-icon">✦</span>
+        <span>Janam Kundli Blueprint</span>
+      </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="birth-header">
+      <div class="header-icon-wrap">
+        <span class="header-constellation">🪐</span>
+      </div>
+      <h1 class="birth-title">
+        {{ isExisting() ? t().birthDetails.existingTitle : t().birthDetails.newTitle }}
+      </h1>
+      <p class="birth-subtitle">
+        {{ t().birthDetails.subtitle }}
+      </p>
+    </header>
+
+    <!-- Error Alert Banner -->
+    @if (errorMessage()) {
+      <div class="alert alert-error mb-4" role="alert">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ errorMessage() }}</span>
+        <button type="button" class="close-alert" (click)="errorMessage.set(null)">✕</button>
+      </div>
+    }
+
+    <!-- Loading Skeleton State -->
+    @if (isLoadingDetails()) {
+      <div class="card birth-card skeleton-card">
+        <div class="skeleton-shimmer skeleton-title"></div>
+        <div class="skeleton-shimmer skeleton-subtitle"></div>
+        <div class="skeleton-grid">
+          <div class="skeleton-shimmer skeleton-field"></div>
+          <div class="skeleton-shimmer skeleton-field"></div>
+        </div>
+        <div class="skeleton-shimmer skeleton-field-lg"></div>
+        <div class="skeleton-shimmer skeleton-btn"></div>
+      </div>
+    }
+
+    <!-- Main Birth Details Card & Form -->
+    @else {
+      <div class="card birth-card">
+        <form [formGroup]="birthForm" (ngSubmit)="onSubmit()" novalidate>
+          
+          <!-- Row 1: Date of Birth & Time of Birth -->
+          <div class="form-row-2col">
+            <!-- Date of Birth -->
+            <div class="form-group" [class.has-error]="birthForm.get('date_of_birth')?.invalid && birthForm.get('date_of_birth')?.touched">
+              <label for="dob-input" class="form-label">
+                <span>{{ t().birthDetails.dobLabel }}</span>
+                <span class="required-star">*</span>
+              </label>
+              
+              <div class="input-icon-wrap">
+                <span class="input-icon" aria-hidden="true">📅</span>
+                <input
+                  id="dob-input"
+                  type="date"
+                  class="form-control with-icon"
+                  formControlName="date_of_birth"
+                  [max]="maxDate"
+                  [placeholder]="t().birthDetails.dobPlaceholder"
+                  aria-required="true"
+                />
+              </div>
+
+              @if (birthForm.get('date_of_birth')?.invalid && birthForm.get('date_of_birth')?.touched) {
+                <div class="form-error">
+                  @if (birthForm.get('date_of_birth')?.hasError('required')) {
+                    <span>{{ t().birthDetails.errors.required }}</span>
+                  } @else if (birthForm.get('date_of_birth')?.hasError('futureDate')) {
+                    <span>{{ t().birthDetails.errors.futureDate }}</span>
+                  } @else {
+                    <span>{{ t().birthDetails.errors.validDate }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Time of Birth -->
+            <div class="form-group" [class.has-error]="birthForm.get('time_of_birth')?.invalid && birthForm.get('time_of_birth')?.touched">
+              <label for="tob-input" class="form-label">
+                <span>{{ t().birthDetails.tobLabel }}</span>
+                <span class="required-star">*</span>
+              </label>
+              
+              <div class="input-icon-wrap">
+                <span class="input-icon" aria-hidden="true">⏰</span>
+                <input
+                  id="tob-input"
+                  type="time"
+                  class="form-control with-icon"
+                  formControlName="time_of_birth"
+                  step="60"
+                  aria-required="true"
+                />
+              </div>
+
+              <span class="form-helper-text">
+                {{ t().birthDetails.tobHelper }}
+              </span>
+
+              @if (birthForm.get('time_of_birth')?.invalid && birthForm.get('time_of_birth')?.touched) {
+                <div class="form-error">
+                  @if (birthForm.get('time_of_birth')?.hasError('required')) {
+                    <span>{{ t().birthDetails.errors.required }}</span>
+                  } @else {
+                    <span>{{ t().birthDetails.errors.validTime }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Row 2: Place of Birth Search -->
+          <div class="form-group place-search-group" [class.has-error]="birthForm.get('place_of_birth')?.invalid && birthForm.get('place_of_birth')?.touched">
+            <label for="pob-input" class="form-label">
+              <span>{{ t().birthDetails.pobLabel }}</span>
+              <span class="required-star">*</span>
+            </label>
+
+            <div class="input-icon-wrap">
+              <span class="input-icon" aria-hidden="true">📍</span>
+              <input
+                id="pob-input"
+                type="text"
+                class="form-control with-icon"
+                formControlName="place_of_birth"
+                (input)="onPlaceInput($event)"
+                (focus)="onPlaceInput($event)"
+                [placeholder]="t().birthDetails.pobPlaceholder"
+                autocomplete="off"
+                aria-required="true"
+              />
+            </div>
+
+            <!-- Auto-Suggest Dropdown -->
+            @if (showPlaceDropdown() && placeSuggestions().length > 0) {
+              <div class="suggestions-dropdown" role="listbox">
+                @for (item of placeSuggestions(); track item.name) {
+                  <button
+                    type="button"
+                    class="suggestion-item"
+                    role="option"
+                    (click)="selectPlace(item)"
+                  >
+                    <div class="suggestion-pin">📍</div>
+                    <div class="suggestion-info">
+                      <span class="suggestion-name">{{ item.name }}</span>
+                      <span class="suggestion-coords">{{ item.latitude.toFixed(4) }}°N, {{ item.longitude.toFixed(4) }}°E • {{ item.timezone }}</span>
+                    </div>
+                  </button>
+                }
+              </div>
+            }
+
+            @if (birthForm.get('place_of_birth')?.invalid && birthForm.get('place_of_birth')?.touched) {
+              <div class="form-error">
+                <span>{{ t().birthDetails.errors.placeRequired }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Row 3: Resolved Geographical Information (Subtle Card) -->
+          <div class="geo-info-card">
+            <div class="geo-header">
+              <span class="geo-icon">🌐</span>
+              <span class="geo-title">{{ t().birthDetails.locationInfoLabel }}</span>
+            </div>
+
+            <div class="geo-grid">
+              <div class="geo-item">
+                <span class="geo-label">{{ t().birthDetails.latLabel }}</span>
+                <span class="geo-value">
+                  {{ birthForm.get('latitude')?.value ? (birthForm.get('latitude')?.value + '°') : '—' }}
+                </span>
+              </div>
+
+              <div class="geo-divider"></div>
+
+              <div class="geo-item">
+                <span class="geo-label">{{ t().birthDetails.lngLabel }}</span>
+                <span class="geo-value">
+                  {{ birthForm.get('longitude')?.value ? (birthForm.get('longitude')?.value + '°') : '—' }}
+                </span>
+              </div>
+
+              <div class="geo-divider"></div>
+
+              <div class="geo-item">
+                <span class="geo-label">{{ t().birthDetails.tzLabel }}</span>
+                <span class="geo-value highlight">
+                  {{ birthForm.get('timezone')?.value || 'Asia/Kolkata' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions Bar -->
+          <div class="form-actions">
+            <!-- Primary Gold Action Button -->
+            <button
+              id="save-birth-details-btn"
+              type="submit"
+              class="btn btn-primary submit-btn"
+              [disabled]="birthForm.invalid || isSaving() || isDeleting()"
+            >
+              @if (isSaving()) {
+                <span class="spinner"></span>
+                <span>{{ t().birthDetails.savingBtn }}</span>
+              } @else {
+                <span>{{ isExisting() ? t().birthDetails.saveChangesBtn : t().birthDetails.saveContinueBtn }}</span>
+                <span class="btn-arrow">→</span>
+              }
+            </button>
+
+            <!-- Secondary Delete Action (Only for Existing Records) -->
+            @if (isExisting()) {
+              <button
+                type="button"
+                class="btn btn-ghost delete-trigger-btn"
+                (click)="openDeleteModal()"
+                [disabled]="isSaving() || isDeleting()"
+                title="Delete birth record"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                <span>{{ t().birthDetails.deleteBtn }}</span>
+              </button>
+            }
+          </div>
+
+        </form>
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Delete Confirmation Modal Dialog -->
+@if (showDeleteModal()) {
+  <div class="modal-backdrop" (click)="closeDeleteModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-icon-wrap">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+
+      <h3 id="modal-title" class="modal-title">{{ t().birthDetails.deleteModalTitle }}</h3>
+      <p class="modal-message">{{ t().birthDetails.deleteModalMsg }}</p>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn btn-secondary modal-cancel-btn"
+          (click)="closeDeleteModal()"
+          [disabled]="isDeleting()"
+        >
+          {{ t().birthDetails.cancelBtn }}
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger modal-delete-btn"
+          (click)="confirmDelete()"
+          [disabled]="isDeleting()"
+        >
+          @if (isDeleting()) {
+            <span class="spinner"></span>
+            <span>{{ t().birthDetails.deletingBtn }}</span>
+          } @else {
+            <span>{{ t().birthDetails.confirmDeleteBtn }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Floating Success Feedback Toast -->
+@if (successToast()) {
+  <div class="success-toast" role="status" aria-live="polite">
+    <span class="toast-check">✓</span>
+    <span>{{ successToast() }}</span>
+  </div>
+}
+
+<app-footer></app-footer>

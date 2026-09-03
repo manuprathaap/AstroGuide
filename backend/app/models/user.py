@@ -63,3 +63,10 @@ class User(Base):
         "Language",
         back_populates="users",
     )
+
+    birth_details: Mapped["BirthDetail | None"] = relationship(
+    "BirthDetail",
+    back_populates="user",
+    uselist=False,
+    cascade="all, delete-orphan",
+)

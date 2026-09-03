@@ -33,6 +33,12 @@ export const routes: Routes = [
     title: 'Dashboard — AstroGuide'
   },
   {
+    path: 'birth-details',
+    loadComponent: () => import('./features/birth-details/birth-details.component').then(m => m.BirthDetailsComponent),
+    canActivate: [authGuard],
+    title: 'Birth Details — AstroGuide'
+  },
+  {
     path: '**',
     redirectTo: ''
   }
