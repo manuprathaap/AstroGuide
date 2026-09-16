@@ -9,7 +9,7 @@
     <!-- Desktop Navigation Links -->
     <nav class="desktop-nav">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">{{ t().nav.home }}</a>
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">{{ t().nav.guidance }}</a>
+      <a routerLink="/guidance" routerLinkActive="active" class="nav-link">{{ t().nav.guidance }}</a>
       @if (isAuthenticated()) {
         <a routerLink="/birth-details" routerLinkActive="active" class="nav-link">{{ t().nav.birthChart }}</a>
       } @else {
@@ -22,7 +22,7 @@
     <div class="desktop-actions">
       @if (isAuthenticated()) {
         <!-- Language Switcher Pill -->
-        <a routerLink="/language" class="lang-pill" title="Change Language">
+        <a routerLink="/language" [queryParams]="{ returnUrl: currentUrl() }" class="lang-pill" title="Change Language">
           <span class="globe-icon">🌐</span>
           <span>{{ currentLanguageLabel() }}</span>
         </a>
@@ -74,8 +74,8 @@
 
       <nav class="mobile-nav-links">
         <a routerLink="/" (click)="closeMobileMenu()" class="mobile-nav-link">{{ t().nav.home }}</a>
-        <a routerLink="/dashboard" (click)="closeMobileMenu()" class="mobile-nav-link highlight">✨ {{ t().nav.guidance }}</a>
-        <a routerLink="/language" (click)="closeMobileMenu()" class="mobile-nav-link">🌐 {{ t().nav.language }} ({{ currentLanguageLabel() }})</a>
+        <a routerLink="/guidance" (click)="closeMobileMenu()" routerLinkActive="active" class="mobile-nav-link highlight">✨ {{ t().nav.guidance }}</a>
+        <a routerLink="/language" [queryParams]="{ returnUrl: currentUrl() }" (click)="closeMobileMenu()" class="mobile-nav-link">🌐 {{ t().nav.language }} ({{ currentLanguageLabel() }})</a>
         @if (isAuthenticated()) {
           <a routerLink="/birth-details" (click)="closeMobileMenu()" class="mobile-nav-link">🪐 {{ t().nav.birthChart }}</a>
         } @else {

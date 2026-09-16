@@ -9,6 +9,7 @@ from app.services.guidance_service import (
     create_guidance,
     get_user_guidance,
     update_guidance,
+    delete_guidance
 )
 
 
@@ -71,3 +72,26 @@ def update_guidance_endpoint(
         )
 
     return guidance
+
+@router.delete(
+    "/{guidance_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_guidance_endpoint(
+    guidance_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    deleted = delete_guidance(
+        db=db,
+        user_id=current_user.id,
+        guidance_id=guidance_id,
+    )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Guidance not found.",
+        )
+
+    return None

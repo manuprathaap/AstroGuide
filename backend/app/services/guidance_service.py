@@ -54,3 +54,25 @@ def update_guidance(
     db.refresh(guidance)
 
     return guidance
+
+def delete_guidance(
+    db: Session,
+    user_id: int,
+    guidance_id: int,
+) -> bool:
+    guidance = (
+        db.query(Guidance)
+        .filter(
+            Guidance.id == guidance_id,
+            Guidance.user_id == user_id,
+        )
+        .first()
+    )
+
+    if guidance is None:
+        return False
+
+    db.delete(guidance)
+    db.commit()
+
+    return True

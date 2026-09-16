@@ -1,0 +1,750 @@
+<app-navbar></app-navbar>
+
+<main class="guidance-page">
+  <!-- Subtle Astrology Background Celestial Halos -->
+  <div class="celestial-halo celestial-halo-1" aria-hidden="true"></div>
+  <div class="celestial-halo celestial-halo-2" aria-hidden="true"></div>
+
+  <div class="astro-container content-container">
+    <!-- Top Action Bar -->
+    <div class="page-topbar">
+      <button 
+        type="button" 
+        id="guidance-back-btn"
+        class="back-link-btn" 
+        (click)="goBack()"
+        [disabled]="currentStep() === 4"
+        [attr.aria-label]="currentStep() === 1 ? g().backToDashboard : g().back"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>
+          @if (currentStep() === 1) {
+            {{ g().backToDashboard }}
+          } @else if (currentStep() === 2) {
+            {{ g().backToOverview }}
+          } @else if (currentStep() === 3) {
+            {{ g().backToTopics }}
+          } @else if (currentStep() === 5) {
+            {{ g().backToQuestion }}
+          } @else {
+            {{ g().back }}
+          }
+        </span>
+      </button>
+
+      <!-- Right Action Pills -->
+      <div class="topbar-pills">
+        <!-- Language Switcher Pill -->
+        <a 
+          routerLink="/language" 
+          [queryParams]="{ returnUrl: '/guidance' }" 
+          class="guidance-lang-pill" 
+          title="Change Language"
+        >
+          <span class="globe-icon" aria-hidden="true">🌐</span>
+          <span>{{ currentLanguageLabel() }}</span>
+        </a>
+
+        @if (guidanceHistory().length > 0) {
+          <button type="button" class="history-quick-btn" (click)="scrollToHistory()">
+            <span class="history-icon-small" aria-hidden="true">📜</span>
+            <span>{{ g().historyBtn }} ({{ guidanceHistory().length }})</span>
+          </button>
+        }
+        <div class="celestial-badge">
+          <span class="star-icon" aria-hidden="true">✦</span>
+          <span>
+            @if (currentStep() === 1) { {{ g().stepWord }} 1 {{ g().ofWord }} 5: {{ g().steps.overview }} }
+            @else if (currentStep() === 2) { {{ g().stepWord }} 2 {{ g().ofWord }} 5: {{ g().steps.topic }} }
+            @else if (currentStep() === 3) { {{ g().stepWord }} 3 {{ g().ofWord }} 5: {{ g().steps.problem }} }
+            @else if (currentStep() === 4) { {{ g().stepWord }} 4 {{ g().ofWord }} 5: {{ g().steps.analyzing }} }
+            @else { {{ g().stepWord }} 5 {{ g().ofWord }} 5: {{ g().steps.reading }} }
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Toast Notification -->
+    @if (toastMessage()) {
+      <div class="toast-alert" role="status" aria-live="polite">
+        <span class="toast-icon" aria-hidden="true">✨</span>
+        <span class="toast-text">{{ toastMessage() }}</span>
+        <button type="button" class="toast-close" (click)="dismissToast()" aria-label="Close notification">✕</button>
+      </div>
+    }
+
+    <!-- Visual Journey Progress Ribbon -->
+    <nav class="step-progress-nav" aria-label="Guidance Journey Steps">
+      <ol class="step-progress-list">
+        <li class="step-item" [class.active]="currentStep() === 1" [class.completed]="currentStep() > 1">
+          <button type="button" class="step-circle" (click)="goToStep(1)" [disabled]="currentStep() === 4">1</button>
+          <span class="step-label">{{ g().steps.overview }}</span>
+        </li>
+        <li class="step-line" [class.filled]="currentStep() > 1" aria-hidden="true"></li>
+        <li class="step-item" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2">
+          <button type="button" class="step-circle" (click)="goToStep(2)" [disabled]="currentStep() === 4">2</button>
+          <span class="step-label">{{ g().steps.topic }}</span>
+        </li>
+        <li class="step-line" [class.filled]="currentStep() > 2" aria-hidden="true"></li>
+        <li class="step-item" [class.active]="currentStep() === 3" [class.completed]="currentStep() > 3">
+          <button type="button" class="step-circle" (click)="goToStep(3)" [disabled]="currentStep() === 4">3</button>
+          <span class="step-label">{{ g().steps.problem }}</span>
+        </li>
+        <li class="step-line" [class.filled]="currentStep() > 3" aria-hidden="true"></li>
+        <li class="step-item" [class.active]="currentStep() === 4" [class.completed]="currentStep() > 4">
+          <span class="step-circle">4</span>
+          <span class="step-label">{{ g().steps.analyzing }}</span>
+        </li>
+        <li class="step-line" [class.filled]="currentStep() > 4" aria-hidden="true"></li>
+        <li class="step-item" [class.active]="currentStep() === 5">
+          <span class="step-circle">5</span>
+          <span class="step-label">{{ g().steps.reading }}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- ==================================================== -->
+    <!-- STEP 1: GUIDANCE INTRO (What is on your mind?)       -->
+    <!-- ==================================================== -->
+    @if (currentStep() === 1) {
+      <div class="guidance-step-view fade-in">
+        <!-- Header -->
+        <header class="guidance-header">
+          <div class="header-icon-wrap" aria-hidden="true">
+            <span class="header-constellation">🔮</span>
+          </div>
+          <h1 class="guidance-title">{{ g().step1.title }}</h1>
+          <p class="guidance-subtitle">
+            {{ g().step1.subtitle }}
+          </p>
+        </header>
+
+        <!-- Intro Cards -->
+        <div class="astro-card intro-card">
+          <div class="intro-headline">
+            <span class="headline-badge">{{ g().step1.badge }}</span>
+            <h2 class="intro-title">{{ g().step1.introTitle }}</h2>
+            <p class="intro-desc">
+              {{ g().step1.introDesc }}
+            </p>
+          </div>
+
+          <div class="pillars-grid">
+            <div class="pillar-box">
+              <div class="pillar-icon" aria-hidden="true">🪐</div>
+              <h3 class="pillar-heading">{{ g().step1.pillar1Title }}</h3>
+              <p class="pillar-text">{{ g().step1.pillar1Desc }}</p>
+            </div>
+            <div class="pillar-box">
+              <div class="pillar-icon" aria-hidden="true">🔒</div>
+              <h3 class="pillar-heading">{{ g().step1.pillar2Title }}</h3>
+              <p class="pillar-text">{{ g().step1.pillar2Desc }}</p>
+            </div>
+            <div class="pillar-box">
+              <div class="pillar-icon" aria-hidden="true">🌿</div>
+              <h3 class="pillar-heading">{{ g().step1.pillar3Title }}</h3>
+              <p class="pillar-text">{{ g().step1.pillar3Desc }}</p>
+            </div>
+          </div>
+
+          <div class="intro-actions">
+            <button 
+              type="button" 
+              id="begin-consultation-btn"
+              class="btn btn-primary btn-lg continue-btn" 
+              (click)="goToStep(2)"
+            >
+              <span>{{ g().step1.beginBtn }}</span>
+              <span class="arrow-icon" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ==================================================== -->
+    <!-- STEP 2: TOPIC SELECTION                              -->
+    <!-- ==================================================== -->
+    @else if (currentStep() === 2) {
+      <div class="guidance-step-view fade-in">
+        <header class="guidance-header">
+          <div class="header-icon-wrap" aria-hidden="true">
+            <span class="header-constellation">✨</span>
+          </div>
+          <h1 class="guidance-title">{{ g().step2.title }}</h1>
+          <p class="guidance-subtitle">
+            {{ g().step2.subtitle }}
+          </p>
+        </header>
+
+        <div class="astro-card step-card">
+          <div 
+            class="topic-cards-grid" 
+            role="radiogroup" 
+            aria-label="Select Problem Category"
+          >
+            @for (cat of categories(); track cat.id) {
+              <button
+                type="button"
+                id="topic-btn-{{ cat.id.toLowerCase() }}"
+                class="topic-card-btn"
+                [class.selected]="selectedCategory() === cat.id"
+                role="radio"
+                [attr.aria-checked]="selectedCategory() === cat.id"
+                (click)="selectCategory(cat.id)"
+              >
+                <div class="topic-header">
+                  <span class="topic-icon" aria-hidden="true">{{ cat.icon }}</span>
+                  <span class="topic-name">{{ cat.label }}</span>
+                  <div class="radio-indicator" aria-hidden="true">
+                    @if (selectedCategory() === cat.id) {
+                      <span class="check-mark">✓</span>
+                    }
+                  </div>
+                </div>
+                <p class="topic-description">{{ cat.description }}</p>
+                <div class="topic-transit-tag">
+                  <span class="transit-icon" aria-hidden="true">✦</span>
+                  <span>{{ cat.transitFocus }}</span>
+                </div>
+              </button>
+            }
+          </div>
+
+          <div class="step-card-actions">
+            <button type="button" class="btn btn-secondary" (click)="goToStep(1)">
+              ← {{ g().back }}
+            </button>
+            <button 
+              type="button" 
+              id="continue-to-problem-btn"
+              class="btn btn-primary continue-btn" 
+              (click)="goToStep(3)"
+              [disabled]="!selectedCategory()"
+            >
+              <span>{{ g().step2.continueBtn }}</span>
+              <span class="arrow-icon" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ==================================================== -->
+    <!-- STEP 3: PROBLEM FORM (Tell us about your problem)    -->
+    <!-- ==================================================== -->
+    @else if (currentStep() === 3) {
+      <div class="guidance-step-view fade-in">
+        <header class="guidance-header">
+          <div class="header-icon-wrap" aria-hidden="true">
+            <span class="header-constellation">📜</span>
+          </div>
+          <h1 class="guidance-title">{{ g().step3.title }}</h1>
+          <p class="guidance-subtitle">
+            {{ g().step3.subtitle }}
+          </p>
+        </header>
+
+        <!-- Main Form Card -->
+        <section class="astro-card step-card" aria-labelledby="form-card-title">
+          <!-- Active Category Pill -->
+          <div class="selected-category-ribbon">
+            <div class="ribbon-info">
+              <span class="ribbon-icon" aria-hidden="true">{{ currentCategoryItem().icon }}</span>
+              <div>
+                <span class="ribbon-sub">{{ g().step3.selectedTopic }}</span>
+                <strong class="ribbon-title">{{ currentCategoryItem().label }}</strong>
+              </div>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm change-cat-btn" (click)="goToStep(2)">
+              {{ g().step3.changeTopic }}
+            </button>
+          </div>
+
+          <!-- Error Alert Banner -->
+          @if (createErrorMessage()) {
+            <div class="alert alert-error" role="alert">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ createErrorMessage() }}</span>
+              <button type="button" class="close-alert-btn" (click)="createErrorMessage.set(null)" aria-label="Close error">✕</button>
+            </div>
+          }
+
+          <!-- Problem Form -->
+          <form [formGroup]="problemForm" (ngSubmit)="onSubmitProblem()" novalidate class="guidance-form">
+            <div class="form-group-custom" [class.has-error]="shouldShowError">
+              <label for="problem-textarea" class="problem-label">
+                {{ g().step3.label }}
+                <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <p class="problem-sublabel">
+                {{ g().step3.sublabel }}
+              </p>
+
+              <!-- Textarea -->
+              <div class="textarea-wrapper" [class.invalid-wrapper]="shouldShowError">
+                <textarea
+                  id="problem-textarea"
+                  name="problem"
+                  class="problem-textarea"
+                  formControlName="problem"
+                  [placeholder]="g().step3.placeholder"
+                  rows="8"
+                  [attr.aria-invalid]="shouldShowError"
+                  aria-describedby="char-counter error-feedback"
+                ></textarea>
+              </div>
+
+              <!-- Footer: Error Feedback & Character Counter -->
+              <div class="textarea-footer">
+                <div class="error-col" id="error-feedback" aria-live="polite">
+                  @if (shouldShowError && errorMessage) {
+                    <div class="field-error-message" role="alert">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                      </svg>
+                      <span>{{ errorMessage }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Dynamic Character Counter -->
+                <div 
+                  id="char-counter" 
+                  class="character-counter" 
+                  [class.near-limit]="charCount() > 4800"
+                  [class.at-limit]="charCount() >= 5000"
+                  aria-label="Character count"
+                >
+                  <span class="current-count">{{ charCount() }}</span>
+                  <span class="max-count">/ 5000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Action -->
+            <div class="form-actions">
+              <button 
+                type="submit" 
+                id="submit-guidance-btn"
+                class="btn btn-primary submit-guidance-btn"
+                [disabled]="isCreating()"
+              >
+                @if (isCreating()) {
+                  <span class="spinner" aria-hidden="true"></span>
+                  <span>{{ g().step3.submittingBtn }}</span>
+                } @else {
+                  <span class="btn-sparkle" aria-hidden="true">✨</span>
+                  <span>{{ g().step3.submitBtn }}</span>
+                }
+              </button>
+            </div>
+
+            <div class="trust-notice">
+              <span class="lock-icon" aria-hidden="true">🔒</span>
+              <span>{{ g().step3.privacyNote }}</span>
+            </div>
+          </form>
+        </section>
+      </div>
+    }
+
+    <!-- ==================================================== -->
+    <!-- STEP 4: PROCESSING (Understanding your reading...)   -->
+    <!-- ==================================================== -->
+    @else if (currentStep() === 4) {
+      <div class="guidance-step-view fade-in">
+        <div class="astro-card processing-card">
+          <div class="celestial-orbit-container" aria-hidden="true">
+            <div class="orbit orbit-outer">
+              <span class="planet planet-saturn">🪐</span>
+            </div>
+            <div class="orbit orbit-middle">
+              <span class="planet planet-sun">☀️</span>
+            </div>
+            <div class="orbit orbit-inner">
+              <span class="planet planet-moon">🌙</span>
+            </div>
+            <div class="orbit-center">
+              <span class="sparkle-pulse">✨</span>
+            </div>
+          </div>
+
+          <h2 class="processing-title">{{ g().step4.title }}</h2>
+          <p class="processing-subtitle">
+            {{ g().step4.subtitle }}
+          </p>
+
+          <div class="pulse-progress-bar" aria-hidden="true">
+            <div class="pulse-progress-fill"></div>
+          </div>
+
+          <div class="processing-features">
+            <span class="feature-tag">✦ {{ currentCategoryItem().transitFocus }}</span>
+            <span class="feature-tag">✦ {{ g().step4.synthesis }}</span>
+            <span class="feature-tag">✦ {{ g().step4.remedies }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ==================================================== -->
+    <!-- STEP 5: PERSONALIZED READING                         -->
+    <!-- ==================================================== -->
+    @else if (currentStep() === 5) {
+      <div class="guidance-step-view fade-in">
+        <header class="guidance-header">
+          <div class="header-icon-wrap" aria-hidden="true">
+            <span class="header-constellation">🌟</span>
+          </div>
+          <h1 class="guidance-title">{{ g().step5.title }}</h1>
+          <p class="guidance-subtitle">
+            {{ g().step5.subtitle }}
+          </p>
+        </header>
+
+        <div class="reading-container">
+          <!-- Inquiry Summary Banner -->
+          <div class="astro-card submitted-inquiry-card">
+            <div class="inquiry-header">
+              <div class="inquiry-badge-group">
+                <span class="badge badge-gold">{{ currentCategoryItem().icon }} {{ currentCategoryItem().label }}</span>
+                <span class="inquiry-timestamp">✦ {{ g().step5.analysisBadge }}</span>
+              </div>
+              @if (createdGuidance()) {
+                <span class="guidance-id-badge">ID: #{{ createdGuidance()?.id }}</span>
+              }
+            </div>
+
+            <div class="user-problem-quote">
+              <span class="quote-symbol" aria-hidden="true">“</span>
+              <p class="problem-text">{{ submittedProblemText() }}</p>
+            </div>
+          </div>
+
+          <!-- Section 1: What May Be Happening (Planetary Transits) -->
+          <div class="astro-card reading-section-card highlight-card">
+            <div class="section-card-header">
+              <span class="section-badge-icon" aria-hidden="true">🪐</span>
+              <div>
+                <span class="badge badge-gold">Planetary Alignment</span>
+                <h2 class="section-card-title">{{ g().step5.happeningTitle }}</h2>
+              </div>
+            </div>
+            <p class="section-body-text">{{ personalizedReading().happening }}</p>
+            <div class="astrological-metadata">
+              <span class="meta-pill">Transit Focus: {{ currentCategoryItem().transitFocus }}</span>
+            </div>
+          </div>
+
+          <!-- Section 2: Astrological Guidance & Perspective -->
+          <div class="astro-card reading-section-card guidance-insight-card">
+            <div class="section-card-header">
+              <span class="section-badge-icon" aria-hidden="true">✨</span>
+              <div>
+                <span class="badge badge-gold">Astrological Counsel</span>
+                <h2 class="section-card-title">{{ g().step5.guidanceTitle }}</h2>
+              </div>
+            </div>
+            <p class="section-body-text">{{ personalizedReading().guidance }}</p>
+          </div>
+
+          <!-- Section 3: Recommended Actions & Remedies -->
+          <div class="astro-card reading-section-card remedy-card">
+            <div class="section-card-header">
+              <span class="section-badge-icon" aria-hidden="true">🌿</span>
+              <div>
+                <span class="badge badge-gold">Actionable Remedies</span>
+                <h2 class="section-card-title">{{ g().step5.remedyTitle }}</h2>
+              </div>
+            </div>
+            <p class="section-body-text">{{ personalizedReading().action }}</p>
+          </div>
+
+          <!-- Reading Actions -->
+          <div class="reading-footer-actions">
+            <button 
+              type="button" 
+              id="ask-another-btn"
+              class="btn btn-primary btn-lg" 
+              (click)="startNewConsultation()"
+            >
+              <span class="btn-icon" aria-hidden="true">✨</span>
+              <span>{{ g().step5.askAnotherBtn }}</span>
+            </button>
+
+            <button 
+              type="button" 
+              class="btn btn-secondary btn-lg" 
+              (click)="scrollToHistory()"
+            >
+              <span class="btn-icon" aria-hidden="true">📜</span>
+              <span>{{ g().step5.viewHistoryBtn }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ==================================================== -->
+    <!-- GUIDANCE HISTORY SECTION (GET / PUT / DELETE)        -->
+    <!-- ==================================================== -->
+    <section id="guidance-history-section" class="astro-card history-card" aria-labelledby="history-heading">
+      <div class="history-header">
+        <div class="history-title-wrap">
+          <span class="history-icon" aria-hidden="true">📜</span>
+          <h2 id="history-heading" class="history-title">{{ g().history.title }}</h2>
+        </div>
+        <div class="history-header-actions">
+          <span class="badge badge-muted">{{ g().history.badge }} ({{ guidanceHistory().length }})</span>
+          <button type="button" class="btn btn-ghost btn-sm refresh-btn" (click)="loadHistory()" title="Refresh history">
+            ↻
+          </button>
+        </div>
+      </div>
+
+      <!-- History Error Alert -->
+      @if (historyErrorMessage()) {
+        <div class="alert alert-error" role="alert">
+          <span>{{ historyErrorMessage() }}</span>
+          <button type="button" class="btn btn-outline btn-sm" (click)="loadHistory()">Retry</button>
+        </div>
+      }
+
+      <!-- Loading Skeleton -->
+      @if (isLoadingHistory()) {
+        <div class="history-skeleton-list">
+          <div class="skeleton-shimmer skeleton-item"></div>
+          <div class="skeleton-shimmer skeleton-item"></div>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @else if (guidanceHistory().length === 0) {
+        <div class="history-empty-state">
+          <div class="empty-icon-bubble" aria-hidden="true">
+            <span>✨</span>
+          </div>
+          <h3 class="empty-heading">{{ g().history.emptyHeading }}</h3>
+          <p class="empty-desc">
+            {{ g().history.emptyDesc }}
+          </p>
+          <div class="sample-categories-preview">
+            <span class="preview-label">{{ g().history.popularTopics }}</span>
+            <div class="preview-tags">
+              <button type="button" class="badge badge-gold" (click)="selectCategory('Career'); goToStep(3)">{{ g().step2.categories.career.label }}</button>
+              <button type="button" class="badge badge-gold" (click)="selectCategory('Marriage'); goToStep(3)">{{ g().step2.categories.marriage.label }}</button>
+              <button type="button" class="badge badge-gold" (click)="selectCategory('Finance'); goToStep(3)">{{ g().step2.categories.finance.label }}</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Guidance Items List -->
+      @else {
+        <div class="history-list">
+          @for (item of guidanceHistory(); track item.id) {
+            <div class="history-item-card">
+              <div class="item-header">
+                <div class="item-meta">
+                  <span class="badge badge-gold">✦ Inquiry #{{ item.id }}</span>
+                  <time class="item-date">{{ formatDate(item.created_at) }}</time>
+                </div>
+
+                <div class="item-action-buttons">
+                  <button 
+                    type="button" 
+                    class="btn btn-ghost btn-xs item-btn" 
+                    (click)="openViewModal(item)"
+                    title="View full reading"
+                  >
+                    {{ g().history.viewBtn }}
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-ghost btn-xs item-btn edit-color" 
+                    (click)="openEditModal(item)"
+                    title="Edit problem description"
+                  >
+                    {{ g().history.editBtn }}
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-ghost btn-xs item-btn delete-color" 
+                    (click)="confirmDelete(item)"
+                    title="Delete inquiry"
+                  >
+                    {{ g().history.deleteBtn }}
+                  </button>
+                </div>
+              </div>
+
+              <p class="item-problem-snippet">{{ item.problem }}</p>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: VIEW GUIDANCE DETAILS                         -->
+  <!-- ==================================================== -->
+  @if (viewingGuidance()) {
+    <div class="modal-backdrop" (click)="closeViewModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="view-modal-title">
+        <div class="modal-header">
+          <div>
+            <span class="badge badge-gold">Inquiry #{{ viewingGuidance()?.id }}</span>
+            <h3 id="view-modal-title" class="modal-title">{{ g().history.viewModalTitle }}</h3>
+          </div>
+          <button type="button" class="modal-close-btn" (click)="closeViewModal()" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-meta-row">
+            <span class="meta-label">Submitted on:</span>
+            <span class="meta-val">{{ formatDate(viewingGuidance()!.created_at) }}</span>
+          </div>
+
+          <div class="inquiry-detail-box">
+            <h4 class="box-subtitle">{{ g().history.problemStatement }}</h4>
+            <p class="full-problem-text">{{ viewingGuidance()?.problem }}</p>
+          </div>
+
+          <div class="remedy-note-box">
+            <h4 class="box-subtitle">{{ g().history.transitPerspective }}</h4>
+            <p class="note-text">
+              {{ g().history.transitPerspectiveText }}
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeViewModal()">{{ g().history.closeBtn }}</button>
+          <button type="button" class="btn btn-primary" (click)="closeViewModal(); openEditModal(viewingGuidance()!)">{{ g().history.editProblemBtn }}</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================================================== -->
+  <!-- MODAL: EDIT GUIDANCE (PUT /api/v1/guidance/{id})     -->
+  <!-- ==================================================== -->
+  @if (editingGuidance()) {
+    <div class="modal-backdrop" (click)="closeEditModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <div class="modal-header">
+          <div>
+            <span class="badge badge-gold">Edit Inquiry #{{ editingGuidance()?.id }}</span>
+            <h3 id="edit-modal-title" class="modal-title">{{ g().history.editModalTitle }}</h3>
+          </div>
+          <button type="button" class="modal-close-btn" (click)="closeEditModal()" aria-label="Close modal">✕</button>
+        </div>
+
+        <form [formGroup]="editForm" (ngSubmit)="onUpdateGuidance()" novalidate class="modal-body">
+          @if (updateErrorMessage()) {
+            <div class="alert alert-error mb-3" role="alert">
+              <span>{{ updateErrorMessage() }}</span>
+            </div>
+          }
+
+          <div class="form-group-custom">
+            <label for="edit-problem-textarea" class="problem-label">
+              {{ g().history.editLabel }}
+              <span class="required-star">*</span>
+            </label>
+            <div class="textarea-wrapper" [class.invalid-wrapper]="editProblemControl?.invalid && editProblemControl?.touched">
+              <textarea
+                id="edit-problem-textarea"
+                class="problem-textarea"
+                formControlName="problem"
+                rows="6"
+                [placeholder]="g().step3.placeholder"
+              ></textarea>
+            </div>
+
+            @if (editProblemControl?.invalid && editProblemControl?.touched) {
+              <div class="field-error-message mt-1" role="alert">
+                @if (editProblemControl?.hasError('required')) {
+                  <span>{{ g().step3.errors.required }}</span>
+                } @else if (editProblemControl?.hasError('minlength')) {
+                  <span>{{ g().step3.errors.minLength }}</span>
+                } @else if (editProblemControl?.hasError('maxlength')) {
+                  <span>{{ g().step3.errors.maxLength }}</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeEditModal()" [disabled]="isUpdating()">
+              {{ g().history.cancelBtn }}
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isUpdating() || editForm.invalid">
+              @if (isUpdating()) {
+                <span class="spinner" aria-hidden="true"></span>
+                <span>{{ g().history.savingBtn }}</span>
+              } @else {
+                <span>{{ g().history.saveChangesBtn }}</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- ==================================================== -->
+  <!-- MODAL: DELETE CONFIRMATION (DELETE /api/v1/guidance) -->
+  <!-- ==================================================== -->
+  @if (deletingGuidance()) {
+    <div class="modal-backdrop" (click)="cancelDelete()">
+      <div class="modal-content modal-sm" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+        <div class="modal-header">
+          <h3 id="delete-modal-title" class="modal-title delete-title">{{ g().history.deleteModalTitle }}</h3>
+          <button type="button" class="modal-close-btn" (click)="cancelDelete()" aria-label="Close dialog">✕</button>
+        </div>
+
+        <div class="modal-body">
+          @if (deleteErrorMessage()) {
+            <div class="alert alert-error mb-3" role="alert">
+              <span>{{ deleteErrorMessage() }}</span>
+            </div>
+          }
+          <p class="delete-confirm-text">
+            {{ g().history.deleteConfirmText }} (<strong>Inquiry #{{ deletingGuidance()?.id }}</strong>)
+          </p>
+          <p class="delete-warning-sub">
+            {{ g().history.deleteWarningSub }}
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancelDelete()" [disabled]="isDeleting()">
+            {{ g().history.cancelBtn }}
+          </button>
+          <button type="button" class="btn btn-error" (click)="onDeleteGuidance()" [disabled]="isDeleting()">
+            @if (isDeleting()) {
+              <span class="spinner" aria-hidden="true"></span>
+              <span>{{ g().history.deletingBtn }}</span>
+            } @else {
+              <span>{{ g().history.deletePermanentBtn }}</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</main>
+
+<app-footer></app-footer>

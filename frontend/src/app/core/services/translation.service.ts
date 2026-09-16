@@ -1,5 +1,14 @@
 import { Injectable, inject, computed } from '@angular/core';
 import { LanguageService } from './language.service';
+import {
+  GuidanceTranslations,
+  EN_GUIDANCE_TRANSLATIONS,
+  ML_GUIDANCE_TRANSLATIONS,
+  HI_GUIDANCE_TRANSLATIONS,
+  TA_GUIDANCE_TRANSLATIONS,
+  TE_GUIDANCE_TRANSLATIONS,
+  KN_GUIDANCE_TRANSLATIONS
+} from './guidance-translations.data';
 
 export interface AppTranslations {
   nav: {
@@ -157,6 +166,7 @@ export interface AppTranslations {
       placeRequired: string;
     };
   };
+  guidancePage: GuidanceTranslations;
 }
 
 const EN_TRANSLATIONS: AppTranslations = {
@@ -314,7 +324,8 @@ const EN_TRANSLATIONS: AppTranslations = {
       validTime: 'Please enter a valid birth time',
       placeRequired: 'Please select your birth place'
     }
-  }
+  },
+  guidancePage: EN_GUIDANCE_TRANSLATIONS
 };
 
 const ML_TRANSLATIONS: AppTranslations = {
@@ -472,11 +483,13 @@ const ML_TRANSLATIONS: AppTranslations = {
       validTime: 'ശരിയായ ജനന സമയം നൽകുക',
       placeRequired: 'ജനിച്ച സ്ഥലം തിരഞ്ഞെടുക്കുക'
     }
-  }
+  },
+  guidancePage: ML_GUIDANCE_TRANSLATIONS
 };
 
 const HI_TRANSLATIONS: AppTranslations = {
   ...EN_TRANSLATIONS,
+  guidancePage: HI_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
     home: 'होम',
@@ -530,6 +543,7 @@ const HI_TRANSLATIONS: AppTranslations = {
 
 const TA_TRANSLATIONS: AppTranslations = {
   ...EN_TRANSLATIONS,
+  guidancePage: TA_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
     home: 'முகப்பு',
@@ -583,6 +597,7 @@ const TA_TRANSLATIONS: AppTranslations = {
 
 const TE_TRANSLATIONS: AppTranslations = {
   ...EN_TRANSLATIONS,
+  guidancePage: TE_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
     home: 'హోమ్',
@@ -636,6 +651,7 @@ const TE_TRANSLATIONS: AppTranslations = {
 
 const KN_TRANSLATIONS: AppTranslations = {
   ...EN_TRANSLATIONS,
+  guidancePage: KN_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
     home: 'ಮುಖಪುಟ',

@@ -59,10 +59,15 @@ export class LoginComponent implements OnInit {
         this.authService.getMe().subscribe({
           next: (user) => {
             this.isLoading.set(false);
+            const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
             if (user.language_id !== null && user.language_id !== undefined) {
-              this.router.navigate(['/dashboard']);
+              if (returnUrl) {
+                this.router.navigateByUrl(returnUrl);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
             } else {
-              this.router.navigate(['/language']);
+              this.router.navigate(['/language'], returnUrl ? { queryParams: { returnUrl } } : undefined);
             }
           },
           error: (err) => {

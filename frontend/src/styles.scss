@@ -360,3 +360,165 @@ p {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Global Modals */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 20, 35, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: #FFFFFF;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  max-width: 580px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+  animation: modalScale 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.modal-sm { max-width: 440px; }
+
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 0.25rem;
+      &.delete-title { color: var(--color-error); }
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+      &:hover { color: var(--text-primary); }
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem 1.75rem;
+
+    .modal-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      .meta-label { color: var(--text-muted); }
+      .meta-val { color: var(--text-primary); font-weight: 500; }
+    }
+
+    .inquiry-detail-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+
+      .box-subtitle {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+      }
+
+      .full-problem-text {
+        font-size: 0.975rem;
+        color: var(--text-primary);
+        line-height: 1.6;
+        white-space: pre-wrap;
+      }
+    }
+
+    .remedy-note-box {
+      background: var(--bg-tag);
+      border: 1px solid var(--color-gold-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+
+      .box-subtitle {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--color-gold-text);
+        margin-bottom: 0.25rem;
+      }
+
+      .note-text { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+    }
+
+    .delete-confirm-text { font-size: 1rem; color: var(--text-primary); line-height: 1.5; margin-bottom: 0.75rem; }
+    .delete-warning-sub { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.45; }
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.75rem 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+}
+
+.btn-error {
+  background: var(--color-error);
+  color: #FFFFFF;
+  &:hover:not(:disabled) { background: #C23544; color: #FFFFFF; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes orbitSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes orbitSpinReverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+@keyframes pulse {
+  from { transform: translate(-50%, -50%) scale(0.85); opacity: 0.7; }
+  to { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+}
+
+

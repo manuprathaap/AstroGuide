@@ -39,6 +39,12 @@ export const routes: Routes = [
     title: 'Birth Details — AstroGuide'
   },
   {
+    path: 'guidance',
+    loadComponent: () => import('./features/guidance/guidance.component').then(m => m.GuidanceComponent),
+    canActivate: [authGuard],
+    title: 'Guidance — AstroGuide'
+  },
+  {
     path: '**',
     redirectTo: ''
   }

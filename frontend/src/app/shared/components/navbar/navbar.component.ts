@@ -23,6 +23,7 @@ export class NavbarComponent {
   readonly t = this.translationService.t;
   readonly currentLanguage = this.languageService.currentLanguage;
   readonly currentLanguageLabel = computed(() => this.currentLanguage()?.name || 'Language');
+  readonly currentUrl = computed(() => this.router.url);
 
   readonly mobileMenuOpen = signal<boolean>(false);
 

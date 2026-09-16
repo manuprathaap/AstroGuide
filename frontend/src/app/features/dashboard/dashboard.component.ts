@@ -204,7 +204,7 @@ export class DashboardComponent implements OnInit {
 
   openExploration(id: string): void {
     if (id === 'problem') {
-      this.activeView.set('problem_guidance');
+      this.router.navigate(['/guidance']);
     } else if (id === 'chart') {
       this.router.navigate(['/birth-details']);
     } else if (id === 'palm') {
