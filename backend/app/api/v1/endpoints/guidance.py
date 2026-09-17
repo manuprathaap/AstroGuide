@@ -1,16 +1,18 @@
-from fastapi import APIRouter, Depends,HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
 from app.database.connection import get_db
+from app.astrology.calculator import AstrologyCalculationError
 from app.models.user import User
-from app.schemas.guidance import GuidanceCreate,GuidanceUpdate, GuidanceResponse
+from app.schemas.guidance import GuidanceCreate, GuidanceUpdate, GuidanceResponse
 from app.services.guidance_service import (
-    create_guidance,
     get_user_guidance,
     update_guidance,
     delete_guidance
 )
+from app.services.guidance_analysis_service import GuidanceAnalysisService
+from app.services.guidance_analysis_service import GuidanceExplanationError
 
 
 router = APIRouter(
@@ -29,11 +31,44 @@ def create_guidance_endpoint(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return create_guidance(
-        db=db,
-        user_id=current_user.id,
-        problem=guidance_data.problem,
-    )
+    try:
+        result = GuidanceAnalysisService().create_and_analyze(
+            db=db,
+            user_id=current_user.id,
+            problem=guidance_data.problem,
+            language=(
+                current_user.language.name
+                if getattr(current_user, "language", None) is not None
+                else None
+            ),
+        )
+    except LookupError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        ) from exc
+    except AstrologyCalculationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
+    except GuidanceExplanationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Astrology analysis succeeded, but the explanation service failed.",
+        ) from exc
+
+    return {
+        "id": result.guidance.id,
+        "user_id": result.guidance.user_id,
+        "problem": result.guidance.problem,
+        "created_at": result.guidance.created_at,
+        "updated_at": result.guidance.updated_at,
+        "category": result.category,
+        "supported": result.supported,
+        "message": result.message,
+        "analysis": result.analysis,
+    }
 
 @router.get(
     "",
