@@ -27,6 +27,12 @@ export const routes: Routes = [
     title: 'Select Language — AstroGuide'
   },
   {
+    path: 'explore',
+    loadComponent: () => import('./features/explore/explore.component').then(m => m.ExploreComponent),
+    canActivate: [authGuard],
+    title: 'Explore — AstroGuide'
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard],
@@ -39,10 +45,33 @@ export const routes: Routes = [
     title: 'Birth Details — AstroGuide'
   },
   {
-    path: 'guidance',
-    loadComponent: () => import('./features/guidance/guidance.component').then(m => m.GuidanceComponent),
+    path: 'reading/prepare',
+    loadComponent: () => import('./features/reading/reading-prepare/reading-prepare.component').then(m => m.ReadingPrepareComponent),
     canActivate: [authGuard],
-    title: 'Guidance — AstroGuide'
+    title: 'Understanding Your Reading — AstroGuide'
+  },
+  {
+    path: 'reading/question',
+    loadComponent: () => import('./features/reading/reading-question/reading-question.component').then(m => m.ReadingQuestionComponent),
+    canActivate: [authGuard],
+    title: 'Ask Question — AstroGuide'
+  },
+  {
+    path: 'reading/result',
+    loadComponent: () => import('./features/reading/reading-result/reading-result.component').then(m => m.ReadingResultComponent),
+    canActivate: [authGuard],
+    title: 'Your Reading — AstroGuide'
+  },
+  {
+    path: 'guidance',
+    redirectTo: 'explore',
+    pathMatch: 'full'
+  },
+  {
+    path: 'guidance/history',
+    loadComponent: () => import('./features/reading/reading-history/reading-history.component').then(m => m.ReadingHistoryComponent),
+    canActivate: [authGuard],
+    title: 'Guidance History — AstroGuide'
   },
   {
     path: '**',

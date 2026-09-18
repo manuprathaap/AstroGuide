@@ -1,0 +1,58 @@
+<app-navbar></app-navbar>
+
+<main class="explore-page-main">
+  <div class="astro-container explore-container">
+    <div class="astro-card explore-card">
+      <!-- Step Badge -->
+      <div class="step-badge-wrap">
+        <span class="step-badge">STEP 2 OF 5 · EXPLORE TOPIC</span>
+      </div>
+
+      <!-- Header -->
+      <div class="explore-header">
+        <h1 class="explore-title">What would you like to explore today?</h1>
+        <p class="explore-subtitle">Tell us what you're curious about.</p>
+      </div>
+
+      <!-- Topics Grid -->
+      <div class="topics-grid" role="radiogroup" aria-label="Astrology inquiry topics">
+        @for (topic of topics; track topic.id) {
+          <div 
+            class="topic-card" 
+            [class.selected]="selectedTopic() === topic.id"
+            (click)="selectTopic(topic.id)"
+            role="radio"
+            tabindex="0"
+            [attr.aria-checked]="selectedTopic() === topic.id"
+            (keydown.enter)="selectTopic(topic.id)"
+            (keydown.space)="selectTopic(topic.id); $event.preventDefault()"
+          >
+            <div class="topic-header">
+              <span class="topic-icon" aria-hidden="true">{{ topic.icon }}</span>
+              <div class="topic-radio" [class.checked]="selectedTopic() === topic.id" aria-hidden="true">
+                @if (selectedTopic() === topic.id) {
+                  <span class="radio-dot"></span>
+                }
+              </div>
+            </div>
+            <h2 class="topic-name">{{ topic.label }}</h2>
+            <p class="topic-desc">{{ topic.description }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="explore-actions">
+        <button 
+          id="continue-explore-btn"
+          type="button" 
+          class="btn btn-primary continue-btn"
+          (click)="onContinue()"
+        >
+          <span>Continue</span>
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

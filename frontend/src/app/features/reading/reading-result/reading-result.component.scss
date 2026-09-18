@@ -1,0 +1,695 @@
+.reading-result-main {
+  min-height: calc(100vh - 54px);
+  padding: 2rem 1rem 4rem;
+  background-color: var(--bg-primary);
+}
+
+.result-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Topbar */
+.result-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  .btn-topbar-action, .btn-history-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+
+    &:hover {
+      color: var(--text-primary);
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  .btn-history-link {
+    color: var(--color-gold-text);
+
+    &:hover {
+      color: var(--color-gold-hover);
+      background: var(--bg-tag);
+    }
+  }
+}
+
+/* SCREEN 13: Three Column Responsive Grid */
+.personalized-reading-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 1060px) {
+    grid-template-columns: 260px 1fr;
+
+    .right-addon-col {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 780px) {
+    grid-template-columns: 1fr;
+
+    .right-addon-col {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* Left Column */
+.left-context-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.context-card {
+  padding: 1.35rem;
+
+  .context-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-gold-text);
+    background: var(--bg-tag);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-gold);
+    }
+  }
+
+  .context-field {
+    margin-bottom: 0.95rem;
+
+    .context-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .topic-highlight {
+      display: inline-block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .user-question-text {
+      font-size: 0.925rem;
+      color: var(--text-primary);
+      font-style: italic;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .context-value-small {
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+    }
+  }
+
+  .new-inquiry-box {
+    margin-top: 1.25rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+}
+
+/* SCREEN 10: Plan Card */
+.plan-access-card {
+  padding: 1.25rem;
+  background: var(--bg-card);
+
+  .plan-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.6rem;
+
+    .plan-icon {
+      font-size: 1.35rem;
+    }
+
+    .plan-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .plan-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--color-success);
+    }
+  }
+
+  .plan-desc {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 0.65rem;
+  }
+
+  .plan-footer {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+}
+
+/* Center Column */
+.center-reading-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.main-reading-card {
+  padding: 2.25rem 2rem;
+
+  @media (max-width: 640px) {
+    padding: 1.5rem 1.15rem;
+  }
+}
+
+.reading-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+
+  .star-accent {
+    color: var(--color-gold);
+    font-size: 1.1rem;
+  }
+
+  .reading-main-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.25px;
+    margin: 0;
+  }
+}
+
+.question-chip-banner {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+
+  .chip-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .chip-content {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+}
+
+.guidance-content-area {
+  margin-bottom: 2rem;
+
+  .guidance-label-row {
+    margin-bottom: 1rem;
+
+    .guidance-subheading {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+  }
+
+  .natural-language-response {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+
+    ::ng-deep {
+      .md-h1, .md-h2, .md-h3 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-top: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .md-h1 { font-size: 1.35rem; }
+      .md-h2 { font-size: 1.2rem; }
+      .md-h3 { font-size: 1.05rem; }
+
+      .md-p {
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .md-ul {
+        margin: 0.75rem 0 1.25rem 1.25rem;
+        padding: 0;
+      }
+
+      .md-li, .md-oli {
+        margin-bottom: 0.45rem;
+        line-height: 1.6;
+        color: var(--text-primary);
+      }
+
+      strong {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      em {
+        font-style: italic;
+        color: var(--text-secondary);
+      }
+    }
+  }
+}
+
+/* SCREEN 9: TIMING WINDOWS */
+.timing-windows-section {
+  background: #FFFDF9;
+  border: 1.5px solid var(--color-gold-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  .timing-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+
+    .timing-icon {
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .timing-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-gold-text);
+      margin: 0 0 0.15rem;
+    }
+
+    .timing-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+
+  .timing-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .timing-window-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    box-shadow: var(--shadow-xs);
+
+    .timing-years-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-tag);
+      border: 1px solid var(--color-gold-border);
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      margin-bottom: 0.5rem;
+
+      .window-dates {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--color-gold-text);
+      }
+    }
+
+    .window-dasha-info {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .window-reasons-list {
+      margin: 0;
+      padding-left: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+
+      li {
+        margin-bottom: 0.2rem;
+      }
+    }
+  }
+}
+
+/* SCREEN 8: COLLAPSIBLE ASTROLOGY DETAILS */
+.astrology-details-collapsible {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.25rem;
+
+  .toggle-details-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.15rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+
+    &:hover {
+      background: var(--bg-card-hover);
+      border-color: #D9D4CB;
+    }
+
+    .toggle-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .toggle-icon {
+        font-size: 1.1rem;
+      }
+
+      .toggle-text {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+    }
+
+    .toggle-arrow {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: transform var(--transition-fast);
+
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .astrology-details-body {
+    padding-top: 1.25rem;
+  }
+
+  .astro-specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+
+    .spec-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+
+      .spec-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        margin-bottom: 0.15rem;
+      }
+
+      .spec-value {
+        font-size: 0.885rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .factors-group {
+    margin-bottom: 1rem;
+
+    .factors-heading {
+      font-size: 0.825rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.45rem;
+
+      &.supportive {
+        color: var(--color-success);
+      }
+
+      &.caution {
+        color: #D9822B;
+      }
+    }
+
+    .factors-list {
+      margin: 0;
+      padding-left: 1.15rem;
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+
+      li {
+        margin-bottom: 0.35rem;
+      }
+    }
+  }
+}
+
+/* SCREEN 12: CAREER & LIFE GUIDANCE TABS */
+.guidance-tabs-card {
+  padding: 1.75rem;
+
+  .guidance-tabs-header {
+    margin-bottom: 1.25rem;
+
+    .tabs-main-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem;
+    }
+
+    .tabs-subheading {
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+
+  .category-tabs-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+
+    .category-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.85rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+
+      &:hover {
+        background: var(--bg-tag);
+        border-color: var(--color-gold-border);
+        color: var(--color-gold-text);
+      }
+
+      &.active {
+        background: var(--bg-tag);
+        border-color: var(--color-gold);
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .tab-prompt-preview {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .tab-prompt-text {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+}
+
+/* Right Column */
+.right-addon-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* SCREEN 11: PALM READING ENTRY CARD */
+.palm-entry-card {
+  padding: 1.5rem;
+  text-align: center;
+
+  .palm-icon-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-tag);
+    border: 1px solid var(--color-gold-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin: 0 auto 0.85rem;
+  }
+
+  .palm-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.35rem;
+  }
+
+  .palm-card-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    margin-bottom: 1.25rem;
+  }
+
+  .palm-alert {
+    background: var(--bg-tag);
+    border: 1px solid var(--color-gold-border);
+    color: var(--color-gold-text);
+    font-size: 0.78rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .analyze-palm-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .palm-badge-sub {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+  }
+}
+
+/* Recommendations Card */
+.recommendations-card {
+  padding: 1.35rem;
+
+  .rec-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.85rem;
+  }
+
+  .rec-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-card);
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      transition: all var(--transition-fast);
+
+      &:hover {
+        background: var(--bg-tag);
+        border-color: var(--color-gold-border);
+        color: var(--color-gold-text);
+      }
+
+      .rec-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+}

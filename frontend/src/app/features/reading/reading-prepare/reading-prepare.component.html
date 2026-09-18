@@ -1,0 +1,52 @@
+<app-navbar></app-navbar>
+
+<main class="prepare-page-main">
+  <div class="astro-container prepare-container">
+    <div class="astro-card prepare-card">
+      <!-- Step Badge -->
+      <div class="step-badge-wrap">
+        <span class="step-badge">STEP 4 OF 5 · HOW YOUR READING WORKS</span>
+      </div>
+
+      <!-- Header Section -->
+      <header class="prepare-header">
+        <h1 class="prepare-title">Understanding your reading</h1>
+        <p class="prepare-subtitle">
+          Here is how AstroGuide creates personalized guidance tailored to your chart.
+        </p>
+      </header>
+
+      <!-- Concise Pillars Grid -->
+      <div class="pillars-grid">
+        @for (pillar of pillars; track pillar.title) {
+          <div class="pillar-card">
+            <div class="pillar-icon-wrap" aria-hidden="true">
+              <span class="pillar-icon">{{ pillar.icon }}</span>
+            </div>
+            <div class="pillar-content">
+              <h2 class="pillar-title">{{ pillar.title }}</h2>
+              <p class="pillar-desc">{{ pillar.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Action Footer -->
+      <div class="prepare-actions">
+        <button type="button" class="btn btn-secondary" (click)="onBack()">
+          Back
+        </button>
+
+        <button 
+          id="continue-prepare-btn"
+          type="button" 
+          class="btn btn-primary continue-btn" 
+          (click)="onContinue()"
+        >
+          <span>Continue to Question</span>
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

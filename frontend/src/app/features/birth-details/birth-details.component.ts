@@ -7,6 +7,7 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 import { BirthDetailService } from '../../core/services/birth-detail.service';
 import { AuthService } from '../../core/services/auth.service';
 import { TranslationService } from '../../core/services/translation.service';
+import { ReadingJourneyService } from '../../core/services/reading-journey.service';
 import { BirthDetail, BirthDetailCreate, BirthDetailUpdate, PlaceSuggestion } from '../../core/models/birth-detail.model';
 
 function pastOrTodayDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -22,7 +23,6 @@ function pastOrTodayDateValidator(control: AbstractControl): ValidationErrors | 
   if (inputDate > today) {
     return { futureDate: true };
   }
-  // Check reasonable past year (e.g. not before 1900)
   if (inputDate.getFullYear() < 1900) {
     return { invalidDate: true };
   }
@@ -41,6 +41,7 @@ export class BirthDetailsComponent implements OnInit {
   private readonly birthDetailService = inject(BirthDetailService);
   private readonly authService = inject(AuthService);
   private readonly translationService = inject(TranslationService);
+  private readonly journeyService = inject(ReadingJourneyService);
   private readonly router = inject(Router);
   private readonly elementRef = inject(ElementRef);
 
@@ -51,6 +52,9 @@ export class BirthDetailsComponent implements OnInit {
   readonly isSaving = signal<boolean>(false);
   readonly isDeleting = signal<boolean>(false);
   readonly isExisting = signal<boolean>(false);
+  readonly isEditingMode = signal<boolean>(false);
+  readonly savedDetails = signal<BirthDetail | null>(null);
+
   readonly showDeleteModal = signal<boolean>(false);
   readonly successToast = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
@@ -88,7 +92,9 @@ export class BirthDetailsComponent implements OnInit {
     this.birthDetailService.getBirthDetails().subscribe({
       next: (details: BirthDetail) => {
         this.isExisting.set(true);
-        // Format time if backend returns HH:MM:SS to HH:MM for time picker
+        this.savedDetails.set(details);
+        this.journeyService.setBirthDetails(details);
+
         let formattedTime = details.time_of_birth || '';
         if (formattedTime.length > 5) {
           formattedTime = formattedTime.substring(0, 5);
@@ -102,16 +108,17 @@ export class BirthDetailsComponent implements OnInit {
           longitude: details.longitude,
           timezone: details.timezone || 'Asia/Kolkata'
         });
+        this.isEditingMode.set(false);
         this.isLoadingDetails.set(false);
       },
       error: (err) => {
         if (err.status === 404) {
-          // HTTP 404 means the user has not entered birth details yet -> brand new form
           this.isExisting.set(false);
-          // Set default timezone
+          this.isEditingMode.set(true);
           this.birthForm.patchValue({ timezone: 'Asia/Kolkata' });
         } else {
           this.errorMessage.set(this.authService.formatErrorMessage(err));
+          this.isEditingMode.set(true);
         }
         this.isLoadingDetails.set(false);
       }
@@ -134,6 +141,20 @@ export class BirthDetailsComponent implements OnInit {
       timezone: suggestion.timezone
     });
     this.showPlaceDropdown.set(false);
+  }
+
+  enableEdit(): void {
+    this.isEditingMode.set(true);
+  }
+
+  cancelEdit(): void {
+    if (this.isExisting()) {
+      this.isEditingMode.set(false);
+    }
+  }
+
+  continueToReading(): void {
+    this.router.navigate(['/reading/prepare']);
   }
 
   onSubmit(): void {
@@ -162,8 +183,10 @@ export class BirthDetailsComponent implements OnInit {
       };
 
       this.birthDetailService.updateBirthDetails(updatePayload).subscribe({
-        next: () => {
+        next: (updated) => {
           this.isSaving.set(false);
+          this.savedDetails.set(updated);
+          this.journeyService.setBirthDetails(updated);
           this.triggerSuccessAndRedirect();
         },
         error: (err) => {
@@ -182,9 +205,11 @@ export class BirthDetailsComponent implements OnInit {
       };
 
       this.birthDetailService.createBirthDetails(createPayload).subscribe({
-        next: () => {
+        next: (created) => {
           this.isSaving.set(false);
           this.isExisting.set(true);
+          this.savedDetails.set(created);
+          this.journeyService.setBirthDetails(created);
           this.triggerSuccessAndRedirect();
         },
         error: (err) => {
@@ -196,10 +221,10 @@ export class BirthDetailsComponent implements OnInit {
   }
 
   triggerSuccessAndRedirect(): void {
-    this.successToast.set(this.t().birthDetails.successSaved);
+    this.successToast.set('Birth details saved successfully.');
     setTimeout(() => {
-      this.router.navigate(['/dashboard']);
-    }, 1200);
+      this.router.navigate(['/reading/prepare']);
+    }, 600);
   }
 
   openDeleteModal(): void {
@@ -219,8 +244,11 @@ export class BirthDetailsComponent implements OnInit {
         this.isDeleting.set(false);
         this.showDeleteModal.set(false);
         this.isExisting.set(false);
+        this.savedDetails.set(null);
+        this.journeyService.setBirthDetails(null);
         this.birthForm.reset({ timezone: 'Asia/Kolkata' });
-        this.successToast.set(this.t().birthDetails.successDeleted);
+        this.isEditingMode.set(true);
+        this.successToast.set('Birth details removed.');
         setTimeout(() => {
           this.successToast.set(null);
         }, 3000);
@@ -234,6 +262,6 @@ export class BirthDetailsComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/explore']);
   }
 }

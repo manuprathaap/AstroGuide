@@ -1,0 +1,148 @@
+<app-navbar></app-navbar>
+
+<main class="history-page-main">
+  <div class="astro-container history-container">
+    <div class="history-header-row">
+      <div>
+        <h1 class="history-title">Guidance History</h1>
+        <p class="history-subtitle">Review your past astrological consultations and AI explanations.</p>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" (click)="startNewReading()">
+        + Ask New Question
+      </button>
+    </div>
+
+    <!-- Error Alert -->
+    @if (errorMessage()) {
+      <div class="alert alert-error" role="alert">
+        <span>{{ errorMessage() }}</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="loadHistory()">Retry</button>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="state-container loading-state">
+        <span class="spinner spinner-lg"></span>
+        <p class="state-text">Loading your guidance history...</p>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @else if (historyItems().length === 0) {
+      <div class="astro-card empty-history-card">
+        <div class="empty-icon" aria-hidden="true">📜</div>
+        <h3 class="empty-title">No guidance history yet</h3>
+        <p class="empty-desc">
+          When you ask AstroGuide a question about your chart, your readings will be saved here for easy review.
+        </p>
+        <button type="button" class="btn btn-primary" (click)="startNewReading()">
+          Begin Your First Reading
+        </button>
+      </div>
+    }
+
+    <!-- History Cards Grid -->
+    @else {
+      <div class="history-grid">
+        @for (item of historyItems(); track item.id) {
+          <div class="astro-card history-card" (click)="openReading(item)" role="button" tabindex="0">
+            <div class="history-card-top">
+              <div class="badge-group">
+                @if (item.category) {
+                  <span class="cat-badge">{{ item.category }}</span>
+                }
+                <span class="date-badge">{{ item.created_at | date:'mediumDate' }}</span>
+              </div>
+              <div class="card-item-actions">
+                <button 
+                  type="button" 
+                  class="action-icon-btn" 
+                  (click)="openEditModal($event, item)"
+                  title="Edit Question"
+                  aria-label="Edit Question"
+                >
+                  ✎
+                </button>
+                <button 
+                  type="button" 
+                  class="action-icon-btn danger" 
+                  (click)="openDeleteModal($event, item)"
+                  title="Delete Inquiry"
+                  aria-label="Delete Inquiry"
+                >
+                  🗑
+                </button>
+              </div>
+            </div>
+
+            <h3 class="history-question">"{{ item.problem }}"</h3>
+
+            @if (item.message) {
+              <p class="history-preview">
+                {{ item.message | slice:0:160 }}...
+              </p>
+            }
+
+            <div class="history-card-footer">
+              <span class="view-reading-link">
+                View Full Reading →
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Edit Modal -->
+    @if (editingItem()) {
+      <div class="modal-backdrop" (click)="closeEditModal()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <h3 class="modal-title">Edit Question</h3>
+          <div class="input-wrapper mb-3">
+            <textarea
+              class="edit-textarea"
+              rows="3"
+              [ngModel]="editProblemText()"
+              (ngModelChange)="editProblemText.set($event)"
+            ></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" (click)="saveEdit()" [disabled]="isUpdating()">
+              @if (isUpdating()) {
+                <span>Saving...</span>
+              } @else {
+                <span>Save</span>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Delete Modal -->
+    @if (deletingItem()) {
+      <div class="modal-backdrop" (click)="closeDeleteModal()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <h3 class="modal-title">Delete Inquiry?</h3>
+          <p class="modal-desc">Are you sure you want to remove this guidance record?</p>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-error" (click)="confirmDelete()" [disabled]="isDeleting()">
+              @if (isDeleting()) {
+                <span>Deleting...</span>
+              } @else {
+                <span>Delete</span>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</main>

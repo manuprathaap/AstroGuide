@@ -1,0 +1,338 @@
+<app-navbar></app-navbar>
+
+<main class="reading-result-main">
+  <div class="astro-container result-container">
+    
+    <!-- Top Bar: Back & History Shortcuts -->
+    <div class="result-topbar">
+      <button type="button" class="btn-topbar-action" (click)="askNewQuestion()">
+        <span aria-hidden="true">←</span>
+        <span>Ask another question</span>
+      </button>
+
+      <div class="topbar-right">
+        <button type="button" class="btn-history-link" (click)="viewHistory()">
+          <span aria-hidden="true">📜</span>
+          <span>View Guidance History</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SCREEN 13: RESPONSIVE THREE-COLUMN LAYOUT -->
+    <div class="personalized-reading-layout">
+      
+      <!-- LEFT COLUMN: User Question & Category Context -->
+      <aside class="left-context-col">
+        <div class="astro-card context-card">
+          <div class="context-badge">
+            <span class="badge-dot"></span>
+            <span>CURRENT INQUIRY</span>
+          </div>
+
+          <div class="context-field">
+            <span class="context-label">Category</span>
+            <span class="context-value topic-highlight">{{ topic() }}</span>
+          </div>
+
+          <div class="context-field">
+            <span class="context-label">Your Question</span>
+            <p class="user-question-text">"{{ question() }}"</p>
+          </div>
+
+          @if (birthDetails()) {
+            <div class="context-field birth-snippet">
+              <span class="context-label">Birth Chart Profile</span>
+              <span class="context-value-small">
+                {{ birthDetails()?.date_of_birth }} • {{ birthDetails()?.place_of_birth }}
+              </span>
+            </div>
+          }
+
+          <div class="new-inquiry-box">
+            <button type="button" class="btn btn-secondary btn-sm w-full" (click)="askNewQuestion()">
+              + New Question
+            </button>
+          </div>
+        </div>
+
+        <!-- SCREEN 10: CHECK YOUR PLAN CARD -->
+        <div class="astro-card plan-access-card">
+          <div class="plan-header">
+            <span class="plan-icon" aria-hidden="true">🛡️</span>
+            <div>
+              <h4 class="plan-title">{{ planStatus().planName }}</h4>
+              <span class="plan-badge">Active Seeker</span>
+            </div>
+          </div>
+          <p class="plan-desc">{{ planStatus().readingsRemaining }}</p>
+          <div class="plan-footer">
+            <span class="plan-status-text">✓ Vedic calculations enabled</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER COLUMN: SCREEN 7 (YOUR READING) & SCREEN 8/9 (ASTROLOGY DETAILS) -->
+      <section class="center-reading-col">
+        <!-- SCREEN 7: YOUR READING RESULT -->
+        <div class="astro-card main-reading-card">
+          <div class="reading-header-bar">
+            <span class="star-accent" aria-hidden="true">✦</span>
+            <h1 class="reading-main-title">Your Reading</h1>
+          </div>
+
+          <div class="question-chip-banner">
+            <span class="chip-label">Question:</span>
+            <span class="chip-content">{{ question() }}</span>
+          </div>
+
+          <div class="guidance-content-area">
+            <div class="guidance-label-row">
+              <h2 class="guidance-subheading">Your Guidance</h2>
+            </div>
+
+            <!-- Gemini Natural Language Explanation (Markdown formatted) -->
+            @if (readingResponse()) {
+              <div class="natural-language-response" [innerHTML]="readingResponse() | markdown"></div>
+            } @else {
+              <div class="empty-response-state">
+                <p>No response details available for this reading.</p>
+                <button type="button" class="btn btn-primary" (click)="askNewQuestion()">
+                  Ask AstroGuide
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- SCREEN 9: TIMING WINDOWS (Highlight Supportive Periods) -->
+          @if (timingWindows().length > 0) {
+            <div class="timing-windows-section">
+              <div class="timing-header">
+                <span class="timing-icon" aria-hidden="true">⏳</span>
+                <div>
+                  <h3 class="timing-title">Supportive Periods Indicated by Analysis</h3>
+                  <p class="timing-subtitle">
+                    Astrological periods showing favorable alignment according to your chart.
+                  </p>
+                </div>
+              </div>
+
+              <div class="timing-cards-grid">
+                @for (window of timingWindows(); track window.start) {
+                  <div class="timing-window-card">
+                    <div class="timing-years-badge">
+                      <span class="cal-icon" aria-hidden="true">📅</span>
+                      <span class="window-dates">
+                        {{ window.start | date:'yyyy' }} – {{ window.end | date:'yyyy' }}
+                      </span>
+                    </div>
+                    <div class="window-dasha-info">
+                      <span class="dasha-tag">
+                        {{ window.mahadasha_lord }} Mahadasha • {{ window.antardasha_lord }} Antardasha
+                      </span>
+                    </div>
+                    @if (window.reasons && window.reasons.length > 0) {
+                      <ul class="window-reasons-list">
+                        @for (reason of window.reasons; track reason) {
+                          <li>{{ reason }}</li>
+                        }
+                      </ul>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- SCREEN 8: COLLAPSIBLE ASTROLOGY DETAILS -->
+          <div class="astrology-details-collapsible">
+            <button 
+              type="button" 
+              class="toggle-details-btn" 
+              (click)="toggleAstrologyDetails()"
+              [attr.aria-expanded]="showAstrologyDetails()"
+            >
+              <div class="toggle-btn-left">
+                <span class="toggle-icon" aria-hidden="true">🪐</span>
+                <span class="toggle-text">View Astrology Details</span>
+              </div>
+              <span class="toggle-arrow" [class.rotated]="showAstrologyDetails()" aria-hidden="true">
+                ▼
+              </span>
+            </button>
+
+            @if (showAstrologyDetails()) {
+              <div class="astrology-details-body fade-in">
+                <div class="astro-specs-grid">
+                  <!-- 7th House & 7th Lord -->
+                  @if (analysis()?.seventh_house_sign) {
+                    <div class="spec-card">
+                      <span class="spec-label">7th House</span>
+                      <span class="spec-value">{{ analysis()?.seventh_house_sign }}</span>
+                    </div>
+                  }
+                  @if (analysis()?.seventh_house_lord) {
+                    <div class="spec-card">
+                      <span class="spec-label">7th Lord</span>
+                      <span class="spec-value">{{ analysis()?.seventh_house_lord }}</span>
+                    </div>
+                  }
+
+                  <!-- Venus Position -->
+                  @if (analysis()?.venus_sign) {
+                    <div class="spec-card">
+                      <span class="spec-label">Venus</span>
+                      <span class="spec-value">
+                        {{ analysis()?.venus_sign }} 
+                        @if (analysis()?.venus_house) {
+                          (House {{ analysis()?.venus_house }})
+                        }
+                      </span>
+                    </div>
+                  }
+
+                  <!-- Jupiter Position -->
+                  @if (analysis()?.jupiter_sign) {
+                    <div class="spec-card">
+                      <span class="spec-label">Jupiter</span>
+                      <span class="spec-value">
+                        {{ analysis()?.jupiter_sign }}
+                        @if (analysis()?.jupiter_house) {
+                          (House {{ analysis()?.jupiter_house }})
+                        }
+                      </span>
+                    </div>
+                  }
+
+                  <!-- Dasha & Antardasha -->
+                  @if (analysis()?.current_mahadasha) {
+                    <div class="spec-card">
+                      <span class="spec-label">Mahadasha</span>
+                      <span class="spec-value">{{ analysis()?.current_mahadasha }}</span>
+                    </div>
+                  }
+                  @if (analysis()?.current_antardasha) {
+                    <div class="spec-card">
+                      <span class="spec-label">Antardasha</span>
+                      <span class="spec-value">{{ analysis()?.current_antardasha }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Supporting Factors -->
+                @if (supportingFactors().length > 0) {
+                  <div class="factors-group">
+                    <h4 class="factors-heading supportive">Supporting Factors</h4>
+                    <ul class="factors-list">
+                      @for (f of supportingFactors(); track f.rule) {
+                        <li>
+                          <strong>{{ f.planet || f.rule }}:</strong> {{ f.reason }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+
+                <!-- Challenging / Caution Factors -->
+                @if (cautionFactors().length > 0) {
+                  <div class="factors-group">
+                    <h4 class="factors-heading caution">Factors to Be Mindful Of</h4>
+                    <ul class="factors-list">
+                      @for (f of cautionFactors(); track f.rule) {
+                        <li>
+                          <strong>{{ f.planet || f.rule }}:</strong> {{ f.reason }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- SCREEN 12: CAREER & LIFE GUIDANCE (Tabbed exploration) -->
+        <div class="astro-card guidance-tabs-card">
+          <div class="guidance-tabs-header">
+            <h3 class="tabs-main-heading">Career &amp; Life Guidance</h3>
+            <p class="tabs-subheading">
+              Explore guidance across other areas of your life without restarting your profile.
+            </p>
+          </div>
+
+          <!-- Horizontal Selectable Category Tabs -->
+          <div class="category-tabs-bar" role="tablist">
+            @for (tab of categoryTabs; track tab.id) {
+              <button 
+                type="button" 
+                class="category-tab-btn" 
+                [class.active]="activeCategoryTab() === tab.id"
+                (click)="selectCategoryTab(tab.id)"
+                role="tab"
+                [attr.aria-selected]="activeCategoryTab() === tab.id"
+              >
+                <span class="tab-icon" aria-hidden="true">{{ tab.icon }}</span>
+                <span>{{ tab.label }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="tab-prompt-preview">
+            <p class="tab-prompt-text">
+              Curious about <strong>{{ activeCategoryTab() }}</strong>? Ask a question to explore planetary influences on this path.
+            </p>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="askNewQuestion()">
+              Ask About {{ activeCategoryTab() }} →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: SCREEN 11 (PALM READING) & RECOMMENDATIONS -->
+      <aside class="right-addon-col">
+        <!-- SCREEN 11: PALM READING ENTRY CARD -->
+        <div class="astro-card palm-entry-card">
+          <div class="palm-icon-badge" aria-hidden="true">✋</div>
+          <h3 class="palm-card-title">Palm Reading</h3>
+          <p class="palm-card-desc">
+            Analyze key palmistry lines — life, heart, and destiny lines — to complement your Vedic chart insights.
+          </p>
+
+          @if (palmReadingMessage()) {
+            <div class="palm-alert" role="status">
+              {{ palmReadingMessage() }}
+            </div>
+          }
+
+          <button 
+            type="button" 
+            class="btn btn-secondary w-full analyze-palm-btn"
+            (click)="analyzePalm()"
+            id="analyze-palm-btn"
+          >
+            <span>Analyze Palm</span>
+          </button>
+          <span class="palm-badge-sub">Integration Point Ready</span>
+        </div>
+
+        <!-- Continue Reading / Recommendations -->
+        <div class="astro-card recommendations-card">
+          <h4 class="rec-title">Recommended for You</h4>
+          <ul class="rec-list">
+            <li (click)="selectCategoryTab('Career'); askNewQuestion()">
+              <span class="rec-icon">💼</span>
+              <span class="rec-text">Career Progression &amp; Timing</span>
+            </li>
+            <li (click)="selectCategoryTab('Money / Finance'); askNewQuestion()">
+              <span class="rec-icon">💰</span>
+              <span class="rec-text">Financial Stability Cycles</span>
+            </li>
+            <li (click)="selectCategoryTab('Travel / Abroad'); askNewQuestion()">
+              <span class="rec-icon">✈️</span>
+              <span class="rec-text">Foreign Travel / Relocation</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>

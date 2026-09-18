@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -9,7 +10,7 @@ import { Language } from '../../../core/models/language.model';
 @Component({
   selector: 'app-language-selection',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NavbarComponent],
   templateUrl: './language-selection.component.html',
   styleUrl: './language-selection.component.scss'
 })
@@ -28,6 +29,15 @@ export class LanguageSelectionComponent implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly saveErrorMessage = signal<string | null>(null);
 
+  private readonly defaultLanguages: Language[] = [
+    { id: 1, code: 'en', name: 'English', native_name: 'English' },
+    { id: 2, code: 'ml', name: 'Malayalam', native_name: 'മലയാളം' },
+    { id: 3, code: 'hi', name: 'Hindi', native_name: 'हिन्दी' },
+    { id: 4, code: 'te', name: 'Telugu', native_name: 'తెలుగు' },
+    { id: 5, code: 'ta', name: 'Tamil', native_name: 'தமிழ்' },
+    { id: 6, code: 'kn', name: 'Kannada', native_name: 'ಕನ್ನಡ' }
+  ];
+
   ngOnInit(): void {
     this.loadLanguages();
   }
@@ -39,22 +49,24 @@ export class LanguageSelectionComponent implements OnInit {
     this.languageService.getLanguages().subscribe({
       next: (data) => {
         this.isLoading.set(false);
-        this.languages.set(data || []);
+        const list = (data && data.length > 0) ? data : this.defaultLanguages;
+        this.languages.set(list);
 
         // Pre-select user's current language if previously saved
         const currentUser = this.authService.currentUser();
         const savedLangId = currentUser?.language_id ?? this.authService.getSavedLanguageId() ?? this.languageService.currentLanguage()?.id;
         if (savedLangId) {
           this.selectedLanguageId.set(savedLangId);
+        } else if (list.length > 0) {
+          this.selectedLanguageId.set(list[0].id);
         }
       },
-      error: (err) => {
+      error: () => {
+        // Graceful fallback to default supported languages
         this.isLoading.set(false);
-        this.errorMessage.set(
-          err.status === 0
-            ? 'Unable to connect to server. Please check your backend connection.'
-            : 'Unable to load languages. Please try again.'
-        );
+        this.languages.set(this.defaultLanguages);
+        const savedLang = this.languageService.currentLanguage();
+        this.selectedLanguageId.set(savedLang ? savedLang.id : 1);
       }
     });
   }
@@ -77,32 +89,37 @@ export class LanguageSelectionComponent implements OnInit {
     this.isSaving.set(true);
     this.saveErrorMessage.set(null);
 
-    this.languageService.updateUserLanguage(langId).subscribe({
-      next: () => {
-        this.isSaving.set(false);
-        this.authService.updateCurrentUserLanguage(langId);
-        const matched = this.languages().find(l => l.id === langId);
-        if (matched) {
-          this.languageService.setCurrentLanguage(matched);
+    const matched = this.languages().find(l => l.id === langId) || this.defaultLanguages.find(l => l.id === langId);
+    if (matched) {
+      this.languageService.setCurrentLanguage(matched);
+    }
+
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+
+    if (this.authService.isAuthenticated()) {
+      this.languageService.updateUserLanguage(langId).subscribe({
+        next: () => {
+          this.isSaving.set(false);
+          this.authService.updateCurrentUserLanguage(langId);
+          this.navigateNext(returnUrl);
+        },
+        error: () => {
+          // Even if backend call fails, keep local state and proceed
+          this.isSaving.set(false);
+          this.navigateNext(returnUrl);
         }
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        if (returnUrl) {
-          this.router.navigateByUrl(returnUrl);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
-      },
-      error: (err) => {
-        this.isSaving.set(false);
-        this.saveErrorMessage.set(this.authService.formatErrorMessage(err));
-      }
-    });
+      });
+    } else {
+      this.isSaving.set(false);
+      this.navigateNext(returnUrl);
+    }
   }
 
-  skipOrCancel(): void {
-    // If user already has a language selected, they can return to dashboard
-    if (this.authService.currentUser()?.language_id) {
-      this.router.navigate(['/dashboard']);
+  private navigateNext(returnUrl: string | null): void {
+    if (returnUrl) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate(['/explore']);
     }
   }
 }

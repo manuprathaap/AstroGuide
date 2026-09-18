@@ -1,6 +1,6 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslationService } from '../../../core/services/translation.service';
@@ -8,7 +8,7 @@ import { TranslationService } from '../../../core/services/translation.service';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
@@ -22,21 +22,10 @@ export class NavbarComponent {
   readonly isAuthenticated = this.authService.isAuthenticated;
   readonly t = this.translationService.t;
   readonly currentLanguage = this.languageService.currentLanguage;
-  readonly currentLanguageLabel = computed(() => this.currentLanguage()?.name || 'Language');
+  readonly currentLanguageLabel = computed(() => this.languageService.currentLanguage()?.name || 'Language');
   readonly currentUrl = computed(() => this.router.url);
 
-  readonly mobileMenuOpen = signal<boolean>(false);
-
-  toggleMobileMenu(): void {
-    this.mobileMenuOpen.update(v => !v);
-  }
-
-  closeMobileMenu(): void {
-    this.mobileMenuOpen.set(false);
-  }
-
   logout(): void {
-    this.closeMobileMenu();
     this.authService.logout();
   }
 }

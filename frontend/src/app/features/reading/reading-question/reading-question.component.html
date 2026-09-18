@@ -1,0 +1,111 @@
+<app-navbar></app-navbar>
+
+<main class="question-page-main">
+  <div class="astro-container question-container">
+    <!-- SCREEN 6: CALM READING / LOADING STATE -->
+    @if (isSubmitting()) {
+      <div class="astro-card loading-card" role="status" aria-live="polite">
+        <div class="loading-visual-wrap" aria-hidden="true">
+          <div class="loading-pulse-ring"></div>
+          <span class="loading-icon">✦</span>
+        </div>
+
+        <h2 class="loading-phase-text">
+          {{ loadingMessages[loadingPhaseIndex()] }}
+        </h2>
+        <p class="loading-subtext">
+          Analyzing planetary transits, dasha cycles, and house placements...
+        </p>
+
+        <div class="loading-dots-indicator" aria-hidden="true">
+          @for (msg of loadingMessages; track msg; let i = $index) {
+            <span class="dot" [class.active]="loadingPhaseIndex() === i"></span>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- SCREEN 5: ASK QUESTION STATE -->
+    @else {
+      <div class="astro-card question-card">
+        <!-- Step Badge -->
+        <div class="step-badge-wrap">
+          <span class="step-badge">STEP 5 OF 5 · ASK ASTROGUIDE</span>
+        </div>
+
+        <!-- Header Section -->
+        <header class="question-header">
+          <div class="topic-pill">
+            <span>Topic:</span>
+            <strong>{{ selectedTopic() }}</strong>
+          </div>
+          <h1 class="question-title">What would you like to know?</h1>
+          <p class="question-subtitle">
+            Ask any question about your life or select a suggested question below.
+          </p>
+        </header>
+
+        <!-- Error Alert -->
+        @if (errorMessage()) {
+          <div class="alert alert-error" role="alert">
+            <span>{{ errorMessage() }}</span>
+            <button type="button" class="close-alert" (click)="errorMessage.set(null)" aria-label="Close alert">✕</button>
+          </div>
+        }
+
+        <!-- Question Form -->
+        <form (ngSubmit)="onSubmit()" class="question-form">
+          <div class="input-area-wrap">
+            <textarea
+              id="user-question-input"
+              class="question-textarea"
+              rows="3"
+              [placeholder]="'Ask a question about your life...'"
+              [ngModel]="currentQuestion()"
+              (ngModelChange)="currentQuestion.set($event)"
+              name="userQuestion"
+              required
+              aria-label="Your question for AstroGuide"
+            ></textarea>
+          </div>
+
+          <!-- Selectable Language-Specific Suggestions -->
+          @if (suggestions().length > 0) {
+            <div class="suggestions-section">
+              <span class="suggestions-label">Suggested in {{ currentLanguageName() }}:</span>
+              <div class="suggestion-chips" role="group" aria-label="Suggested questions">
+                @for (suggestion of suggestions(); track suggestion) {
+                  <button
+                    type="button"
+                    class="chip-btn"
+                    [class.selected]="currentQuestion() === suggestion"
+                    (click)="selectSuggestion(suggestion)"
+                  >
+                    <span>{{ suggestion }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Form Actions -->
+          <div class="question-actions">
+            <button type="button" class="btn btn-secondary" (click)="onBack()">
+              Back
+            </button>
+
+            <button
+              id="submit-question-btn"
+              type="submit"
+              class="btn btn-primary ask-btn"
+              [disabled]="!currentQuestion().trim()"
+            >
+              <span>Ask AstroGuide</span>
+              <span class="btn-sparkle" aria-hidden="true">✦</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </div>
+</main>

@@ -1,4 +1,4 @@
-.lang-page-main {
+.explore-page-main {
   min-height: calc(100vh - 54px);
   display: flex;
   align-items: center;
@@ -7,21 +7,21 @@
   background-color: var(--bg-primary);
 }
 
-.lang-container {
+.explore-container {
   display: flex;
   justify-content: center;
 }
 
-.lang-card {
+.explore-card {
   width: 100%;
-  max-width: 460px;
+  max-width: 760px;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   padding: 2.25rem 2rem;
   box-shadow: var(--shadow-sm);
 
-  @media (max-width: 480px) {
+  @media (max-width: 640px) {
     padding: 1.5rem 1rem;
   }
 }
@@ -42,10 +42,10 @@
   }
 }
 
-.lang-header {
-  margin-bottom: 1.75rem;
+.explore-header {
+  margin-bottom: 2rem;
 
-  .lang-title {
+  .explore-title {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -53,118 +53,114 @@
     letter-spacing: -0.2px;
   }
 
-  .lang-subtitle {
+  .explore-subtitle {
     font-size: 0.885rem;
     color: var(--text-secondary);
-    line-height: 1.45;
   }
 }
 
-/* State Containers */
-.state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2.5rem 1rem;
-  text-align: center;
-  gap: 0.75rem;
-
-  .spinner-lg {
-    width: 2rem;
-    height: 2rem;
-    border-width: 3px;
-    color: var(--color-gold);
-  }
-
-  .state-text {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-  }
-}
-
-/* Languages List (Vertical Cards) */
-.languages-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 580px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.lang-row-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 1.15rem;
-  border-radius: var(--radius-md);
+.topic-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 
   &:hover {
     border-color: #D9D4CB;
     background: var(--bg-card-hover);
+    transform: translateY(-1px);
   }
 
   &.selected {
-    background: var(--bg-tag);
     border-color: var(--color-gold);
+    background: var(--bg-tag);
 
-    .lang-native {
+    .topic-name {
       color: var(--text-primary);
       font-weight: 600;
     }
   }
 
-  .lang-left {
-    display: flex;
-    align-items: baseline;
-    gap: 0.65rem;
-
-    .lang-native {
-      font-size: 0.98rem;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .lang-english {
-      font-size: 0.825rem;
-      color: var(--text-muted);
-    }
-  }
-
-  .radio-circle {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1.5px solid #D9D4CB;
+  .topic-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all var(--transition-fast);
+    justify-content: space-between;
+    margin-bottom: 0.65rem;
 
-    &.checked {
-      border-color: var(--color-gold);
+    .topic-icon {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
 
-      .radio-inner {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--color-gold);
+    .topic-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid #D9D4CB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+
+      &.checked {
+        border-color: var(--color-gold);
+
+        .radio-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--color-gold);
+        }
       }
     }
   }
+
+  .topic-name {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .topic-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 0;
+  }
 }
 
-.lang-actions {
+.explore-actions {
+  display: flex;
+  justify-content: flex-end;
+
   .continue-btn {
-    width: 100%;
-    padding: 0.8rem 1.25rem;
+    min-width: 160px;
+    padding: 0.8rem 1.4rem;
     font-size: 0.95rem;
     border-radius: var(--radius-md);
     gap: 0.5rem;
+
+    @media (max-width: 580px) {
+      width: 100%;
+    }
 
     .btn-arrow {
       font-size: 1.1rem;
