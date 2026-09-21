@@ -7,18 +7,18 @@
     <div class="result-topbar">
       <button type="button" class="btn-topbar-action" (click)="askNewQuestion()">
         <span aria-hidden="true">←</span>
-        <span>Ask another question</span>
+        <span>{{ t().readingResult.askAnother }}</span>
       </button>
 
       <div class="topbar-right">
         <button type="button" class="btn-history-link" (click)="viewHistory()">
           <span aria-hidden="true">📜</span>
-          <span>View Guidance History</span>
+          <span>{{ t().readingResult.viewHistory }}</span>
         </button>
       </div>
     </div>
 
-    <!-- SCREEN 13: RESPONSIVE THREE-COLUMN LAYOUT -->
+    <!-- RESPONSIVE THREE-COLUMN LAYOUT -->
     <div class="personalized-reading-layout">
       
       <!-- LEFT COLUMN: User Question & Category Context -->
@@ -26,22 +26,22 @@
         <div class="astro-card context-card">
           <div class="context-badge">
             <span class="badge-dot"></span>
-            <span>CURRENT INQUIRY</span>
+            <span>{{ t().readingResult.currentInquiry }}</span>
           </div>
 
           <div class="context-field">
-            <span class="context-label">Category</span>
+            <span class="context-label">{{ t().readingResult.category }}</span>
             <span class="context-value topic-highlight">{{ topic() }}</span>
           </div>
 
           <div class="context-field">
-            <span class="context-label">Your Question</span>
+            <span class="context-label">{{ t().readingResult.yourQuestion }}</span>
             <p class="user-question-text">"{{ question() }}"</p>
           </div>
 
           @if (birthDetails()) {
             <div class="context-field birth-snippet">
-              <span class="context-label">Birth Chart Profile</span>
+              <span class="context-label">{{ t().readingResult.birthProfile }}</span>
               <span class="context-value-small">
                 {{ birthDetails()?.date_of_birth }} • {{ birthDetails()?.place_of_birth }}
               </span>
@@ -50,23 +50,23 @@
 
           <div class="new-inquiry-box">
             <button type="button" class="btn btn-secondary btn-sm w-full" (click)="askNewQuestion()">
-              + New Question
+              {{ t().readingResult.newQuestion }}
             </button>
           </div>
         </div>
 
-        <!-- SCREEN 10: CHECK YOUR PLAN CARD -->
+        <!-- PLAN CARD -->
         <div class="astro-card plan-access-card">
           <div class="plan-header">
             <span class="plan-icon" aria-hidden="true">🛡️</span>
             <div>
               <h4 class="plan-title">{{ planStatus().planName }}</h4>
-              <span class="plan-badge">Active Seeker</span>
+              <span class="plan-badge">{{ t().readingResult.plan.badge }}</span>
             </div>
           </div>
           <p class="plan-desc">{{ planStatus().readingsRemaining }}</p>
           <div class="plan-footer">
-            <span class="plan-status-text">✓ Vedic calculations enabled</span>
+            <span class="plan-status-text">{{ t().readingResult.plan.status }}</span>
           </div>
         </div>
       </aside>
@@ -79,13 +79,13 @@
             <div class="chat-header-left">
               <div class="chat-brand-icon" aria-hidden="true">✦</div>
               <div>
-                <h1 class="chat-main-title">AstroGuide</h1>
-                <p class="chat-subtitle">Personal Vedic Astrologer &amp; Guidance</p>
+                <h1 class="chat-main-title">{{ t().readingResult.chat.title }}</h1>
+                <p class="chat-subtitle">{{ t().readingResult.chat.subtitle }}</p>
               </div>
             </div>
             <div class="chat-status-pill">
               <span class="status-indicator-dot"></span>
-              <span>Live Chart Session</span>
+              <span>{{ t().readingResult.chat.liveSession }}</span>
             </div>
           </div>
 
@@ -97,7 +97,7 @@
                 <div class="message-row user-row">
                   <div class="user-bubble">
                     <div class="bubble-meta">
-                      <span class="bubble-sender">You</span>
+                      <span class="bubble-sender">{{ t().readingResult.chat.you }}</span>
                     </div>
                     <p class="bubble-text">{{ msg.content }}</p>
                   </div>
@@ -111,7 +111,7 @@
                     <div class="assistant-card-header">
                       <div class="astro-badge">
                         <span class="sparkle" aria-hidden="true">✨</span>
-                        <span class="astro-name">AstroGuide</span>
+                        <span class="astro-name">{{ t().readingResult.chat.title }}</span>
                       </div>
                       @if (msg.category) {
                         <span class="category-tag">{{ formatCategory(msg.category) }}</span>
@@ -126,7 +126,7 @@
                       <div class="msg-timing-section">
                         <div class="msg-timing-header">
                           <span class="timing-badge-icon" aria-hidden="true">⏳</span>
-                          <span class="msg-timing-title">Supportive Periods Indicated</span>
+                          <span class="msg-timing-title">{{ t().readingResult.timing.supportivePeriods }}</span>
                         </div>
                         <div class="msg-timing-grid">
                           @for (window of msg.timingWindows; track window.start) {
@@ -153,7 +153,7 @@
                 <div class="assistant-card typing-card">
                   <div class="typing-header">
                     <span class="sparkle" aria-hidden="true">✨</span>
-                    <span class="typing-label">AstroGuide is reading your chart...</span>
+                    <span class="typing-label">{{ t().readingResult.chat.readingChart }}</span>
                   </div>
                   <div class="typing-dots-wrap" aria-hidden="true">
                     <span class="typing-dot"></span>
@@ -181,7 +181,7 @@
           <!-- Suggested Follow-up Questions -->
           @if (!isTyping() && suggestedFollowUps().length > 0) {
             <div class="follow-up-suggestions-bar">
-              <span class="suggestions-caption">Suggested follow-ups:</span>
+              <span class="suggestions-caption">{{ t().readingResult.chat.suggestedFollowUps }}</span>
               <div class="suggestion-chips-row">
                 @for (chip of suggestedFollowUps(); track chip) {
                   <button type="button" class="suggestion-chip-btn" (click)="sendMessage(chip)">
@@ -200,20 +200,20 @@
                 id="chat-user-input"
                 name="chatInput"
                 class="chat-text-input"
-                placeholder="Ask AstroGuide anything..."
+                [placeholder]="t().readingResult.chat.inputPlaceholder"
                 [ngModel]="inputQuestion()"
                 (ngModelChange)="inputQuestion.set($event)"
                 (keydown)="onInputKeyDown($event)"
                 [disabled]="isTyping()"
                 autocomplete="off"
-                aria-label="Ask AstroGuide anything"
+                [attr.aria-label]="t().readingResult.chat.inputPlaceholder"
               />
               <button
                 type="submit"
                 id="chat-send-btn"
                 class="chat-send-btn"
                 [disabled]="!inputQuestion().trim() || isTyping()"
-                aria-label="Send message"
+                [attr.aria-label]="t().readingResult.chat.send"
               >
                 <span class="send-icon" aria-hidden="true">➤</span>
               </button>
@@ -221,7 +221,7 @@
           </div>
         </div>
 
-        <!-- SCREEN 8: COLLAPSIBLE ASTROLOGY DETAILS -->
+        <!-- COLLAPSIBLE ASTROLOGY DETAILS -->
         @if (analysis(); as ana) {
           <div class="astro-card astrology-details-collapsible">
             <button 
@@ -232,7 +232,7 @@
             >
               <div class="toggle-btn-left">
                 <span class="toggle-icon" aria-hidden="true">🪐</span>
-                <span class="toggle-text">View Astrology Details</span>
+                <span class="toggle-text">{{ t().readingResult.astrologyDetails.toggle }}</span>
               </div>
               <span class="toggle-arrow" [class.rotated]="showAstrologyDetails()" aria-hidden="true">
                 ▼
@@ -244,47 +244,47 @@
                 <div class="astro-specs-grid">
                   @if (ana.seventh_house_sign) {
                     <div class="spec-card">
-                      <span class="spec-label">7th House</span>
+                      <span class="spec-label">{{ t().readingResult.astrologyDetails.seventhHouse }}</span>
                       <span class="spec-value">{{ ana.seventh_house_sign }}</span>
                     </div>
                   }
                   @if (ana.seventh_house_lord) {
                     <div class="spec-card">
-                      <span class="spec-label">7th Lord</span>
+                      <span class="spec-label">{{ t().readingResult.astrologyDetails.seventhLord }}</span>
                       <span class="spec-value">{{ ana.seventh_house_lord }}</span>
                     </div>
                   }
                   @if (ana.venus_sign) {
                     <div class="spec-card">
-                      <span class="spec-label">Venus</span>
+                      <span class="spec-label">{{ t().readingResult.astrologyDetails.venus }}</span>
                       <span class="spec-value">
                         {{ ana.venus_sign }} 
                         @if (ana.venus_house) {
-                          (House {{ ana.venus_house }})
+                          ({{ t().readingResult.astrologyDetails.house }} {{ ana.venus_house }})
                         }
                       </span>
                     </div>
                   }
                   @if (ana.jupiter_sign) {
                     <div class="spec-card">
-                      <span class="spec-label">Jupiter</span>
+                      <span class="spec-label">{{ t().readingResult.astrologyDetails.jupiter }}</span>
                       <span class="spec-value">
-                        {{ ana.jupiter_sign }}
+                        {{ ana.jupiter_sign }} 
                         @if (ana.jupiter_house) {
-                          (House {{ ana.jupiter_house }})
+                          ({{ t().readingResult.astrologyDetails.house }} {{ ana.jupiter_house }})
                         }
                       </span>
                     </div>
                   }
                   @if (ana.current_mahadasha) {
                     <div class="spec-card">
-                      <span class="spec-label">Mahadasha</span>
+                      <span class="spec-label">{{ t().readingResult.astrologyDetails.mahadasha }}</span>
                       <span class="spec-value">{{ ana.current_mahadasha }}</span>
                     </div>
                   }
                   @if (ana.current_antardasha) {
                     <div class="spec-card">
-                      <span class="spec-label">Antardasha</span>
+                      <span class="spec-label">{{ t().readingResult.astrologyDetails.antardasha }}</span>
                       <span class="spec-value">{{ ana.current_antardasha }}</span>
                     </div>
                   }
@@ -292,7 +292,7 @@
 
                 @if (supportingFactors().length > 0) {
                   <div class="factors-group">
-                    <h4 class="factors-heading supportive">Supporting Factors</h4>
+                    <h4 class="factors-heading supportive">{{ t().readingResult.astrologyDetails.supportingFactors }}</h4>
                     <ul class="factors-list">
                       @for (f of supportingFactors(); track f.rule) {
                         <li>
@@ -305,7 +305,7 @@
 
                 @if (cautionFactors().length > 0) {
                   <div class="factors-group">
-                    <h4 class="factors-heading caution">Factors to Be Mindful Of</h4>
+                    <h4 class="factors-heading caution">{{ t().readingResult.astrologyDetails.cautionFactors }}</h4>
                     <ul class="factors-list">
                       @for (f of cautionFactors(); track f.rule) {
                         <li>
@@ -320,18 +320,18 @@
           </div>
         }
 
-        <!-- SCREEN 12: CAREER & LIFE GUIDANCE (Tabbed exploration) -->
+        <!-- CAREER & LIFE GUIDANCE (Tabbed exploration) -->
         <div class="astro-card guidance-tabs-card">
           <div class="guidance-tabs-header">
-            <h3 class="tabs-main-heading">Career &amp; Life Guidance</h3>
+            <h3 class="tabs-main-heading">{{ t().readingResult.guidanceTabs.heading }}</h3>
             <p class="tabs-subheading">
-              Explore guidance across other areas of your life without restarting your profile.
+              {{ t().readingResult.guidanceTabs.subheading }}
             </p>
           </div>
 
           <!-- Horizontal Selectable Category Tabs -->
           <div class="category-tabs-bar" role="tablist">
-            @for (tab of categoryTabs; track tab.id) {
+            @for (tab of categoryTabs(); track tab.id) {
               <button 
                 type="button" 
                 class="category-tab-btn" 
@@ -348,23 +348,23 @@
 
           <div class="tab-prompt-preview">
             <p class="tab-prompt-text">
-              Curious about <strong>{{ activeCategoryTab() }}</strong>? Ask a question to explore planetary influences on this path.
+              {{ t().readingResult.guidanceTabs.curiousAbout }} <strong>{{ activeCategoryTab() }}</strong>?
             </p>
             <button type="button" class="btn btn-secondary btn-sm" (click)="sendMessage('What does my chart indicate about ' + activeCategoryTab() + '?')">
-              Ask About {{ activeCategoryTab() }} →
+              {{ t().readingResult.guidanceTabs.askAbout }} {{ activeCategoryTab() }} →
             </button>
           </div>
         </div>
       </section>
 
-      <!-- RIGHT COLUMN: SCREEN 11 (PALM READING) & RECOMMENDATIONS -->
+      <!-- RIGHT COLUMN: PALM READING & RECOMMENDATIONS -->
       <aside class="right-addon-col">
-        <!-- SCREEN 11: PALM READING ENTRY CARD -->
+        <!-- PALM READING ENTRY CARD -->
         <div class="astro-card palm-entry-card">
           <div class="palm-icon-badge" aria-hidden="true">✋</div>
-          <h3 class="palm-card-title">Palm Reading</h3>
+          <h3 class="palm-card-title">{{ t().readingResult.palm.title }}</h3>
           <p class="palm-card-desc">
-            Analyze key palmistry lines — life, heart, and destiny lines — to complement your Vedic chart insights.
+            {{ t().readingResult.palm.desc }}
           </p>
 
           @if (palmReadingMessage()) {
@@ -379,26 +379,26 @@
             (click)="analyzePalm()"
             id="analyze-palm-btn"
           >
-            <span>Analyze Palm</span>
+            <span>{{ t().readingResult.palm.btn }}</span>
           </button>
-          <span class="palm-badge-sub">Integration Point Ready</span>
+          <span class="palm-badge-sub">{{ t().readingResult.palm.badge }}</span>
         </div>
 
-        <!-- Continue Reading / Recommendations -->
+        <!-- Recommendations -->
         <div class="astro-card recommendations-card">
-          <h4 class="rec-title">Recommended for You</h4>
+          <h4 class="rec-title">{{ t().readingResult.recommendations.heading }}</h4>
           <ul class="rec-list">
             <li (click)="selectCategoryTab('Career'); askNewQuestion()">
               <span class="rec-icon">💼</span>
-              <span class="rec-text">Career Progression &amp; Timing</span>
+              <span class="rec-text">{{ t().readingResult.recommendations.career }}</span>
             </li>
             <li (click)="selectCategoryTab('Money / Finance'); askNewQuestion()">
               <span class="rec-icon">💰</span>
-              <span class="rec-text">Financial Stability Cycles</span>
+              <span class="rec-text">{{ t().readingResult.recommendations.money }}</span>
             </li>
             <li (click)="selectCategoryTab('Travel / Abroad'); askNewQuestion()">
               <span class="rec-icon">✈️</span>
-              <span class="rec-text">Foreign Travel / Relocation</span>
+              <span class="rec-text">{{ t().readingResult.recommendations.travel }}</span>
             </li>
           </ul>
         </div>

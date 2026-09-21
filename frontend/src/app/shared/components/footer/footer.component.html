@@ -8,43 +8,43 @@
           <span class="brand-text">Astro<span class="gold-text">Guide</span></span>
         </a>
         <p class="brand-desc">
-          Bridging ancient Vedic astrological wisdom with cutting-edge computational intelligence to illuminate your life's path.
+          {{ t().footer.brandDesc }}
         </p>
         <div class="cosmic-quote">
-          "As above, so below; as within, so without."
+          "{{ t().footer.quote }}"
         </div>
       </div>
 
       <!-- Quick Links -->
       <div class="footer-links-col">
-        <h4 class="col-title">Exploration</h4>
+        <h4 class="col-title">{{ t().footer.exploration }}</h4>
         <ul class="footer-links">
-          <li><a routerLink="/">Cosmic Overview</a></li>
-          <li><a routerLink="/" fragment="features">Daily Horoscopes</a></li>
-          <li><a routerLink="/" fragment="kundli">Vedic Kundli</a></li>
-          <li><a routerLink="/language">Language Preference</a></li>
-          <li><a routerLink="/dashboard">Member Portal</a></li>
+          <li><a routerLink="/explore">{{ t().explore.title }}</a></li>
+          <li><a routerLink="/birth-details">{{ t().birthDetails.existingTitle }}</a></li>
+          <li><a routerLink="/guidance/history">{{ t().readingHistory.title }}</a></li>
+          <li><a routerLink="/language">{{ t().nav.language }}</a></li>
+          <li><a routerLink="/dashboard">{{ t().nav.home }}</a></li>
         </ul>
       </div>
 
       <!-- Guidance & Wisdom -->
       <div class="footer-links-col">
-        <h4 class="col-title">Astrology Guides</h4>
+        <h4 class="col-title">{{ t().footer.guides }}</h4>
         <ul class="footer-links">
-          <li><a routerLink="/">Planetary Transits</a></li>
-          <li><a routerLink="/">Birth Chart Houses</a></li>
-          <li><a routerLink="/">Zodiac Compatibility</a></li>
-          <li><a routerLink="/">Nakshatras & Stars</a></li>
+          <li><a routerLink="/explore">{{ t().explore.topics.career.label }}</a></li>
+          <li><a routerLink="/explore">{{ t().explore.topics.marriage.label }}</a></li>
+          <li><a routerLink="/explore">{{ t().explore.topics.money.label }}</a></li>
+          <li><a routerLink="/explore">{{ t().explore.topics.relationships.label }}</a></li>
         </ul>
       </div>
 
       <!-- System & Security -->
       <div class="footer-links-col">
-        <h4 class="col-title">Trust & Privacy</h4>
+        <h4 class="col-title">{{ t().footer.trust }}</h4>
         <ul class="footer-links">
           <li><a routerLink="/">Privacy Policy</a></li>
           <li><a routerLink="/">Terms of Guidance</a></li>
-          <li><a routerLink="/">Vedic Disclaimer</a></li>
+          <li><a routerLink="/">Vedic Jyotish Standards</a></li>
           <li><a routerLink="/">FastAPI Engine Status</a></li>
         </ul>
       </div>
@@ -53,10 +53,10 @@
     <!-- Bottom Bar -->
     <div class="footer-bottom">
       <p class="copyright">
-        © {{ currentYear }} AstroGuide. All rights reserved. Crafted with celestial precision.
+        © {{ currentYear }} AstroGuide. {{ t().footer.copyright }}
       </p>
       <div class="astronomy-disclaimer">
-        Astrological readings are for self-discovery, spiritual awareness, and entertainment purposes.
+        {{ t().footer.disclaimer }}
       </div>
     </div>
   </div>

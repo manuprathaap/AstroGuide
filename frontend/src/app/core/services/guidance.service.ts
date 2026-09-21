@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Guidance, GuidanceCreate, GuidanceUpdate } from '../models/guidance.model';
+import { LanguageService } from './language.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +11,18 @@ import { Guidance, GuidanceCreate, GuidanceUpdate } from '../models/guidance.mod
 export class GuidanceService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Create a new guidance request with user's problem description.
    * Note: The backend automatically identifies current_user from the JWT Bearer token.
    */
   createGuidance(data: GuidanceCreate): Observable<Guidance> {
-    return this.http.post<Guidance>(`${this.apiUrl}/guidance`, data);
+    const payload: GuidanceCreate = {
+      ...data,
+      language: data.language || this.languageService.currentLanguageName()
+    };
+    return this.http.post<Guidance>(`${this.apiUrl}/guidance`, payload);
   }
 
   /**

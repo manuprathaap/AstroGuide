@@ -5,14 +5,14 @@
     <div class="astro-card birth-card">
       <!-- Step Badge -->
       <div class="step-badge-wrap">
-        <span class="step-badge">STEP 3 OF 5 · BIRTH DETAILS</span>
+        <span class="step-badge">{{ t().birthDetails.stepBadge }}</span>
       </div>
 
       <!-- Header Section -->
       <header class="birth-header">
-        <h1 class="birth-title">Your birth details</h1>
+        <h1 class="birth-title">{{ isExisting() && !isEditingMode() ? t().birthDetails.existingTitle : t().birthDetails.newTitle }}</h1>
         <p class="birth-subtitle">
-          Tell us your birth details to personalize your reading.
+          {{ t().birthDetails.subtitle }}
         </p>
       </header>
 
@@ -35,7 +35,7 @@
       @if (isLoadingDetails()) {
         <div class="state-container loading-state">
           <span class="spinner spinner-lg"></span>
-          <p class="state-text">Loading your birth details...</p>
+          <p class="state-text">{{ t().birthDetails.loadingDetails }}</p>
         </div>
       }
 
@@ -44,19 +44,19 @@
         <div class="saved-details-view">
           <div class="saved-summary-grid">
             <div class="summary-item">
-              <span class="summary-label">Date of Birth</span>
+              <span class="summary-label">{{ t().birthDetails.dobSummary }}</span>
               <span class="summary-value">{{ savedDetails()?.date_of_birth }}</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Time of Birth</span>
+              <span class="summary-label">{{ t().birthDetails.tobSummary }}</span>
               <span class="summary-value">{{ savedDetails()?.time_of_birth }}</span>
             </div>
             <div class="summary-item full-width">
-              <span class="summary-label">Place of Birth</span>
+              <span class="summary-label">{{ t().birthDetails.pobSummary }}</span>
               <span class="summary-value">{{ savedDetails()?.place_of_birth }}</span>
             </div>
             <div class="summary-item full-width meta-item">
-              <span class="summary-label">Timezone &amp; Coordinates</span>
+              <span class="summary-label">{{ t().birthDetails.tzCoordSummary }}</span>
               <span class="summary-value muted">
                 {{ savedDetails()?.timezone || 'Asia/Kolkata' }} 
                 @if (savedDetails()?.latitude && savedDetails()?.longitude) {
@@ -73,7 +73,7 @@
               (click)="enableEdit()"
               id="edit-birth-btn"
             >
-              <span>Edit Details</span>
+              <span>{{ t().birthDetails.editDetailsBtn }}</span>
             </button>
 
             <button 
@@ -82,14 +82,14 @@
               (click)="continueToReading()"
               id="continue-birth-btn"
             >
-              <span>Continue</span>
+              <span>{{ t().birthDetails.continueBtn }}</span>
               <span class="btn-arrow" aria-hidden="true">→</span>
             </button>
           </div>
 
           <div class="danger-zone">
             <button type="button" class="btn-delete-link" (click)="openDeleteModal()">
-              Remove saved birth details
+              {{ t().birthDetails.removeSavedBtn }}
             </button>
           </div>
         </div>
@@ -103,7 +103,7 @@
             <!-- Date of Birth -->
             <div class="form-group" [class.has-error]="birthForm.get('date_of_birth')?.invalid && birthForm.get('date_of_birth')?.touched">
               <label for="dob-input">
-                <span>Date of birth</span>
+                <span>{{ t().birthDetails.dobLabel }}</span>
                 <span class="req">*</span>
               </label>
               <div class="input-wrapper">
@@ -116,14 +116,14 @@
                 />
               </div>
               @if (birthForm.get('date_of_birth')?.invalid && birthForm.get('date_of_birth')?.touched) {
-                <span class="error-text">Please select a valid past date of birth.</span>
+                <span class="error-text">{{ t().birthDetails.errors.dobInvalid }}</span>
               }
             </div>
 
             <!-- Time of Birth -->
             <div class="form-group" [class.has-error]="birthForm.get('time_of_birth')?.invalid && birthForm.get('time_of_birth')?.touched">
               <label for="tob-input">
-                <span>Time of birth</span>
+                <span>{{ t().birthDetails.tobLabel }}</span>
                 <span class="req">*</span>
               </label>
               <div class="input-wrapper">
@@ -136,7 +136,7 @@
                 />
               </div>
               @if (birthForm.get('time_of_birth')?.invalid && birthForm.get('time_of_birth')?.touched) {
-                <span class="error-text">Please enter time of birth.</span>
+                <span class="error-text">{{ t().birthDetails.errors.tobInvalid }}</span>
               }
             </div>
           </div>
@@ -144,7 +144,7 @@
           <!-- Place of Birth with Search Autocomplete -->
           <div class="form-group place-group" [class.has-error]="birthForm.get('place_of_birth')?.invalid && birthForm.get('place_of_birth')?.touched">
             <label for="pob-input">
-              <span>Place of birth</span>
+              <span>{{ t().birthDetails.pobLabel }}</span>
               <span class="req">*</span>
             </label>
             <div class="input-wrapper">
@@ -152,7 +152,7 @@
                 id="pob-input"
                 type="text"
                 formControlName="place_of_birth"
-                placeholder="e.g. Kochi, Bengaluru, Delhi, London..."
+                [placeholder]="t().birthDetails.pobPlaceholder"
                 autocomplete="off"
                 (input)="onPlaceInput($event)"
                 aria-required="true"
@@ -176,28 +176,28 @@
             }
 
             @if (birthForm.get('place_of_birth')?.invalid && birthForm.get('place_of_birth')?.touched) {
-              <span class="error-text">Place of birth is required.</span>
+              <span class="error-text">{{ t().birthDetails.errors.pobInvalid }}</span>
             }
           </div>
 
           <!-- Coordinates & Timezone (Optional details) -->
           <div class="form-row-3col meta-fields">
             <div class="form-group">
-              <label for="lat-input">Latitude</label>
+              <label for="lat-input">{{ t().birthDetails.latLabel }}</label>
               <div class="input-wrapper">
                 <input id="lat-input" type="number" step="any" formControlName="latitude" placeholder="e.g. 9.9312" />
               </div>
             </div>
 
             <div class="form-group">
-              <label for="lng-input">Longitude</label>
+              <label for="lng-input">{{ t().birthDetails.lngLabel }}</label>
               <div class="input-wrapper">
                 <input id="lng-input" type="number" step="any" formControlName="longitude" placeholder="e.g. 76.2673" />
               </div>
             </div>
 
             <div class="form-group">
-              <label for="tz-input">Timezone</label>
+              <label for="tz-input">{{ t().birthDetails.tzLabel }}</label>
               <div class="input-wrapper">
                 <input id="tz-input" type="text" formControlName="timezone" placeholder="Asia/Kolkata" />
               </div>
@@ -208,7 +208,7 @@
           <div class="form-actions">
             @if (isExisting()) {
               <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
-                Cancel
+                {{ t().birthDetails.cancelBtn }}
               </button>
             }
             <button 
@@ -219,9 +219,9 @@
             >
               @if (isSaving()) {
                 <span class="spinner" aria-hidden="true"></span>
-                <span>Saving...</span>
+                <span>{{ t().birthDetails.savingBtn }}</span>
               } @else {
-                <span>Save &amp; Continue</span>
+                <span>{{ isExisting() ? t().birthDetails.saveChangesBtn : t().birthDetails.saveContinueBtn }}</span>
                 <span class="btn-arrow" aria-hidden="true">→</span>
               }
             </button>
@@ -233,19 +233,19 @@
       @if (showDeleteModal()) {
         <div class="modal-backdrop" (click)="closeDeleteModal()">
           <div class="modal-dialog" (click)="$event.stopPropagation()">
-            <h3 class="modal-title">Delete Birth Details?</h3>
+            <h3 class="modal-title">{{ t().birthDetails.deleteModalTitle }}</h3>
             <p class="modal-desc">
-              Your personalized astrology reading requires birth details. Are you sure you want to delete them?
+              {{ t().birthDetails.deleteModalMsg }}
             </p>
             <div class="modal-actions">
               <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()" [disabled]="isDeleting()">
-                Cancel
+                {{ t().birthDetails.cancelBtn }}
               </button>
               <button type="button" class="btn btn-error" (click)="confirmDelete()" [disabled]="isDeleting()">
                 @if (isDeleting()) {
-                  <span>Deleting...</span>
+                  <span>{{ t().birthDetails.deletingBtn }}</span>
                 } @else {
-                  <span>Delete</span>
+                  <span>{{ t().birthDetails.deleteBtn }}</span>
                 }
               </button>
             </div>

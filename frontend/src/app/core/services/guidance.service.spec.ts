@@ -47,7 +47,10 @@ describe('GuidanceService', () => {
 
     const req = httpMock.expectOne(`${environment.apiUrl}/guidance`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ problem: 'I need career guidance regarding a job switch.' });
+    expect(req.request.body).toEqual({
+      problem: 'I need career guidance regarding a job switch.',
+      language: 'English'
+    });
     expect(req.request.body.user_id).toBeUndefined();
     req.flush(mockResponse);
   });

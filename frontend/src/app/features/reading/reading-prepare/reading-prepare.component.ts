@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { ReadingJourneyService } from '../../../core/services/reading-journey.service';
+import { TranslationService } from '../../../core/services/translation.service';
 
 interface PreparationPillar {
   icon: string;
@@ -20,32 +21,37 @@ interface PreparationPillar {
 export class ReadingPrepareComponent {
   private readonly router = inject(Router);
   private readonly journeyService = inject(ReadingJourneyService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly t = this.translationService.t;
   readonly selectedTopic = this.journeyService.selectedTopic;
   readonly birthDetails = this.journeyService.birthDetails;
 
-  readonly pillars: PreparationPillar[] = [
-    {
-      icon: '🪐',
-      title: 'Your birth details',
-      description: 'Your precise date, time, and location calculate your unique planetary positions, lagna, and house cusps.'
-    },
-    {
-      icon: '💬',
-      title: 'Your question',
-      description: 'Your chosen topic and specific question focus the interpretation on the life areas that matter most to you.'
-    },
-    {
-      icon: '📜',
-      title: 'Your astrology analysis',
-      description: 'Traditional Vedic planetary strengths, dashas, antardashas, and supportive timing factors are evaluated.'
-    },
-    {
-      icon: '✦',
-      title: 'Your personalized guidance',
-      description: 'The technical astrology findings are translated into clear, conversational, and thoughtful guidance in your language.'
-    }
-  ];
+  readonly pillars = computed<PreparationPillar[]>(() => {
+    const p = this.t().readingPrepare.pillars;
+    return [
+      {
+        icon: '🪐',
+        title: p.birthDetails.title,
+        description: p.birthDetails.description
+      },
+      {
+        icon: '💬',
+        title: p.question.title,
+        description: p.question.description
+      },
+      {
+        icon: '📜',
+        title: p.astrologyAnalysis.title,
+        description: p.astrologyAnalysis.description
+      },
+      {
+        icon: '✦',
+        title: p.personalizedGuidance.title,
+        description: p.personalizedGuidance.description
+      }
+    ];
+  });
 
   onContinue(): void {
     this.router.navigate(['/reading/question']);

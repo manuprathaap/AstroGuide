@@ -9,8 +9,25 @@ import {
   TE_GUIDANCE_TRANSLATIONS,
   KN_GUIDANCE_TRANSLATIONS
 } from './guidance-translations.data';
+import {
+  JourneyTranslations,
+  ExploreTranslations,
+  ReadingPrepareTranslations,
+  ReadingQuestionTranslations,
+  ReadingResultTranslations,
+  ReadingHistoryTranslations,
+  LandingTranslations,
+  FooterTranslations,
+  EN_JOURNEY_TRANSLATIONS,
+  ML_JOURNEY_TRANSLATIONS,
+  HI_JOURNEY_TRANSLATIONS,
+  TA_JOURNEY_TRANSLATIONS,
+  TE_JOURNEY_TRANSLATIONS,
+  KN_JOURNEY_TRANSLATIONS
+} from './journey-translations.data';
 
 export interface AppTranslations {
+  tagline: string;
   nav: {
     home: string;
     guidance: string;
@@ -132,6 +149,7 @@ export interface AppTranslations {
     retry: string;
   };
   birthDetails: {
+    stepBadge: string;
     newTitle: string;
     existingTitle: string;
     subtitle: string;
@@ -158,18 +176,37 @@ export interface AppTranslations {
     deletingBtn: string;
     successSaved: string;
     successDeleted: string;
+    loadingDetails: string;
+    dobSummary: string;
+    tobSummary: string;
+    pobSummary: string;
+    tzCoordSummary: string;
+    editDetailsBtn: string;
+    continueBtn: string;
+    removeSavedBtn: string;
     errors: {
       required: string;
       validDate: string;
       futureDate: string;
       validTime: string;
       placeRequired: string;
+      dobInvalid: string;
+      tobInvalid: string;
+      pobInvalid: string;
     };
   };
+  explore: ExploreTranslations;
+  readingPrepare: ReadingPrepareTranslations;
+  readingQuestion: ReadingQuestionTranslations;
+  readingResult: ReadingResultTranslations;
+  readingHistory: ReadingHistoryTranslations;
+  landing: LandingTranslations;
+  footer: FooterTranslations;
   guidancePage: GuidanceTranslations;
 }
 
 const EN_TRANSLATIONS: AppTranslations = {
+  ...EN_JOURNEY_TRANSLATIONS,
   nav: {
     home: 'Home',
     guidance: 'Guidance',
@@ -291,17 +328,18 @@ const EN_TRANSLATIONS: AppTranslations = {
     retry: 'Retry'
   },
   birthDetails: {
+    stepBadge: 'STEP 3 OF 5 · BIRTH DETAILS',
     newTitle: 'Tell us about your birth',
     existingTitle: 'Your Birth Details',
     subtitle: 'Your birth details help us create your personalized astrology experience.',
     backBtn: '← Back to Dashboard',
-    dobLabel: 'Date of Birth',
+    dobLabel: 'Date of birth',
     dobPlaceholder: 'DD / MM / YYYY',
-    tobLabel: 'Time of Birth',
+    tobLabel: 'Time of birth',
     tobPlaceholder: 'HH : MM AM/PM',
     tobHelper: 'Enter your birth time as accurately as possible.',
-    pobLabel: 'Place of Birth',
-    pobPlaceholder: 'Search your birth place (e.g. Kochi, Kerala, India)',
+    pobLabel: 'Place of birth',
+    pobPlaceholder: 'e.g. Kochi, Bengaluru, Delhi, London...',
     locationInfoLabel: 'Location Information',
     latLabel: 'Latitude',
     lngLabel: 'Longitude',
@@ -317,18 +355,30 @@ const EN_TRANSLATIONS: AppTranslations = {
     deletingBtn: 'Deleting...',
     successSaved: 'Birth details saved successfully.',
     successDeleted: 'Birth details deleted successfully.',
+    loadingDetails: 'Loading your birth details...',
+    dobSummary: 'Date of Birth',
+    tobSummary: 'Time of Birth',
+    pobSummary: 'Place of Birth',
+    tzCoordSummary: 'Timezone & Coordinates',
+    editDetailsBtn: 'Edit Details',
+    continueBtn: 'Continue',
+    removeSavedBtn: 'Remove saved birth details',
     errors: {
       required: 'This field is required',
       validDate: 'Please enter a valid date',
       futureDate: 'Date of birth cannot be in the future',
       validTime: 'Please enter a valid birth time',
-      placeRequired: 'Please select your birth place'
+      placeRequired: 'Please select your birth place',
+      dobInvalid: 'Please select a valid past date of birth.',
+      tobInvalid: 'Please enter time of birth.',
+      pobInvalid: 'Place of birth is required.'
     }
   },
   guidancePage: EN_GUIDANCE_TRANSLATIONS
 };
 
 const ML_TRANSLATIONS: AppTranslations = {
+  ...ML_JOURNEY_TRANSLATIONS,
   nav: {
     home: 'ഹോം',
     guidance: 'മാർഗ്ഗനിർദ്ദേശം',
@@ -450,6 +500,7 @@ const ML_TRANSLATIONS: AppTranslations = {
     retry: 'വീണ്ടും ശ്രമിക്കുക'
   },
   birthDetails: {
+    stepBadge: 'ഘട്ടം 3 / 5 · ജനന വിവരങ്ങൾ',
     newTitle: 'നിങ്ങളുടെ ജനന വിവരങ്ങൾ നൽകുക',
     existingTitle: 'നിങ്ങളുടെ ജനന വിവരങ്ങൾ',
     subtitle: 'നിങ്ങളുടെ വ്യക്തിഗത ജ്യോതിഷ വിവരങ്ങൾ തയ്യാറാക്കാൻ ഈ വിവരങ്ങൾ സഹായിക്കുന്നു.',
@@ -460,7 +511,7 @@ const ML_TRANSLATIONS: AppTranslations = {
     tobPlaceholder: 'HH : MM AM/PM',
     tobHelper: 'കഴിയുന്നത്ര കൃത്യമായി ജനന സമയം നൽകുക.',
     pobLabel: 'ജനിച്ച സ്ഥലം',
-    pobPlaceholder: 'നിങ്ങൾ ജനിച്ച സ്ഥലം തിരയുക (ഉദാ: കൊച്ചി, കേരളം)',
+    pobPlaceholder: 'ഉദാ: കൊച്ചി, തിരുവനന്തപുരം, കോഴിക്കോട്...',
     locationInfoLabel: 'ഭൂമിശാസ്ത്ര വിവരങ്ങൾ',
     latLabel: 'അക്ഷാംശം (Latitude)',
     lngLabel: 'രേഖാംശം (Longitude)',
@@ -476,19 +527,30 @@ const ML_TRANSLATIONS: AppTranslations = {
     deletingBtn: 'ഇല്ലാതാക്കുന്നു...',
     successSaved: 'ജനന വിവരങ്ങൾ വിജയകരമായി സംരക്ഷിച്ചു.',
     successDeleted: 'ജനന വിവരങ്ങൾ നീക്കം ചെയ്തു.',
+    loadingDetails: 'നിങ്ങളുടെ ജനന വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...',
+    dobSummary: 'ജനന തീയതി',
+    tobSummary: 'ജനന സമയം',
+    pobSummary: 'ജനിച്ച സ്ഥലം',
+    tzCoordSummary: 'സമയ മേഖലയും കോർഡിനേറ്റുകളും',
+    editDetailsBtn: 'വിവരങ്ങൾ തിരുത്തുക',
+    continueBtn: 'തുടരുക',
+    removeSavedBtn: 'ജനന വിവരങ്ങൾ നീക്കം ചെയ്യുക',
     errors: {
       required: 'ഈ ഫീൽഡ് പൂരിപ്പിക്കേണ്ടതുണ്ട്',
       validDate: 'ശരിയായ തീയതി നൽകുക',
       futureDate: 'ജനന തീയതി ഭാവിയിലാകാൻ പാടില്ല',
       validTime: 'ശരിയായ ജനന സമയം നൽകുക',
-      placeRequired: 'ജനിച്ച സ്ഥലം തിരഞ്ഞെടുക്കുക'
+      placeRequired: 'ജനിച്ച സ്ഥലം തിരഞ്ഞെടുക്കുക',
+      dobInvalid: 'ശരിയായ ജനന തീയതി തിരഞ്ഞെടുക്കുക.',
+      tobInvalid: 'ജനന സമയം നൽകുക.',
+      pobInvalid: 'ജനിച്ച സ്ഥലം ആവശ്യമാണ്.'
     }
   },
   guidancePage: ML_GUIDANCE_TRANSLATIONS
 };
 
 const HI_TRANSLATIONS: AppTranslations = {
-  ...EN_TRANSLATIONS,
+  ...HI_JOURNEY_TRANSLATIONS,
   guidancePage: HI_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
@@ -496,6 +558,8 @@ const HI_TRANSLATIONS: AppTranslations = {
     guidance: 'मार्गदर्शन',
     birthChart: 'जन्म कुंडली',
     palmistry: 'हस्तरेखा',
+    signIn: 'साइन इन',
+    getStarted: 'शुरुआत करें',
     signOut: 'साइन आउट',
     language: 'हिन्दी'
   },
@@ -538,11 +602,58 @@ const HI_TRANSLATIONS: AppTranslations = {
     continueBtn: 'जारी रखें',
     saving: 'प्राथमिकता सहेजी जा रही है...',
     retry: 'पुनः प्रयास करें'
+  },
+  birthDetails: {
+    stepBadge: 'चरण 3 / 5 · जन्म विवरण',
+    newTitle: 'अपने जन्म के बारे में बताएं',
+    existingTitle: 'आपका जन्म विवरण',
+    subtitle: 'आपके जन्म का विवरण आपके व्यक्तिगत ज्योतिष अनुभव को तैयार करने में मदद करता है।',
+    backBtn: '← वापस जाएं',
+    dobLabel: 'जन्म तिथि',
+    dobPlaceholder: 'DD / MM / YYYY',
+    tobLabel: 'जन्म समय',
+    tobPlaceholder: 'HH : MM AM/PM',
+    tobHelper: 'सटीक जन्म समय दर्ज करें।',
+    pobLabel: 'जन्म स्थान',
+    pobPlaceholder: 'उदा. दिल्ली, मुंबई, कोच्चि, लखनऊ...',
+    locationInfoLabel: 'स्थान की जानकारी',
+    latLabel: 'अक्षांश (Latitude)',
+    lngLabel: 'देशांतर (Longitude)',
+    tzLabel: 'समय क्षेत्र (Timezone)',
+    saveContinueBtn: 'सहेजें और आगे बढ़ें',
+    saveChangesBtn: 'परिवर्तन सहेजें',
+    savingBtn: 'सहेजा जा रहा है...',
+    deleteBtn: 'जन्म विवरण हटाएं',
+    deleteModalTitle: 'जन्म विवरण हटाएं?',
+    deleteModalMsg: 'यह जानकारी आपकी व्यक्तिगत ज्योतिषीय गणना के लिए आवश्यक है। क्या आप वाकई इसे हटाना चाहते हैं?',
+    cancelBtn: 'रद्द करें',
+    confirmDeleteBtn: 'हटाएं',
+    deletingBtn: 'हटाया जा रहा है...',
+    successSaved: 'जन्म विवरण सफलतापूर्वक सहेजा गया।',
+    successDeleted: 'जन्म विवरण हटा दिया गया।',
+    loadingDetails: 'जन्म विवरण लोड हो रहा है...',
+    dobSummary: 'जन्म तिथि',
+    tobSummary: 'जन्म समय',
+    pobSummary: 'जन्म स्थान',
+    tzCoordSummary: 'समय क्षेत्र एवं निर्देशांक',
+    editDetailsBtn: 'विवरण संपादित करें',
+    continueBtn: 'आगे बढ़ें',
+    removeSavedBtn: 'सहेजे गए विवरण हटाएं',
+    errors: {
+      required: 'यह जानकारी आवश्यक है',
+      validDate: 'कृपया एक मान्य तिथि दर्ज करें',
+      futureDate: 'जन्म तिथि भविष्य की नहीं हो सकती',
+      validTime: 'कृपया मान्य समय दर्ज करें',
+      placeRequired: 'कृपया जन्म स्थान का चयन करें',
+      dobInvalid: 'कृपया एक मान्य जन्म तिथि चुनें।',
+      tobInvalid: 'कृपया जन्म समय दर्ज करें।',
+      pobInvalid: 'जन्म स्थान आवश्यक है।'
+    }
   }
 };
 
 const TA_TRANSLATIONS: AppTranslations = {
-  ...EN_TRANSLATIONS,
+  ...TA_JOURNEY_TRANSLATIONS,
   guidancePage: TA_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
@@ -550,6 +661,8 @@ const TA_TRANSLATIONS: AppTranslations = {
     guidance: 'வழிகாட்டல்',
     birthChart: 'பிறப்பு ஜாதகம்',
     palmistry: 'கைரேகை',
+    signIn: 'உள்நுழைக',
+    getStarted: 'தொடங்குங்கள்',
     signOut: 'வெளியேறு',
     language: 'தமிழ்'
   },
@@ -592,11 +705,58 @@ const TA_TRANSLATIONS: AppTranslations = {
     continueBtn: 'தொடரவும்',
     saving: 'சேமிக்கிறது...',
     retry: 'மீண்டும் முயற்சிக்கவும்'
+  },
+  birthDetails: {
+    stepBadge: 'படி 3 / 5 · பிறப்பு விவரங்கள்',
+    newTitle: 'உங்கள் பிறப்பு விவரங்களை உள்ளிடவும்',
+    existingTitle: 'உங்கள் பிறப்பு விவரங்கள்',
+    subtitle: 'உங்கள் தனிப்பயனாக்கப்பட்ட ஜோதிடக் கணிப்பை உருவாக்க இந்த விவரங்கள் உதவுகின்றன.',
+    backBtn: '← முகப்புக்குத் திரும்பு',
+    dobLabel: 'பிறந்த தேதி',
+    dobPlaceholder: 'DD / MM / YYYY',
+    tobLabel: 'பிறந்த நேரம்',
+    tobPlaceholder: 'HH : MM AM/PM',
+    tobHelper: 'பிறந்த நேரத்தை முடிந்தவரை துல்லியமாக உள்ளிடவும்.',
+    pobLabel: 'பிறந்த இடம்',
+    pobPlaceholder: 'உதா. சென்னை, மதுரை, கோவை, பெங்களூரு...',
+    locationInfoLabel: 'இருப்பிடத் தகவல்',
+    latLabel: 'அட்சரேகை (Latitude)',
+    lngLabel: 'தீர்க்கரேகை (Longitude)',
+    tzLabel: 'நேர மண்டலம் (Timezone)',
+    saveContinueBtn: 'சேமித்துத் தொடரவும்',
+    saveChangesBtn: 'மாற்றங்களைச் சேமி',
+    savingBtn: 'சேமிக்கப்படுகிறது...',
+    deleteBtn: 'விவரங்களை நீக்கு',
+    deleteModalTitle: 'பிறப்பு விவரங்களை நீக்கவா?',
+    deleteModalMsg: 'உங்கள் ஜாதகக் கணிப்புக்கு இந்த விவரங்கள் தேவை. அவற்றை நிச்சயமாக நீக்க விரும்புகிறீர்களா?',
+    cancelBtn: 'ரத்துசெய்',
+    confirmDeleteBtn: 'நீக்கு',
+    deletingBtn: 'நீக்கப்படுகிறது...',
+    successSaved: 'பிறப்பு விவரங்கள் வெற்றிகரமாகச் சேமிக்கப்பட்டன.',
+    successDeleted: 'பிறப்பு விவரங்கள் நீக்கப்பட்டன.',
+    loadingDetails: 'பிறப்பு விவரங்கள் ஏற்றப்படுகின்றன...',
+    dobSummary: 'பிறந்த தேதி',
+    tobSummary: 'பிறந்த நேரம்',
+    pobSummary: 'பிறந்த இடம்',
+    tzCoordSummary: 'நேர மண்டலம் & ஆயத்தொலைவுகள்',
+    editDetailsBtn: 'விவரங்களைத் திருத்து',
+    continueBtn: 'தொடரவும்',
+    removeSavedBtn: 'சேமிக்கப்பட்ட விவரங்களை நீக்கு',
+    errors: {
+      required: 'இந்த புலம் தேவைப்படுகிறது',
+      validDate: 'சரியான தேதியை உள்ளிடவும்',
+      futureDate: 'பிறந்த தேதி எதிர்காலத்தில் இருக்கக்கூடாது',
+      validTime: 'சரியான நேரத்தை உள்ளிடவும்',
+      placeRequired: 'பிறந்த இடத்தைத் தேர்ந்தெடுக்கவும்',
+      dobInvalid: 'சரியான பிறந்த தேதியைத் தேர்வுசெய்யவும்.',
+      tobInvalid: 'பிறந்த நேரத்தை உள்ளிடவும்.',
+      pobInvalid: 'பிறந்த இடம் தேவைப்படுகிறது.'
+    }
   }
 };
 
 const TE_TRANSLATIONS: AppTranslations = {
-  ...EN_TRANSLATIONS,
+  ...TE_JOURNEY_TRANSLATIONS,
   guidancePage: TE_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
@@ -604,6 +764,8 @@ const TE_TRANSLATIONS: AppTranslations = {
     guidance: 'మార్గదర్శకత్వం',
     birthChart: 'జన్మ కుండలి',
     palmistry: 'హస్తసాముద్రికం',
+    signIn: 'సైన్ ఇన్',
+    getStarted: 'ప్రారంభించండి',
     signOut: 'సైన్ అవుట్',
     language: 'తెలుగు'
   },
@@ -646,11 +808,58 @@ const TE_TRANSLATIONS: AppTranslations = {
     continueBtn: 'కొనసాగించండి',
     saving: 'భద్రపరుస్తోంది...',
     retry: 'మళ్ళీ ప్రయత్నించండి'
+  },
+  birthDetails: {
+    stepBadge: 'దశ 3 / 5 · జన్మ వివరాలు',
+    newTitle: 'మీ పుట్టిన వివరాలను నమోదు చేయండి',
+    existingTitle: 'మీ జన్మ వివరాలు',
+    subtitle: 'మీ వ్యక్తిగత జ్యోతిష్య అనుభవాన్ని సృష్టించడానికి ఈ వివరాలు సహాయపడతాయి.',
+    backBtn: '← డ్యాష్‌బోర్డ్‌కు తిరిగి వెళ్ళు',
+    dobLabel: 'పుట్టిన తేదీ',
+    dobPlaceholder: 'DD / MM / YYYY',
+    tobLabel: 'పుట్టిన సమయం',
+    tobPlaceholder: 'HH : MM AM/PM',
+    tobHelper: 'పుట్టిన సమయాన్ని వీలైనంత ఖచ్చితంగా నమోదు చేయండి.',
+    pobLabel: 'పుట్టిన ప్రదేశం',
+    pobPlaceholder: 'ఉదా: హైదరాబాద్, విజయవాడ, విశాఖపట్నం...',
+    locationInfoLabel: 'భౌగోళిక సమాచారం',
+    latLabel: 'అక్షాంశం (Latitude)',
+    lngLabel: 'రేఖాంశం (Longitude)',
+    tzLabel: 'సమయ మండలం (Timezone)',
+    saveContinueBtn: 'భద్రపరిచి కొనసాగించండి',
+    saveChangesBtn: 'మార్పులను భద్రపరచండి',
+    savingBtn: 'భద్రపరుస్తోంది...',
+    deleteBtn: 'వివరాలను తొలగించండి',
+    deleteModalTitle: 'జన్మ వివరాలను తొలగించాలా?',
+    deleteModalMsg: 'మీ జాతక విశ్లేషణకు ఈ వివరాలు అవసరం. మీరు ఖచ్చితంగా వాటిని తొలగించాలనుకుంటున్నారా?',
+    cancelBtn: 'రద్దు చేయండి',
+    confirmDeleteBtn: 'తొలగించండి',
+    deletingBtn: 'తొలగిస్తోంది...',
+    successSaved: 'జన్మ వివరాలు విజయవంతంగా భద్రపరచబడ్డాయి.',
+    successDeleted: 'జన్మ వివరాలు తొలగించబడ్డాయి.',
+    loadingDetails: 'జన్మ వివరాలు లోడ్ అవుతున్నాయి...',
+    dobSummary: 'పుట్టిన తేదీ',
+    tobSummary: 'పుట్టిన సమయం',
+    pobSummary: 'పుట్టిన ప్రదేశం',
+    tzCoordSummary: 'సమయ మండలం & కోఆర్డినేట్లు',
+    editDetailsBtn: 'వివరాలను సవరించండి',
+    continueBtn: 'కొనసాగించండి',
+    removeSavedBtn: 'భద్రపరిచిన వివరాలను తొలగించండి',
+    errors: {
+      required: 'ఈ ఫీల్డ్ అవసరం',
+      validDate: 'దయచేసి సరైన తేదీని నమోదు చేయండి',
+      futureDate: 'పుట్టిన తేదీ భవిష్యత్తులో ఉండకూడదు',
+      validTime: 'దయచేసి సరైన సమయాన్ని నమోదు చేయండి',
+      placeRequired: 'దయచేసి పుట్టిన ప్రదేశాన్ని ఎంచుకోండి',
+      dobInvalid: 'దయచేసి సరైన పుట్టిన తేదీని ఎంచుకోండి.',
+      tobInvalid: 'పుట్టిన సమయాన్ని నమోదు చేయండి.',
+      pobInvalid: 'పుట్టిన ప్రదేశం అవసరం.'
+    }
   }
 };
 
 const KN_TRANSLATIONS: AppTranslations = {
-  ...EN_TRANSLATIONS,
+  ...KN_JOURNEY_TRANSLATIONS,
   guidancePage: KN_GUIDANCE_TRANSLATIONS,
   nav: {
     ...EN_TRANSLATIONS.nav,
@@ -658,6 +867,8 @@ const KN_TRANSLATIONS: AppTranslations = {
     guidance: 'ಮಾರ್ಗದರ್ಶನ',
     birthChart: 'ಜನ್ಮ ಕುಂಡಲಿ',
     palmistry: 'ಹಸ್ತಸಾಮುದ್ರಿಕ',
+    signIn: 'ಸೈನ್ ಇನ್',
+    getStarted: 'ಪ್ರಾರಂಭಿಸಿ',
     signOut: 'ಸೈನ್ ಔಟ್',
     language: 'ಕನ್ನಡ'
   },
@@ -700,6 +911,53 @@ const KN_TRANSLATIONS: AppTranslations = {
     continueBtn: 'ಮುಂದುವರಿಯಿರಿ',
     saving: 'ಉಳಿಸಲಾಗುತ್ತಿದೆ...',
     retry: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ'
+  },
+  birthDetails: {
+    stepBadge: 'ಹಂತ 3 / 5 · ಜನ್ಮ ವಿವರಗಳು',
+    newTitle: 'ನಿಮ್ಮ ಜನ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ',
+    existingTitle: 'ನಿಮ್ಮ ಜನ್ಮ ವಿವರಗಳು',
+    subtitle: 'ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಜ್ಯೋತಿಷ್ಯ ಅನುಭವವನ್ನು ರಚಿಸಲು ಈ ವಿವರಗಳು ನಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತವೆ.',
+    backBtn: '← ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹಿಂತಿರುಗಿ',
+    dobLabel: 'ಜನ್ಮ ದಿನಾಂಕ',
+    dobPlaceholder: 'DD / MM / YYYY',
+    tobLabel: 'ಜನ್ಮ ಸಮಯ',
+    tobPlaceholder: 'HH : MM AM/PM',
+    tobHelper: 'ಸಾಧ್ಯವಾದಷ್ಟು ನಿಖರವಾಗಿ ಜನ್ಮ ಸಮಯವನ್ನು ನಮೂದಿಸಿ.',
+    pobLabel: 'ಹುಟ್ಟಿದ ಸ್ಥಳ',
+    pobPlaceholder: 'ಉದಾ: ಬೆಂಗಳೂರು, ಮೈಸೂರು, ಮಂಗಳೂರು...',
+    locationInfoLabel: 'ಸ್ಥಳದ ಮಾಹಿತಿ',
+    latLabel: 'ಅಕ್ಷಾಂಶ (Latitude)',
+    lngLabel: 'ರೇಖಾಂಶ (Longitude)',
+    tzLabel: 'ಸಮಯ ವಲಯ (Timezone)',
+    saveContinueBtn: 'ಉಳಿಸಿ ಮತ್ತು ಮುಂದುವರಿಯಿರಿ',
+    saveChangesBtn: 'ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ',
+    savingBtn: 'ಉಳಿಸಲಾಗುತ್ತಿದೆ...',
+    deleteBtn: 'ವಿವರಗಳನ್ನು ಅಳಿಸಿ',
+    deleteModalTitle: 'ಜನ್ಮ ವಿವರಗಳನ್ನು ಅಳಿಸುವುದೇ?',
+    deleteModalMsg: 'ನಿಮ್ಮ ಜಾತಕ ವಿಶ್ಲೇಷಣೆಗೆ ಈ ವಿವರಗಳು ಅಗತ್ಯ. ನೀವು ಖಚಿತವಾಗಿ ಅವುಗಳನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?',
+    cancelBtn: 'ರದ್ದುಮಾಡಿ',
+    confirmDeleteBtn: 'ಅಳಿಸಿ',
+    deletingBtn: 'ಅಳಿಸಲಾಗುತ್ತಿದೆ...',
+    successSaved: 'ಜನ್ಮ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ.',
+    successDeleted: 'ಜನ್ಮ ವಿವರಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ.',
+    loadingDetails: 'ಜನ್ಮ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...',
+    dobSummary: 'ಜನ್ಮ ದಿನಾಂಕ',
+    tobSummary: 'ಜನ್ಮ ಸಮಯ',
+    pobSummary: 'ಹುಟ್ಟಿದ ಸ್ಥಳ',
+    tzCoordSummary: 'ಸಮಯ ವಲಯ & ನಿರ್ದೇಶಾಂಕಗಳು',
+    editDetailsBtn: 'ವಿವರಗಳನ್ನು ಸಂಪಾದಿಸಿ',
+    continueBtn: 'ಮುಂದುವರಿಯಿರಿ',
+    removeSavedBtn: 'ಉಳಿಸಿದ ವಿವರಗಳನ್ನು ತೆಗೆದುಹಾಕಿ',
+    errors: {
+      required: 'ಈ ಕ್ಷೇತ್ರ ಅಗತ್ಯವಿದೆ',
+      validDate: 'ದಯವಿಟ್ಟು ಮಾನ್ಯ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ',
+      futureDate: 'ಜನ್ಮ ದಿನಾಂಕ ಭವಿಷ್ಯದಲ್ಲಿರಬಾರದು',
+      validTime: 'ದಯವಿಟ್ಟು ಮಾನ್ಯ ಸಮಯವನ್ನು ನಮೂದಿಸಿ',
+      placeRequired: 'ದಯವಿಟ್ಟು ಹುಟ್ಟಿದ ಸ್ಥಳವನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      dobInvalid: 'ದಯವಿಟ್ಟು ಮಾನ್ಯ ಜನ್ಮ ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ.',
+      tobInvalid: 'ಜನ್ಮ ಸಮಯವನ್ನು ನಮೂದಿಸಿ.',
+      pobInvalid: 'ಹುಟ್ಟಿದ ಸ್ಥಳ ಅಗತ್ಯವಿದೆ.'
+    }
   }
 };
 

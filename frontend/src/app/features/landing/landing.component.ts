@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslationService } from '../../core/services/translation.service';
 
 interface FeatureCard {
   icon: string;
@@ -21,7 +22,10 @@ interface FeatureCard {
 })
 export class LandingComponent {
   private readonly authService = inject(AuthService);
+  private readonly translationService = inject(TranslationService);
+
   readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly t = this.translationService.t;
 
   readonly features: FeatureCard[] = [
     {

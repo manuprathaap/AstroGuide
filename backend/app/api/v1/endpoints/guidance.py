@@ -32,15 +32,16 @@ def create_guidance_endpoint(
     current_user: User = Depends(get_current_user),
 ):
     try:
+        resolved_language = guidance_data.language or (
+            current_user.language.name
+            if getattr(current_user, "language", None) is not None
+            else "English"
+        )
         result = GuidanceAnalysisService().create_and_analyze(
             db=db,
             user_id=current_user.id,
             problem=guidance_data.problem,
-            language=(
-                current_user.language.name
-                if getattr(current_user, "language", None) is not None
-                else None
-            ),
+            language=resolved_language,
         )
 
     except LookupError as exc:

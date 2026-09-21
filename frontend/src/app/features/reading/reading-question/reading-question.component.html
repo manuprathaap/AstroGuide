@@ -11,14 +11,14 @@
         </div>
 
         <h2 class="loading-phase-text">
-          {{ loadingMessages[loadingPhaseIndex()] }}
+          {{ loadingMessages()[loadingPhaseIndex()] }}
         </h2>
         <p class="loading-subtext">
-          Analyzing planetary transits, dasha cycles, and house placements...
+          {{ t().readingQuestion.loadingSubtext }}
         </p>
 
         <div class="loading-dots-indicator" aria-hidden="true">
-          @for (msg of loadingMessages; track msg; let i = $index) {
+          @for (msg of loadingMessages(); track msg; let i = $index) {
             <span class="dot" [class.active]="loadingPhaseIndex() === i"></span>
           }
         </div>
@@ -30,18 +30,18 @@
       <div class="astro-card question-card">
         <!-- Step Badge -->
         <div class="step-badge-wrap">
-          <span class="step-badge">STEP 5 OF 5 · ASK ASTROGUIDE</span>
+          <span class="step-badge">{{ t().readingQuestion.stepBadge }}</span>
         </div>
 
         <!-- Header Section -->
         <header class="question-header">
           <div class="topic-pill">
-            <span>Topic:</span>
+            <span>{{ t().readingQuestion.topicLabel }}:</span>
             <strong>{{ selectedTopic() }}</strong>
           </div>
-          <h1 class="question-title">What would you like to know?</h1>
+          <h1 class="question-title">{{ t().readingQuestion.title }}</h1>
           <p class="question-subtitle">
-            Ask any question about your life or select a suggested question below.
+            {{ t().readingQuestion.subtitle }}
           </p>
         </header>
 
@@ -60,7 +60,7 @@
               id="user-question-input"
               class="question-textarea"
               rows="3"
-              [placeholder]="'Ask a question about your life...'"
+              [placeholder]="t().readingQuestion.inputPlaceholder"
               [ngModel]="currentQuestion()"
               (ngModelChange)="currentQuestion.set($event)"
               name="userQuestion"
@@ -72,7 +72,7 @@
           <!-- Selectable Language-Specific Suggestions -->
           @if (suggestions().length > 0) {
             <div class="suggestions-section">
-              <span class="suggestions-label">Suggested in {{ currentLanguageName() }}:</span>
+              <span class="suggestions-label">{{ t().readingQuestion.suggestedIn }} {{ currentLanguageName() }}:</span>
               <div class="suggestion-chips" role="group" aria-label="Suggested questions">
                 @for (suggestion of suggestions(); track suggestion) {
                   <button
@@ -91,7 +91,7 @@
           <!-- Form Actions -->
           <div class="question-actions">
             <button type="button" class="btn btn-secondary" (click)="onBack()">
-              Back
+              {{ t().readingQuestion.backBtn }}
             </button>
 
             <button
@@ -100,7 +100,7 @@
               class="btn btn-primary ask-btn"
               [disabled]="!currentQuestion().trim()"
             >
-              <span>Ask AstroGuide</span>
+              <span>{{ t().readingQuestion.askBtn }}</span>
               <span class="btn-sparkle" aria-hidden="true">✦</span>
             </button>
           </div>

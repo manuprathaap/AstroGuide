@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { NavbarComponent } from '../../../shared/components/navbar/navbar.compon
 import { ReadingJourneyService } from '../../../core/services/reading-journey.service';
 import { GuidanceService } from '../../../core/services/guidance.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Guidance } from '../../../core/models/guidance.model';
 
@@ -21,8 +22,10 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
   private readonly journeyService = inject(ReadingJourneyService);
   private readonly guidanceService = inject(GuidanceService);
   private readonly languageService = inject(LanguageService);
+  private readonly translationService = inject(TranslationService);
   private readonly authService = inject(AuthService);
 
+  readonly t = this.translationService.t;
   readonly selectedTopic = this.journeyService.selectedTopic;
   readonly currentQuestion = signal<string>('');
   readonly isSubmitting = signal<boolean>(false);
@@ -31,17 +34,21 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
 
   readonly currentLanguageName = this.languageService.currentLanguageName;
   readonly suggestions = this.journeyService.suggestedQuestionsForLanguage;
-
-  readonly loadingMessages = [
-    'Understanding your reading...',
-    'Looking at your chart...',
-    'Preparing your guidance...'
-  ];
+  readonly loadingMessages = computed(() => this.t().readingQuestion.loadingMessages);
 
   private phaseInterval: ReturnType<typeof setInterval> | null = null;
 
+  constructor() {
+    // Keep currentQuestion in sync when journeyService updates default suggestion on language switch
+    effect(() => {
+      const journeyQ = this.journeyService.currentQuestion();
+      if (journeyQ && (!this.currentQuestion() || this.suggestions().includes(this.currentQuestion()))) {
+        this.currentQuestion.set(journeyQ);
+      }
+    });
+  }
+
   ngOnInit(): void {
-    // Initialize question from journey service or default suggestion
     const existing = this.journeyService.currentQuestion();
     if (existing) {
       this.currentQuestion.set(existing);
@@ -65,7 +72,8 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
   private startLoadingInterval(): void {
     this.loadingPhaseIndex.set(0);
     this.phaseInterval = setInterval(() => {
-      this.loadingPhaseIndex.update(idx => (idx + 1) % this.loadingMessages.length);
+      const total = this.loadingMessages().length || 3;
+      this.loadingPhaseIndex.update(idx => (idx + 1) % total);
     }, 1800);
   }
 
@@ -98,7 +106,6 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
           this.executeGuidanceSubmission(questionText);
         },
         error: () => {
-          // If language sync fails, proceed anyway with guidance request
           this.executeGuidanceSubmission(questionText);
         }
       });
@@ -108,7 +115,10 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
   }
 
   private executeGuidanceSubmission(questionText: string): void {
-    this.guidanceService.createGuidance({ problem: questionText }).subscribe({
+    this.guidanceService.createGuidance({
+      problem: questionText,
+      language: this.languageService.currentLanguageName()
+    }).subscribe({
       next: (response: Guidance) => {
         this.stopLoadingInterval();
         this.isSubmitting.set(false);
@@ -122,11 +132,7 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
         this.isSubmitting.set(false);
         if (err.status === 404) {
           const detail = err.error?.detail || '';
-          if (typeof detail === 'string' && detail.toLowerCase().includes('birth')) {
-            this.errorMessage.set('Birth details not found. Please add your birth details first.');
-          } else {
-            this.errorMessage.set(typeof detail === 'string' && detail ? detail : 'Please check your birth details and try again.');
-          }
+          this.errorMessage.set(typeof detail === 'string' && detail ? detail : 'Birth details not found. Please add your birth details first.');
         } else if (err.status === 400) {
           this.errorMessage.set(
             typeof err.error?.detail === 'string'

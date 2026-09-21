@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { GuidanceService } from '../../../core/services/guidance.service';
 import { ReadingJourneyService, GuidedTopicId } from '../../../core/services/reading-journey.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { Guidance } from '../../../core/models/guidance.model';
 
 @Component({
@@ -18,7 +19,9 @@ export class ReadingHistoryComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly guidanceService = inject(GuidanceService);
   private readonly journeyService = inject(ReadingJourneyService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly t = this.translationService.t;
   readonly historyItems = signal<Guidance[]>([]);
   readonly isLoading = signal<boolean>(true);
   readonly errorMessage = signal<string | null>(null);

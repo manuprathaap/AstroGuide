@@ -5,20 +5,20 @@
     <div class="astro-card prepare-card">
       <!-- Step Badge -->
       <div class="step-badge-wrap">
-        <span class="step-badge">STEP 4 OF 5 · HOW YOUR READING WORKS</span>
+        <span class="step-badge">{{ t().readingPrepare.stepBadge }}</span>
       </div>
 
       <!-- Header Section -->
       <header class="prepare-header">
-        <h1 class="prepare-title">Understanding your reading</h1>
+        <h1 class="prepare-title">{{ t().readingPrepare.title }}</h1>
         <p class="prepare-subtitle">
-          Here is how AstroGuide creates personalized guidance tailored to your chart.
+          {{ t().readingPrepare.subtitle }}
         </p>
       </header>
 
       <!-- Concise Pillars Grid -->
       <div class="pillars-grid">
-        @for (pillar of pillars; track pillar.title) {
+        @for (pillar of pillars(); track pillar.title) {
           <div class="pillar-card">
             <div class="pillar-icon-wrap" aria-hidden="true">
               <span class="pillar-icon">{{ pillar.icon }}</span>
@@ -34,7 +34,7 @@
       <!-- Action Footer -->
       <div class="prepare-actions">
         <button type="button" class="btn btn-secondary" (click)="onBack()">
-          Back
+          {{ t().readingPrepare.backBtn }}
         </button>
 
         <button 
@@ -43,7 +43,7 @@
           class="btn btn-primary continue-btn" 
           (click)="onContinue()"
         >
-          <span>Continue to Question</span>
+          <span>{{ t().readingPrepare.continueBtn }}</span>
           <span class="btn-arrow" aria-hidden="true">→</span>
         </button>
       </div>

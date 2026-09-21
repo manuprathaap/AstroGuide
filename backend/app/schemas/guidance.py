@@ -12,6 +12,7 @@ class GuidanceCreate(BaseModel):
         min_length=1,
         max_length=5000,
     )
+    language: str | None = None
 
 
 class GuidanceUpdate(BaseModel):
@@ -20,6 +21,7 @@ class GuidanceUpdate(BaseModel):
         min_length=1,
         max_length=5000,
     )
+    language: str | None = None
 
 
 class GuidanceResponse(BaseModel):

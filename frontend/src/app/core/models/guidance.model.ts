@@ -33,10 +33,12 @@ export interface Guidance {
 
 export interface GuidanceCreate {
   problem: string;
+  language?: string;
 }
 
 export interface GuidanceUpdate {
   problem: string;
+  language?: string;
 }
 
 export interface GuidanceResponse extends Guidance {}

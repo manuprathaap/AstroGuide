@@ -117,7 +117,10 @@ describe('ReadingResultComponent', () => {
     component.inputQuestion.set('Athinte reason enthaanu?');
     component.sendMessage();
 
-    expect(createSpy).toHaveBeenCalledWith({ problem: 'Athinte reason enthaanu?' });
+    expect(createSpy).toHaveBeenCalledWith({
+      problem: 'Athinte reason enthaanu?',
+      language: 'English'
+    });
     expect(component.messages().length).toBeGreaterThanOrEqual(4); // 2 initial + 2 new (user + assistant)
     expect(component.isTyping()).toBe(false);
   });

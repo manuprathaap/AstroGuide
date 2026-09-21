@@ -7,21 +7,21 @@
       <div class="hero-content">
         <div class="celestial-badge">
           <span class="badge-sparkle">☀️</span>
-          <span>Language-first + Problem-first + Vedic Astrology</span>
+          <span>{{ t().landing.badge }}</span>
         </div>
 
         <h1 class="hero-headline">
-          Guiding Your Life's Journey with <span class="gold-gradient-text">Celestial Clarity</span>
+          {{ t().landing.heroTitle }} <span class="gold-gradient-text">{{ t().landing.heroTitleGold }}</span>
         </h1>
 
         <p class="hero-subtext">
-          Whether you are navigating career transitions, relationship questions, or seeking your Vedic birth chart, AstroGuide delivers personalized, interactive guidance in your native language.
+          {{ t().landing.heroSubtext }}
         </p>
 
         <div class="hero-actions">
           @if (isAuthenticated()) {
             <a routerLink="/dashboard" class="btn btn-primary btn-lg">
-              <span>Go to Your Dashboard</span>
+              <span>{{ t().landing.dashboardBtn }}</span>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"/>
                 <polyline points="12 5 19 12 12 19"/>
@@ -29,14 +29,14 @@
             </a>
           } @else {
             <a routerLink="/auth/register" class="btn btn-primary btn-lg">
-              <span>Get Started</span>
+              <span>{{ t().landing.getStartedBtn }}</span>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"/>
                 <polyline points="12 5 19 12 12 19"/>
               </svg>
             </a>
             <a routerLink="/auth/login" class="btn btn-secondary btn-lg">
-              <span>Sign In</span>
+              <span>{{ t().landing.signInBtn }}</span>
             </a>
           }
         </div>
@@ -47,22 +47,22 @@
         <div class="preview-mini-card">
           <span class="mini-icon">💬</span>
           <div class="mini-info">
-            <span class="mini-title">Talk about a problem</span>
-            <span class="mini-sub">Start with what's on your mind</span>
+            <span class="mini-title">{{ t().landing.miniProblemTitle }}</span>
+            <span class="mini-sub">{{ t().landing.miniProblemSub }}</span>
           </div>
         </div>
         <div class="preview-mini-card">
           <span class="mini-icon">🪐</span>
           <div class="mini-info">
-            <span class="mini-title">Birth chart</span>
-            <span class="mini-sub">Enter your birth details</span>
+            <span class="mini-title">{{ t().landing.miniChartTitle }}</span>
+            <span class="mini-sub">{{ t().landing.miniChartSub }}</span>
           </div>
         </div>
         <div class="preview-mini-card">
           <span class="mini-icon">✋</span>
           <div class="mini-info">
-            <span class="mini-title">Palm reading</span>
-            <span class="mini-sub">Upload a photo of your palm</span>
+            <span class="mini-title">{{ t().landing.miniPalmTitle }}</span>
+            <span class="mini-sub">{{ t().landing.miniPalmSub }}</span>
           </div>
         </div>
       </div>
@@ -73,10 +73,10 @@
   <section class="explore-pillars-section">
     <div class="astro-container">
       <div class="section-header text-center">
-        <span class="section-tag">Explore Your Path</span>
-        <h2 class="section-title">How would you like to explore?</h2>
+        <span class="section-tag">{{ t().landing.sectionTag }}</span>
+        <h2 class="section-title">{{ t().landing.sectionTitle }}</h2>
         <p class="section-subtitle">
-          Choose the path that feels right for you. Each journey provides traditional insights tailored to your life.
+          {{ t().landing.sectionSubtitle }}
         </p>
       </div>
 
@@ -85,33 +85,33 @@
           <div class="pillar-icon-wrap">
             <span class="pillar-icon">💬</span>
           </div>
-          <h3 class="pillar-title">Talk about a problem</h3>
+          <h3 class="pillar-title">{{ t().landing.pillarProblemTitle }}</h3>
           <p class="pillar-desc">
-            Start with what's on your mind. Explore guidance on career, marriage & love, family, and money.
+            {{ t().landing.pillarProblemDesc }}
           </p>
-          <a routerLink="/dashboard" class="btn btn-primary w-full">Explore Guidance</a>
+          <a routerLink="/dashboard" class="btn btn-primary w-full">{{ t().landing.pillarProblemBtn }}</a>
         </div>
 
         <div class="pillar-card astro-card">
           <div class="pillar-icon-wrap">
             <span class="pillar-icon">🪐</span>
           </div>
-          <h3 class="pillar-title">Birth chart (Kundli)</h3>
+          <h3 class="pillar-title">{{ t().landing.pillarChartTitle }}</h3>
           <p class="pillar-desc">
-            Explore your life's path through traditional Vedic Jyotish, 12 houses, and planetary Mahadashas.
+            {{ t().landing.pillarChartDesc }}
           </p>
-          <a routerLink="/dashboard" class="btn btn-primary w-full">Explore Chart</a>
+          <a routerLink="/dashboard" class="btn btn-primary w-full">{{ t().landing.pillarChartBtn }}</a>
         </div>
 
         <div class="pillar-card astro-card">
           <div class="pillar-icon-wrap">
             <span class="pillar-icon">✋</span>
           </div>
-          <h3 class="pillar-title">Palm reading</h3>
+          <h3 class="pillar-title">{{ t().landing.pillarPalmTitle }}</h3>
           <p class="pillar-desc">
-            Discover ancient Hastarekha palmistry insights from your heart line, head line, and mount patterns.
+            {{ t().landing.pillarPalmDesc }}
           </p>
-          <a routerLink="/dashboard" class="btn btn-primary w-full">Explore Palm</a>
+          <a routerLink="/dashboard" class="btn btn-primary w-full">{{ t().landing.pillarPalmBtn }}</a>
         </div>
       </div>
     </div>
@@ -122,17 +122,17 @@
     <div class="astro-container">
       <div class="callout-card astro-card">
         <div class="callout-text">
-          <span class="section-tag">Language-First Experience</span>
-          <h2 class="callout-title">Astrological Wisdom in Your Mother Tongue</h2>
+          <span class="section-tag">{{ t().landing.calloutTag }}</span>
+          <h2 class="callout-title">{{ t().landing.calloutTitle }}</h2>
           <p class="callout-desc">
-            AstroGuide is localized into multiple regional Indian languages including English, हिन्दी, தமிழ், తెలుగు, ಕನ್ನಡ, and മലയാളം, dynamically loaded from our FastAPI backend.
+            {{ t().landing.calloutDesc }}
           </p>
         </div>
         <div class="callout-action">
           @if (isAuthenticated()) {
-            <a routerLink="/language" class="btn btn-primary">Change Language</a>
+            <a routerLink="/language" class="btn btn-primary">{{ t().landing.changeLangBtn }}</a>
           } @else {
-            <a routerLink="/auth/register" class="btn btn-primary">Get Started in Your Language</a>
+            <a routerLink="/auth/register" class="btn btn-primary">{{ t().landing.getStartedLangBtn }}</a>
           }
         </div>
       </div>

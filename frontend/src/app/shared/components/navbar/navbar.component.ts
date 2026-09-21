@@ -22,7 +22,10 @@ export class NavbarComponent {
   readonly isAuthenticated = this.authService.isAuthenticated;
   readonly t = this.translationService.t;
   readonly currentLanguage = this.languageService.currentLanguage;
-  readonly currentLanguageLabel = computed(() => this.languageService.currentLanguage()?.name || 'Language');
+  readonly currentLanguageLabel = computed(() => {
+    const lang = this.languageService.currentLanguage();
+    return lang?.native_name || lang?.name || 'Language';
+  });
   readonly currentUrl = computed(() => this.router.url);
 
   logout(): void {

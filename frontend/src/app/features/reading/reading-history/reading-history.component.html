@@ -4,11 +4,11 @@
   <div class="astro-container history-container">
     <div class="history-header-row">
       <div>
-        <h1 class="history-title">Guidance History</h1>
-        <p class="history-subtitle">Review your past astrological consultations and AI explanations.</p>
+        <h1 class="history-title">{{ t().readingHistory.title }}</h1>
+        <p class="history-subtitle">{{ t().readingHistory.subtitle }}</p>
       </div>
       <button type="button" class="btn btn-primary btn-sm" (click)="startNewReading()">
-        + Ask New Question
+        + {{ t().readingHistory.newQuestion }}
       </button>
     </div>
 
@@ -24,7 +24,7 @@
     @if (isLoading()) {
       <div class="state-container loading-state">
         <span class="spinner spinner-lg"></span>
-        <p class="state-text">Loading your guidance history...</p>
+        <p class="state-text">{{ t().readingHistory.loading }}</p>
       </div>
     }
 
@@ -32,12 +32,12 @@
     @else if (historyItems().length === 0) {
       <div class="astro-card empty-history-card">
         <div class="empty-icon" aria-hidden="true">📜</div>
-        <h3 class="empty-title">No guidance history yet</h3>
+        <h3 class="empty-title">{{ t().readingHistory.emptyTitle }}</h3>
         <p class="empty-desc">
-          When you ask AstroGuide a question about your chart, your readings will be saved here for easy review.
+          {{ t().readingHistory.emptyDesc }}
         </p>
         <button type="button" class="btn btn-primary" (click)="startNewReading()">
-          Begin Your First Reading
+          {{ t().readingHistory.startReading }}
         </button>
       </div>
     }
@@ -86,7 +86,7 @@
 
             <div class="history-card-footer">
               <span class="view-reading-link">
-                View Full Reading →
+                {{ t().readingHistory.viewFullReading }} →
               </span>
             </div>
           </div>
@@ -98,7 +98,7 @@
     @if (editingItem()) {
       <div class="modal-backdrop" (click)="closeEditModal()">
         <div class="modal-dialog" (click)="$event.stopPropagation()">
-          <h3 class="modal-title">Edit Question</h3>
+          <h3 class="modal-title">{{ t().readingHistory.editModalTitle }}</h3>
           <div class="input-wrapper mb-3">
             <textarea
               class="edit-textarea"
@@ -109,13 +109,13 @@
           </div>
           <div class="modal-actions">
             <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
-              Cancel
+              {{ t().readingHistory.cancel }}
             </button>
             <button type="button" class="btn btn-primary" (click)="saveEdit()" [disabled]="isUpdating()">
               @if (isUpdating()) {
-                <span>Saving...</span>
+                <span>{{ t().readingHistory.saving }}</span>
               } @else {
-                <span>Save</span>
+                <span>{{ t().readingHistory.save }}</span>
               }
             </button>
           </div>
@@ -127,17 +127,17 @@
     @if (deletingItem()) {
       <div class="modal-backdrop" (click)="closeDeleteModal()">
         <div class="modal-dialog" (click)="$event.stopPropagation()">
-          <h3 class="modal-title">Delete Inquiry?</h3>
-          <p class="modal-desc">Are you sure you want to remove this guidance record?</p>
+          <h3 class="modal-title">{{ t().readingHistory.deleteModalTitle }}</h3>
+          <p class="modal-desc">{{ t().readingHistory.deleteModalDesc }}</p>
           <div class="modal-actions">
             <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
-              Cancel
+              {{ t().readingHistory.cancel }}
             </button>
             <button type="button" class="btn btn-error" (click)="confirmDelete()" [disabled]="isDeleting()">
               @if (isDeleting()) {
-                <span>Deleting...</span>
+                <span>{{ t().readingHistory.deleting }}</span>
               } @else {
-                <span>Delete</span>
+                <span>{{ t().readingHistory.delete }}</span>
               }
             </button>
           </div>

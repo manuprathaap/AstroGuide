@@ -5,18 +5,18 @@
     <div class="astro-card explore-card">
       <!-- Step Badge -->
       <div class="step-badge-wrap">
-        <span class="step-badge">STEP 2 OF 5 · EXPLORE TOPIC</span>
+        <span class="step-badge">{{ t().explore.stepBadge }}</span>
       </div>
 
       <!-- Header -->
       <div class="explore-header">
-        <h1 class="explore-title">What would you like to explore today?</h1>
-        <p class="explore-subtitle">Tell us what you're curious about.</p>
+        <h1 class="explore-title">{{ t().explore.title }}</h1>
+        <p class="explore-subtitle">{{ t().explore.subtitle }}</p>
       </div>
 
       <!-- Topics Grid -->
       <div class="topics-grid" role="radiogroup" aria-label="Astrology inquiry topics">
-        @for (topic of topics; track topic.id) {
+        @for (topic of localizedTopics(); track topic.id) {
           <div 
             class="topic-card" 
             [class.selected]="selectedTopic() === topic.id"
@@ -49,7 +49,7 @@
           class="btn btn-primary continue-btn"
           (click)="onContinue()"
         >
-          <span>Continue</span>
+          <span>{{ t().explore.continueBtn }}</span>
           <span class="btn-arrow" aria-hidden="true">→</span>
         </button>
       </div>

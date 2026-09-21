@@ -8,6 +8,7 @@ import { ReadingJourneyService, GuidedTopicId } from '../../../core/services/rea
 import { GuidanceService } from '../../../core/services/guidance.service';
 import { BirthDetailService } from '../../../core/services/birth-detail.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Guidance, ChatMessage } from '../../../core/models/guidance.model';
 import { AstrologyMarriageAnalysis, AstrologyMarriageTimingWindow } from '../../../core/models/astrology.model';
@@ -27,7 +28,10 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
   private readonly guidanceService = inject(GuidanceService);
   private readonly birthDetailService = inject(BirthDetailService);
   private readonly languageService = inject(LanguageService);
+  private readonly translationService = inject(TranslationService);
   private readonly authService = inject(AuthService);
+
+  readonly t = this.translationService.t;
 
   // Chat Conversation State
   readonly messages = this.journeyService.chatMessages;
@@ -49,15 +53,18 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
 
   // Active Category Tab for Explore
   readonly activeCategoryTab = signal<GuidedTopicId>('Career');
-  readonly categoryTabs: { id: GuidedTopicId; label: string; icon: string }[] = [
-    { id: 'Career', label: 'Career', icon: '💼' },
-    { id: 'Money / Finance', label: 'Money', icon: '💰' },
-    { id: 'Relationships', label: 'Relationships', icon: '💕' },
-    { id: 'Family', label: 'Family', icon: '🏡' },
-    { id: 'Travel / Abroad', label: 'Travel', icon: '✈️' },
-    { id: 'Health / Wellness', label: 'Health', icon: '🌿' },
-    { id: 'General Guidance', label: 'Personal Growth', icon: '✦' }
-  ];
+  readonly categoryTabs = computed(() => {
+    const tabs = this.t().readingResult.guidanceTabs.tabs;
+    return [
+      { id: 'Career' as GuidedTopicId, label: tabs.career, icon: '💼' },
+      { id: 'Money / Finance' as GuidedTopicId, label: tabs.money, icon: '💰' },
+      { id: 'Relationships' as GuidedTopicId, label: tabs.relationships, icon: '💕' },
+      { id: 'Family' as GuidedTopicId, label: tabs.family, icon: '🏡' },
+      { id: 'Travel / Abroad' as GuidedTopicId, label: tabs.travel, icon: '✈️' },
+      { id: 'Health / Wellness' as GuidedTopicId, label: tabs.health, icon: '🌿' },
+      { id: 'General Guidance' as GuidedTopicId, label: tabs.growth, icon: '✦' }
+    ];
+  });
 
   // Timing Windows extracted from latest analysis
   readonly timingWindows = computed<AstrologyMarriageTimingWindow[]>(() => {
@@ -78,10 +85,13 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
   });
 
   // Plan Details (Screen 10)
-  readonly planStatus = signal({
-    planName: 'Personal Seeker Plan',
-    readingsRemaining: 'Unlimited basic inquiry access',
-    isPremium: true
+  readonly planStatus = computed(() => {
+    const pl = this.t().readingResult.plan;
+    return {
+      planName: pl.name,
+      readingsRemaining: pl.remaining,
+      isPremium: true
+    };
   });
 
   // Palm Reading modal / status (Screen 11)
@@ -90,53 +100,37 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
   // Suggested Contextual Follow-up Questions
   readonly suggestedFollowUps = computed<string[]>(() => {
     const cat = (this.lastGuidance()?.category || '').toUpperCase();
-    const langCode = this.languageService.currentLanguageCode().toLowerCase();
-    const isMalayalam = langCode.startsWith('ml');
+    const f = this.t().readingResult.followUps;
 
     if (cat.includes('MARRIAGE')) {
-      return isMalayalam
-        ? ['Athinte reason enthaanu?', 'Partner engane ayirikkum?', '2027-il chance undo?']
-        : ['What are the astrological reasons?', 'What does my chart say about my partner?', 'Is there a favorable window in 2027?'];
+      return f.marriage;
     }
     if (cat.includes('CAREER')) {
-      return isMalayalam
-        ? ['Job change cheyyan nalla samayam aano?', 'Promotion kittan chance undo?', 'Business start cheyyan pattumo?']
-        : ['Is this a favorable time for a job change?', 'When are supportive periods for career growth?', 'Does my chart favor starting a business?'];
+      return f.career;
     }
     if (cat.includes('FINANCE')) {
-      return isMalayalam
-        ? ['Saambathika sthithi eppol nannakum?', 'Investments cheyyan safe aano?']
-        : ['When will financial stability improve?', 'What planetary cycles indicate wealth growth?'];
+      return f.finance;
     }
     if (cat.includes('TRAVEL') || cat.includes('FOREIGN')) {
-      return isMalayalam
-        ? ['Abroad pokan eppol samayam aakum?', 'Permanent settlement chance undo?']
-        : ['When are supportive periods to travel abroad?', 'Is foreign settlement indicated in my chart?'];
+      return f.travel;
     }
-    return isMalayalam
-      ? ['Athinte reason enthaanu?', 'Adutha nalla samayam eppolanu?', 'Ente life-il ippo enthaanu main focus?']
-      : ['What are the primary planetary reasons?', 'When is the next supportive period?', 'What should my main focus be right now?'];
+    return f.general;
   });
 
   ngOnInit(): void {
-    // 1. Hydrate from router transition state if available
     if (history.state?.guidance) {
       this.journeyService.setGuidanceResult(history.state.guidance as Guidance);
     }
 
-    // 2. Fetch birth details profile if not present in memory
     if (!this.birthDetails()) {
       this.birthDetailService.getBirthDetails().subscribe({
         next: (details) => {
           this.journeyService.setBirthDetails(details);
         },
-        error: () => {
-          // Non-blocking
-        }
+        error: () => {}
       });
     }
 
-    // 3. If messages empty, load recent history to populate conversation
     if (this.messages().length === 0) {
       this.guidanceService.getGuidanceHistory().subscribe({
         next: (historyItems) => {
@@ -167,9 +161,7 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
             this.scrollToBottom();
           }
         },
-        error: () => {
-          // Non-blocking
-        }
+        error: () => {}
       });
     }
   }
@@ -184,7 +176,6 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // 1. Immediately append user message
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -198,7 +189,6 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
     this.isTyping.set(true);
     this.scrollToBottom();
 
-    // 2. Ensure user language sync
     const currentLang = this.languageService.currentLanguage();
     const currentUser = this.authService.currentUser();
     if (this.authService.isAuthenticated() && currentLang?.id && currentUser?.language_id !== currentLang.id) {
@@ -217,7 +207,10 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
   }
 
   private executeGuidanceCall(questionText: string): void {
-    this.guidanceService.createGuidance({ problem: questionText }).subscribe({
+    this.guidanceService.createGuidance({
+      problem: questionText,
+      language: this.languageService.currentLanguageName()
+    }).subscribe({
       next: (response: Guidance) => {
         this.isTyping.set(false);
         const rawAnalysis = response.analysis as any;
@@ -236,7 +229,7 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
       },
       error: () => {
         this.isTyping.set(false);
-        this.lastError.set('Something went wrong while preparing your guidance.');
+        this.lastError.set(this.t().readingResult.chat.readingChart || 'Something went wrong while preparing your guidance.');
         this.failedQuestion.set(questionText);
         this.scrollToBottom();
       }
@@ -280,9 +273,7 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
   }
 
   analyzePalm(): void {
-    this.palmReadingMessage.set(
-      'Palm reading analysis module is initialized. Camera/upload integration point is ready for backend integration.'
-    );
+    this.palmReadingMessage.set(this.t().readingResult.palm.alertMessage);
     setTimeout(() => {
       this.palmReadingMessage.set(null);
     }, 4500);
@@ -294,32 +285,34 @@ export class ReadingResultComponent implements OnInit, AfterViewInit {
 
   formatCategory(category?: string | null): string | null {
     if (!category) return null;
+    const c = this.t().readingResult.categories;
     switch (category) {
       case 'MARRIAGE_TIMING':
-        return 'Marriage Timing';
+        return c.marriageTiming;
       case 'MARRIAGE':
-        return 'Marriage';
+        return c.marriage;
       case 'CAREER_TIMING':
+        return c.careerTiming;
       case 'CAREER':
-        return 'Career';
+        return c.career;
       case 'FINANCE':
-        return 'Money / Finance';
+        return c.money;
       case 'RELATIONSHIP':
-        return 'Relationships';
+        return c.relationships;
       case 'FAMILY':
-        return 'Family';
+        return c.family;
       case 'TRAVEL':
       case 'FOREIGN_SETTLEMENT':
-        return 'Travel / Abroad';
+        return c.travel;
       case 'HEALTH':
-        return 'Health / Wellness';
+        return c.health;
       case 'EDUCATION':
-        return 'Education';
+        return c.education;
       case 'BUSINESS':
-        return 'Business';
+        return c.business;
       case 'LIFE_OVERVIEW':
       case 'GENERAL':
-        return 'General Guidance';
+        return c.general;
       default:
         return category;
     }

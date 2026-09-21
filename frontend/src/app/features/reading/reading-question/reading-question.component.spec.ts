@@ -65,7 +65,8 @@ describe('ReadingQuestionComponent', () => {
     component.onSubmit();
 
     expect(createSpy).toHaveBeenCalledWith({
-      problem: 'How will my career progress in the coming years?'
+      problem: 'How will my career progress in the coming years?',
+      language: 'English'
     });
     expect(navSpy).toHaveBeenCalledWith(['/reading/result'], {
       state: { guidance: mockGuidanceResponse }

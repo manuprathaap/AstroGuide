@@ -45,8 +45,11 @@ export class DashboardComponent implements OnInit {
   readonly currentUser = this.authService.currentUser;
   readonly t = this.translationService.t;
   readonly languages = signal<Language[]>([]);
-  readonly currentLanguage = signal<Language | null>(this.languageService.currentLanguage());
-  readonly currentLanguageName = signal<string>(this.languageService.currentLanguage()?.name || 'English');
+  readonly currentLanguage = computed(() => this.languageService.currentLanguage());
+  readonly currentLanguageName = computed(() => {
+    const lang = this.languageService.currentLanguage();
+    return lang ? (lang.native_name ? `${lang.name} (${lang.native_name})` : lang.name) : 'English';
+  });
   readonly isLoading = signal<boolean>(true);
   readonly errorMessage = signal<string | null>(null);
 
@@ -178,15 +181,9 @@ export class DashboardComponent implements OnInit {
             if (targetLangId) {
               const matched = langs.find(l => l.id === targetLangId);
               if (matched) {
-                this.currentLanguage.set(matched);
-                this.currentLanguageName.set(matched.name);
                 this.languageService.setCurrentLanguage(matched);
                 this.authService.updateCurrentUserLanguage(matched.id);
               }
-            } else if (this.languageService.currentLanguage()) {
-              const current = this.languageService.currentLanguage()!;
-              this.currentLanguage.set(current);
-              this.currentLanguageName.set(current.name);
             }
             this.isLoading.set(false);
           },
