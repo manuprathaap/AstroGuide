@@ -29,8 +29,9 @@ class GuidanceResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     category: QuestionType | None = None
+    language: str | None = None
     supported: bool | None = None
     message: str | None = None
-    analysis: AstrologyMarriageAnalysis | None = None
+    analysis: AstrologyMarriageAnalysis | dict | None = None
 
     model_config = ConfigDict(from_attributes=True)

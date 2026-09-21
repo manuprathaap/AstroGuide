@@ -53,8 +53,6 @@ export class ReadingHistoryComponent implements OnInit {
   }
 
   openReading(item: Guidance): void {
-    this.journeyService.setGuidanceResult(item);
-    this.journeyService.setQuestion(item.problem);
     if (item.category) {
       if (item.category.includes('MARRIAGE')) {
         this.journeyService.setTopic('Marriage');
@@ -64,7 +62,14 @@ export class ReadingHistoryComponent implements OnInit {
         this.journeyService.setTopic('Money / Finance');
       }
     }
-    this.router.navigate(['/reading/result']);
+    this.journeyService.setQuestion(item.problem);
+
+    if (item.message) {
+      this.journeyService.setGuidanceResult(item);
+      this.router.navigate(['/reading/result'], { state: { guidance: item } });
+    } else {
+      this.router.navigate(['/reading/question']);
+    }
   }
 
   startNewReading(): void {

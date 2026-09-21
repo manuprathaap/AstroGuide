@@ -6,6 +6,7 @@ import { NavbarComponent } from '../../../shared/components/navbar/navbar.compon
 import { ReadingJourneyService } from '../../../core/services/reading-journey.service';
 import { GuidanceService } from '../../../core/services/guidance.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Guidance } from '../../../core/models/guidance.model';
 
 @Component({
@@ -20,6 +21,7 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
   private readonly journeyService = inject(ReadingJourneyService);
   private readonly guidanceService = inject(GuidanceService);
   private readonly languageService = inject(LanguageService);
+  private readonly authService = inject(AuthService);
 
   readonly selectedTopic = this.journeyService.selectedTopic;
   readonly currentQuestion = signal<string>('');
@@ -85,20 +87,58 @@ export class ReadingQuestionComponent implements OnInit, OnDestroy {
     this.journeyService.setQuestion(questionText);
     this.startLoadingInterval();
 
+    const currentLang = this.languageService.currentLanguage();
+    const currentUser = this.authService.currentUser();
+
+    // Ensure backend user language matches frontend selection so Gemini translates to user's desired language
+    if (this.authService.isAuthenticated() && currentLang?.id && currentUser?.language_id !== currentLang.id) {
+      this.languageService.updateUserLanguage(currentLang.id).subscribe({
+        next: () => {
+          this.authService.updateCurrentUserLanguage(currentLang.id);
+          this.executeGuidanceSubmission(questionText);
+        },
+        error: () => {
+          // If language sync fails, proceed anyway with guidance request
+          this.executeGuidanceSubmission(questionText);
+        }
+      });
+    } else {
+      this.executeGuidanceSubmission(questionText);
+    }
+  }
+
+  private executeGuidanceSubmission(questionText: string): void {
     this.guidanceService.createGuidance({ problem: questionText }).subscribe({
       next: (response: Guidance) => {
         this.stopLoadingInterval();
         this.isSubmitting.set(false);
         this.journeyService.setGuidanceResult(response);
-        this.router.navigate(['/reading/result']);
+        this.router.navigate(['/reading/result'], {
+          state: { guidance: response }
+        });
       },
       error: (err) => {
         this.stopLoadingInterval();
         this.isSubmitting.set(false);
         if (err.status === 404) {
-          this.errorMessage.set('Please check your birth details and try again.');
+          const detail = err.error?.detail || '';
+          if (typeof detail === 'string' && detail.toLowerCase().includes('birth')) {
+            this.errorMessage.set('Birth details not found. Please add your birth details first.');
+          } else {
+            this.errorMessage.set(typeof detail === 'string' && detail ? detail : 'Please check your birth details and try again.');
+          }
+        } else if (err.status === 400) {
+          this.errorMessage.set(
+            typeof err.error?.detail === 'string'
+              ? err.error.detail
+              : 'Astrology calculation could not be completed with the provided birth details.'
+          );
+        } else if (err.status === 502) {
+          this.errorMessage.set(
+            'Astrology analysis succeeded, but the guidance explanation service is temporarily unavailable. Please try again.'
+          );
         } else {
-          this.errorMessage.set("We couldn't prepare your reading right now. Please try again.");
+          this.errorMessage.set(this.authService.formatErrorMessage(err));
         }
       }
     });

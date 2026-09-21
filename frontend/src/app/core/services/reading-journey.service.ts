@@ -6,7 +6,7 @@ import { GuidanceService } from './guidance.service';
 import { AuthService } from './auth.service';
 import { Language } from '../models/language.model';
 import { BirthDetail } from '../models/birth-detail.model';
-import { Guidance } from '../models/guidance.model';
+import { Guidance, ChatMessage } from '../models/guidance.model';
 import { AstrologyMarriageAnalysis } from '../models/astrology.model';
 
 export type GuidedTopicId =
@@ -169,17 +169,68 @@ export class ReadingJourneyService {
     }
   ];
 
+  private readonly guidanceStorageKey = 'astroguide_last_guidance';
+  private readonly chatMessagesStorageKey = 'astroguide_chat_messages';
+
+  private getInitialStoredGuidance(): Guidance | null {
+    try {
+      const item = sessionStorage.getItem(this.guidanceStorageKey);
+      return item ? JSON.parse(item) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private readonly initialGuidance = this.getInitialStoredGuidance();
+
+  private getInitialStoredMessages(): ChatMessage[] {
+    try {
+      const item = sessionStorage.getItem(this.chatMessagesStorageKey);
+      if (item) {
+        return JSON.parse(item);
+      }
+      if (this.initialGuidance && this.initialGuidance.problem) {
+        const list: ChatMessage[] = [
+          {
+            id: `user-${this.initialGuidance.id || Date.now()}`,
+            role: 'user',
+            content: this.initialGuidance.problem,
+            createdAt: this.initialGuidance.created_at || new Date().toISOString(),
+            category: this.initialGuidance.category
+          }
+        ];
+        if (this.initialGuidance.message) {
+          const rawAnalysis = this.initialGuidance.analysis as any;
+          list.push({
+            id: `assistant-${this.initialGuidance.id || Date.now()}`,
+            role: 'assistant',
+            content: this.initialGuidance.message,
+            createdAt: this.initialGuidance.updated_at || new Date().toISOString(),
+            category: this.initialGuidance.category,
+            analysis: this.initialGuidance.analysis,
+            timingWindows: rawAnalysis?.timing_windows || []
+          });
+        }
+        return list;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
   // Journey State Signals
   readonly selectedLanguage = this.languageService.currentLanguage;
   readonly selectedTopic = signal<GuidedTopicId>('Marriage');
   readonly birthDetails = signal<BirthDetail | null>(null);
-  readonly currentQuestion = signal<string>('Ente kalyanam eppol nadakkum?');
+  readonly currentQuestion = signal<string>(this.initialGuidance?.problem || 'Ente kalyanam eppol nadakkum?');
   readonly isLoading = signal<boolean>(false);
   readonly loadingPhaseIndex = signal<number>(0);
-  readonly readingResult = signal<string | null>(null);
-  readonly astrologyAnalysis = signal<AstrologyMarriageAnalysis | null>(null);
-  readonly lastGuidance = signal<Guidance | null>(null);
+  readonly readingResult = signal<string | null>(this.initialGuidance?.message || null);
+  readonly astrologyAnalysis = signal<AstrologyMarriageAnalysis | null>(this.initialGuidance?.analysis as AstrologyMarriageAnalysis || null);
+  readonly lastGuidance = signal<Guidance | null>(this.initialGuidance);
   readonly guidanceError = signal<string | null>(null);
+  readonly chatMessages = signal<ChatMessage[]>(this.getInitialStoredMessages());
 
   // Loading Sequence Messages
   readonly loadingMessages = [
@@ -221,16 +272,94 @@ export class ReadingJourneyService {
     this.birthDetails.set(details);
   }
 
+  addChatMessage(message: ChatMessage): void {
+    this.chatMessages.update(msgs => {
+      const updated = [...msgs, message];
+      try {
+        sessionStorage.setItem(this.chatMessagesStorageKey, JSON.stringify(updated));
+      } catch {
+        // Ignore storage quotas
+      }
+      return updated;
+    });
+  }
+
+  setChatMessages(messages: ChatMessage[]): void {
+    this.chatMessages.set(messages);
+    try {
+      sessionStorage.setItem(this.chatMessagesStorageKey, JSON.stringify(messages));
+    } catch {
+      // Ignore
+    }
+  }
+
+  clearChatMessages(): void {
+    this.chatMessages.set([]);
+    try {
+      sessionStorage.removeItem(this.chatMessagesStorageKey);
+    } catch {
+      // Ignore
+    }
+  }
+
   setGuidanceResult(guidance: Guidance): void {
     this.lastGuidance.set(guidance);
     this.readingResult.set(guidance.message || null);
-    this.astrologyAnalysis.set(guidance.analysis || null);
+    this.astrologyAnalysis.set(guidance.analysis as AstrologyMarriageAnalysis || null);
+    if (guidance.problem) {
+      this.currentQuestion.set(guidance.problem);
+    }
+
+    // If chatMessages is empty or doesn't have this guidance, initialize it
+    const existing = this.chatMessages();
+    const hasTurn = existing.some(m => m.id === `assistant-${guidance.id}` || m.content === guidance.message);
+    if (!hasTurn && guidance.problem) {
+      const turns: ChatMessage[] = [];
+      const hasUserMsg = existing.some(m => m.role === 'user' && m.content === guidance.problem);
+      if (!hasUserMsg) {
+        turns.push({
+          id: `user-${guidance.id || Date.now()}`,
+          role: 'user',
+          content: guidance.problem,
+          createdAt: guidance.created_at || new Date().toISOString(),
+          category: guidance.category
+        });
+      }
+      if (guidance.message) {
+        const rawAnalysis = guidance.analysis as any;
+        turns.push({
+          id: `assistant-${guidance.id || Date.now()}`,
+          role: 'assistant',
+          content: guidance.message,
+          createdAt: guidance.updated_at || new Date().toISOString(),
+          category: guidance.category,
+          analysis: guidance.analysis,
+          timingWindows: rawAnalysis?.timing_windows || []
+        });
+      }
+      if (turns.length > 0) {
+        this.setChatMessages([...existing, ...turns]);
+      }
+    }
+
+    try {
+      sessionStorage.setItem(this.guidanceStorageKey, JSON.stringify(guidance));
+    } catch {
+      // Ignore storage errors in restricted private browsing
+    }
   }
 
   resetJourney(): void {
     this.readingResult.set(null);
     this.astrologyAnalysis.set(null);
+    this.lastGuidance.set(null);
     this.guidanceError.set(null);
     this.isLoading.set(false);
+    this.clearChatMessages();
+    try {
+      sessionStorage.removeItem(this.guidanceStorageKey);
+    } catch {
+      // Ignore
+    }
   }
 }

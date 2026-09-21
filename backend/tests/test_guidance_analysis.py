@@ -88,7 +88,7 @@ def test_marriage_timing_guidance_sends_real_question_language_and_analysis(
     analysis = {"timing_windows": ["2027-2028"]}
     astrology_service.analyze_marriage.return_value = analysis
     llm_service = Mock()
-    llm_service.generate_astrology_response.return_value = "മലയാളം മറുപടി"
+    llm_service.generate_conversational_response.return_value = "മലയാളം മറുപടി"
     saved = saved_guidance()
     monkeypatch.setattr(
         "app.services.guidance_analysis_service.create_guidance",
@@ -106,10 +106,14 @@ def test_marriage_timing_guidance_sends_real_question_language_and_analysis(
     )
 
     assert result.message == "മലയാളം മറുപടി"
-    llm_service.generate_astrology_response.assert_called_once_with(
+    llm_service.generate_conversational_response.assert_called_once_with(
         question="Ente kalyanam eppol nadakkum?",
         language="Malayalam",
-        astrology_analysis=analysis,
+        astrology_context={
+            "question_type": "MARRIAGE_TIMING",
+            "specialized_analysis": analysis,
+        },
+        conversation_history=[],
     )
 
 
@@ -134,7 +138,7 @@ def test_explanation_failure_is_mapped_to_502(monkeypatch):
     )
 
 
-def test_unsupported_career_question_is_saved_without_marriage_analysis(monkeypatch):
+def test_career_question_receives_general_chart_context(monkeypatch):
     astrology_service = Mock()
     saved = saved_guidance("How will my career be?")
     monkeypatch.setattr(
@@ -143,18 +147,18 @@ def test_unsupported_career_question_is_saved_without_marriage_analysis(monkeypa
     )
 
     result = GuidanceAnalysisService(astrology_service).create_and_analyze(
-        db=FakeDb(),
+        db=FakeDb(kochi_birth()),
         user_id=7,
         problem=saved.problem,
     )
 
     assert result.category is QuestionType.CAREER
-    assert result.supported is False
-    assert result.analysis is None
+    assert result.supported is True
+    assert result.analysis["question_type"] == "CAREER"
     astrology_service.analyze_marriage.assert_not_called()
 
 
-def test_general_question_is_saved_without_marriage_analysis(monkeypatch):
+def test_general_question_receives_general_chart_context(monkeypatch):
     astrology_service = Mock()
     saved = saved_guidance("Tell me about my travel plans")
     monkeypatch.setattr(
@@ -163,13 +167,14 @@ def test_general_question_is_saved_without_marriage_analysis(monkeypatch):
     )
 
     result = GuidanceAnalysisService(astrology_service).create_and_analyze(
-        db=FakeDb(),
+        db=FakeDb(kochi_birth()),
         user_id=7,
         problem=saved.problem,
     )
 
     assert result.category is QuestionType.GENERAL
-    assert result.supported is False
+    assert result.supported is True
+    assert result.analysis["question_type"] == "GENERAL"
     astrology_service.analyze_marriage.assert_not_called()
 
 

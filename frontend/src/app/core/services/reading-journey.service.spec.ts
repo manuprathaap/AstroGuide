@@ -64,5 +64,18 @@ describe('ReadingJourneyService', () => {
     service.setGuidanceResult(mockGuidance);
     expect(service.readingResult()).toBe('Marriage is indicated in 2027-2028');
     expect(service.astrologyAnalysis()?.seventh_house_sign).toBe('Taurus');
+    expect(service.lastGuidance()?.id).toBe(1);
+
+    // Verify sessionStorage persistence
+    const stored = sessionStorage.getItem('astroguide_last_guidance');
+    expect(stored).toBeTruthy();
+    expect(JSON.parse(stored!).problem).toBe('Ente kalyanam eppol nadakkum?');
+
+    // Resetting journey should clear stored guidance
+    service.resetJourney();
+    expect(service.readingResult()).toBeNull();
+    expect(service.astrologyAnalysis()).toBeNull();
+    expect(service.lastGuidance()).toBeNull();
+    expect(sessionStorage.getItem('astroguide_last_guidance')).toBeNull();
   });
 });

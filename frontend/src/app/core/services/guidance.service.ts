@@ -20,6 +20,13 @@ export class GuidanceService {
   }
 
   /**
+   * Send a question to AstroGuide in conversational flow.
+   */
+  sendMessage(question: string): Observable<Guidance> {
+    return this.createGuidance({ problem: question });
+  }
+
+  /**
    * Fetch all past guidance inquiries for the authenticated user.
    */
   getGuidanceHistory(): Observable<Guidance[]> {

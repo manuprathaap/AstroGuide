@@ -71,80 +71,159 @@
         </div>
       </aside>
 
-      <!-- CENTER COLUMN: SCREEN 7 (YOUR READING) & SCREEN 8/9 (ASTROLOGY DETAILS) -->
+      <!-- CENTER COLUMN: CONVERSATIONAL ASTROLOGER INTERFACE -->
       <section class="center-reading-col">
-        <!-- SCREEN 7: YOUR READING RESULT -->
-        <div class="astro-card main-reading-card">
-          <div class="reading-header-bar">
-            <span class="star-accent" aria-hidden="true">✦</span>
-            <h1 class="reading-main-title">Your Reading</h1>
-          </div>
-
-          <div class="question-chip-banner">
-            <span class="chip-label">Question:</span>
-            <span class="chip-content">{{ question() }}</span>
-          </div>
-
-          <div class="guidance-content-area">
-            <div class="guidance-label-row">
-              <h2 class="guidance-subheading">Your Guidance</h2>
+        <div class="astro-card chat-main-card">
+          <!-- Chat Card Header -->
+          <div class="chat-header-bar">
+            <div class="chat-header-left">
+              <div class="chat-brand-icon" aria-hidden="true">✦</div>
+              <div>
+                <h1 class="chat-main-title">AstroGuide</h1>
+                <p class="chat-subtitle">Personal Vedic Astrologer &amp; Guidance</p>
+              </div>
             </div>
+            <div class="chat-status-pill">
+              <span class="status-indicator-dot"></span>
+              <span>Live Chart Session</span>
+            </div>
+          </div>
 
-            <!-- Gemini Natural Language Explanation (Markdown formatted) -->
-            @if (readingResponse()) {
-              <div class="natural-language-response" [innerHTML]="readingResponse() | markdown"></div>
-            } @else {
-              <div class="empty-response-state">
-                <p>No response details available for this reading.</p>
-                <button type="button" class="btn btn-primary" (click)="askNewQuestion()">
-                  Ask AstroGuide
-                </button>
+          <!-- Chat Messages Stream -->
+          <div class="chat-thread-container" #chatScrollArea role="log" aria-live="polite">
+            @for (msg of messages(); track msg.id) {
+              <!-- User Message -->
+              @if (msg.role === 'user') {
+                <div class="message-row user-row">
+                  <div class="user-bubble">
+                    <div class="bubble-meta">
+                      <span class="bubble-sender">You</span>
+                    </div>
+                    <p class="bubble-text">{{ msg.content }}</p>
+                  </div>
+                </div>
+              }
+
+              <!-- Assistant Message -->
+              @if (msg.role === 'assistant') {
+                <div class="message-row assistant-row">
+                  <div class="assistant-card">
+                    <div class="assistant-card-header">
+                      <div class="astro-badge">
+                        <span class="sparkle" aria-hidden="true">✨</span>
+                        <span class="astro-name">AstroGuide</span>
+                      </div>
+                      @if (msg.category) {
+                        <span class="category-tag">{{ formatCategory(msg.category) }}</span>
+                      }
+                    </div>
+
+                    <!-- Gemini Natural Language Explanation (Markdown formatted) -->
+                    <div class="natural-language-response" [innerHTML]="msg.content | markdown"></div>
+
+                    <!-- Supportive Timing Windows if returned with this response -->
+                    @if (msg.timingWindows && msg.timingWindows.length > 0) {
+                      <div class="msg-timing-section">
+                        <div class="msg-timing-header">
+                          <span class="timing-badge-icon" aria-hidden="true">⏳</span>
+                          <span class="msg-timing-title">Supportive Periods Indicated</span>
+                        </div>
+                        <div class="msg-timing-grid">
+                          @for (window of msg.timingWindows; track window.start) {
+                            <div class="msg-timing-card">
+                              <span class="timing-dates">
+                                📅 {{ window.start | date:'yyyy' }} – {{ window.end | date:'yyyy' }}
+                              </span>
+                              <span class="timing-dasha">
+                                {{ window.mahadasha_lord }} / {{ window.antardasha_lord }}
+                              </span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            }
+
+            <!-- Typing Indicator -->
+            @if (isTyping()) {
+              <div class="message-row assistant-row typing-row" role="status">
+                <div class="assistant-card typing-card">
+                  <div class="typing-header">
+                    <span class="sparkle" aria-hidden="true">✨</span>
+                    <span class="typing-label">AstroGuide is reading your chart...</span>
+                  </div>
+                  <div class="typing-dots-wrap" aria-hidden="true">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Error Banner with Retry -->
+            @if (lastError()) {
+              <div class="message-row error-row" role="alert">
+                <div class="error-banner">
+                  <span class="error-icon" aria-hidden="true">⚠️</span>
+                  <span class="error-text">{{ lastError() }}</span>
+                  <button type="button" class="btn-retry" (click)="retryLastQuestion()">
+                    Retry
+                  </button>
+                </div>
               </div>
             }
           </div>
 
-          <!-- SCREEN 9: TIMING WINDOWS (Highlight Supportive Periods) -->
-          @if (timingWindows().length > 0) {
-            <div class="timing-windows-section">
-              <div class="timing-header">
-                <span class="timing-icon" aria-hidden="true">⏳</span>
-                <div>
-                  <h3 class="timing-title">Supportive Periods Indicated by Analysis</h3>
-                  <p class="timing-subtitle">
-                    Astrological periods showing favorable alignment according to your chart.
-                  </p>
-                </div>
-              </div>
-
-              <div class="timing-cards-grid">
-                @for (window of timingWindows(); track window.start) {
-                  <div class="timing-window-card">
-                    <div class="timing-years-badge">
-                      <span class="cal-icon" aria-hidden="true">📅</span>
-                      <span class="window-dates">
-                        {{ window.start | date:'yyyy' }} – {{ window.end | date:'yyyy' }}
-                      </span>
-                    </div>
-                    <div class="window-dasha-info">
-                      <span class="dasha-tag">
-                        {{ window.mahadasha_lord }} Mahadasha • {{ window.antardasha_lord }} Antardasha
-                      </span>
-                    </div>
-                    @if (window.reasons && window.reasons.length > 0) {
-                      <ul class="window-reasons-list">
-                        @for (reason of window.reasons; track reason) {
-                          <li>{{ reason }}</li>
-                        }
-                      </ul>
-                    }
-                  </div>
+          <!-- Suggested Follow-up Questions -->
+          @if (!isTyping() && suggestedFollowUps().length > 0) {
+            <div class="follow-up-suggestions-bar">
+              <span class="suggestions-caption">Suggested follow-ups:</span>
+              <div class="suggestion-chips-row">
+                @for (chip of suggestedFollowUps(); track chip) {
+                  <button type="button" class="suggestion-chip-btn" (click)="sendMessage(chip)">
+                    <span>{{ chip }}</span>
+                  </button>
                 }
               </div>
             </div>
           }
 
-          <!-- SCREEN 8: COLLAPSIBLE ASTROLOGY DETAILS -->
-          <div class="astrology-details-collapsible">
+          <!-- Chat Input Bar -->
+          <div class="chat-input-area">
+            <form (ngSubmit)="sendMessage()" class="chat-input-form">
+              <input
+                type="text"
+                id="chat-user-input"
+                name="chatInput"
+                class="chat-text-input"
+                placeholder="Ask AstroGuide anything..."
+                [ngModel]="inputQuestion()"
+                (ngModelChange)="inputQuestion.set($event)"
+                (keydown)="onInputKeyDown($event)"
+                [disabled]="isTyping()"
+                autocomplete="off"
+                aria-label="Ask AstroGuide anything"
+              />
+              <button
+                type="submit"
+                id="chat-send-btn"
+                class="chat-send-btn"
+                [disabled]="!inputQuestion().trim() || isTyping()"
+                aria-label="Send message"
+              >
+                <span class="send-icon" aria-hidden="true">➤</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- SCREEN 8: COLLAPSIBLE ASTROLOGY DETAILS -->
+        @if (analysis(); as ana) {
+          <div class="astro-card astrology-details-collapsible">
             <button 
               type="button" 
               class="toggle-details-btn" 
@@ -163,62 +242,54 @@
             @if (showAstrologyDetails()) {
               <div class="astrology-details-body fade-in">
                 <div class="astro-specs-grid">
-                  <!-- 7th House & 7th Lord -->
-                  @if (analysis()?.seventh_house_sign) {
+                  @if (ana.seventh_house_sign) {
                     <div class="spec-card">
                       <span class="spec-label">7th House</span>
-                      <span class="spec-value">{{ analysis()?.seventh_house_sign }}</span>
+                      <span class="spec-value">{{ ana.seventh_house_sign }}</span>
                     </div>
                   }
-                  @if (analysis()?.seventh_house_lord) {
+                  @if (ana.seventh_house_lord) {
                     <div class="spec-card">
                       <span class="spec-label">7th Lord</span>
-                      <span class="spec-value">{{ analysis()?.seventh_house_lord }}</span>
+                      <span class="spec-value">{{ ana.seventh_house_lord }}</span>
                     </div>
                   }
-
-                  <!-- Venus Position -->
-                  @if (analysis()?.venus_sign) {
+                  @if (ana.venus_sign) {
                     <div class="spec-card">
                       <span class="spec-label">Venus</span>
                       <span class="spec-value">
-                        {{ analysis()?.venus_sign }} 
-                        @if (analysis()?.venus_house) {
-                          (House {{ analysis()?.venus_house }})
+                        {{ ana.venus_sign }} 
+                        @if (ana.venus_house) {
+                          (House {{ ana.venus_house }})
                         }
                       </span>
                     </div>
                   }
-
-                  <!-- Jupiter Position -->
-                  @if (analysis()?.jupiter_sign) {
+                  @if (ana.jupiter_sign) {
                     <div class="spec-card">
                       <span class="spec-label">Jupiter</span>
                       <span class="spec-value">
-                        {{ analysis()?.jupiter_sign }}
-                        @if (analysis()?.jupiter_house) {
-                          (House {{ analysis()?.jupiter_house }})
+                        {{ ana.jupiter_sign }}
+                        @if (ana.jupiter_house) {
+                          (House {{ ana.jupiter_house }})
                         }
                       </span>
                     </div>
                   }
-
-                  <!-- Dasha & Antardasha -->
-                  @if (analysis()?.current_mahadasha) {
+                  @if (ana.current_mahadasha) {
                     <div class="spec-card">
                       <span class="spec-label">Mahadasha</span>
-                      <span class="spec-value">{{ analysis()?.current_mahadasha }}</span>
+                      <span class="spec-value">{{ ana.current_mahadasha }}</span>
                     </div>
                   }
-                  @if (analysis()?.current_antardasha) {
+                  @if (ana.current_antardasha) {
                     <div class="spec-card">
                       <span class="spec-label">Antardasha</span>
-                      <span class="spec-value">{{ analysis()?.current_antardasha }}</span>
+                      <span class="spec-value">{{ ana.current_antardasha }}</span>
                     </div>
                   }
                 </div>
 
-                <!-- Supporting Factors -->
                 @if (supportingFactors().length > 0) {
                   <div class="factors-group">
                     <h4 class="factors-heading supportive">Supporting Factors</h4>
@@ -232,7 +303,6 @@
                   </div>
                 }
 
-                <!-- Challenging / Caution Factors -->
                 @if (cautionFactors().length > 0) {
                   <div class="factors-group">
                     <h4 class="factors-heading caution">Factors to Be Mindful Of</h4>
@@ -248,7 +318,7 @@
               </div>
             }
           </div>
-        </div>
+        }
 
         <!-- SCREEN 12: CAREER & LIFE GUIDANCE (Tabbed exploration) -->
         <div class="astro-card guidance-tabs-card">
@@ -280,7 +350,7 @@
             <p class="tab-prompt-text">
               Curious about <strong>{{ activeCategoryTab() }}</strong>? Ask a question to explore planetary influences on this path.
             </p>
-            <button type="button" class="btn btn-secondary btn-sm" (click)="askNewQuestion()">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="sendMessage('What does my chart indicate about ' + activeCategoryTab() + '?')">
               Ask About {{ activeCategoryTab() }} →
             </button>
           </div>

@@ -42,20 +42,32 @@ def create_guidance_endpoint(
                 else None
             ),
         )
+
     except LookupError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
         ) from exc
+
     except AstrologyCalculationError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
+
     except GuidanceExplanationError as exc:
+        print("========== LLM ERROR ==========")
+        print("Error type:", type(exc).__name__)
+        print("Error:", str(exc))
+        print("Cause:", repr(exc.__cause__))
+        print("Context:", repr(exc.__context__))
+        print("================================")
+
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Astrology analysis succeeded, but the explanation service failed.",
+            detail=(
+                "Astrology analysis succeeded, but the explanation service failed."
+            ),
         ) from exc
 
     return {

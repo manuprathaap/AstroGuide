@@ -7,10 +7,18 @@ def create_guidance(
     db: Session,
     user_id: int,
     problem: str,
+    category: str | None = None,
+    language: str | None = None,
+    message: str | None = None,
+    analysis: dict | None = None,
 ) -> Guidance:
     guidance = Guidance(
         user_id=user_id,
         problem=problem,
+        category=category,
+        language=language,
+        message=message,
+        analysis=analysis,
     )
 
     db.add(guidance)
