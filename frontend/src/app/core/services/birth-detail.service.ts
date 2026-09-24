@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BirthDetail, BirthDetailCreate, BirthDetailUpdate, PlaceSuggestion } from '../models/birth-detail.model';
+import { BirthDetail, BirthDetailCreate, BirthDetailUpdate, PlaceSuggestion, BirthPlaceSearchResult, BirthPlaceSearchResponse } from '../models/birth-detail.model';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +72,14 @@ export class BirthDetailService {
     return this.http.delete<void>(`${this.apiUrl}/birth-details`);
   }
 
+  searchBirthPlaces(query: string): Observable<BirthPlaceSearchResponse> {
+    return this.http.get<BirthPlaceSearchResponse>(`${this.apiUrl}/birth-details/places/search`, {
+      params: {
+        query
+      }
+    });
+  }
+
   searchPlaces(query: string): PlaceSuggestion[] {
     const q = query.trim().toLowerCase();
     if (!q || q.length < 2) {
@@ -86,3 +94,4 @@ export class BirthDetailService {
     ).slice(0, 6);
   }
 }
+

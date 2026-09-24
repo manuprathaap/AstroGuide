@@ -37,3 +37,17 @@ export interface PlaceSuggestion {
   longitude: number;
   timezone: string;
 }
+
+export interface BirthPlaceSearchResult {
+  place_name: string;
+  formatted_address: string;
+  latitude: number;
+  longitude: number;
+  timezone?: string | null;
+  country?: string | null;
+}
+
+export interface BirthPlaceSearchResponse {
+  results: BirthPlaceSearchResult[];
+}
+

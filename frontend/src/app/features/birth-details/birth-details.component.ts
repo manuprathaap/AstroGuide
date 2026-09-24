@@ -1,14 +1,16 @@
-import { Component, OnInit, inject, signal, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { BirthDetailService } from '../../core/services/birth-detail.service';
 import { AuthService } from '../../core/services/auth.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { ReadingJourneyService } from '../../core/services/reading-journey.service';
-import { BirthDetail, BirthDetailCreate, BirthDetailUpdate, PlaceSuggestion } from '../../core/models/birth-detail.model';
+import { BirthDetail, BirthDetailCreate, BirthDetailUpdate, BirthPlaceSearchResult } from '../../core/models/birth-detail.model';
 
 function pastOrTodayDateValidator(control: AbstractControl): ValidationErrors | null {
   if (!control.value) {
@@ -36,7 +38,7 @@ function pastOrTodayDateValidator(control: AbstractControl): ValidationErrors | 
   templateUrl: './birth-details.component.html',
   styleUrl: './birth-details.component.scss'
 })
-export class BirthDetailsComponent implements OnInit {
+export class BirthDetailsComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly birthDetailService = inject(BirthDetailService);
   private readonly authService = inject(AuthService);
@@ -59,8 +61,17 @@ export class BirthDetailsComponent implements OnInit {
   readonly successToast = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
-  readonly placeSuggestions = signal<PlaceSuggestion[]>([]);
+  // Autocomplete Signals
+  readonly isSearchingPlaces = signal<boolean>(false);
+  readonly hasSearched = signal<boolean>(false);
+  readonly placeSearchError = signal<string | null>(null);
+  readonly placeSuggestions = signal<BirthPlaceSearchResult[]>([]);
   readonly showPlaceDropdown = signal<boolean>(false);
+  readonly highlightedIndex = signal<number>(-1);
+  readonly selectedPlace = signal<BirthPlaceSearchResult | null>(null);
+
+  private readonly destroy$ = new Subject<void>();
+  private readonly searchSubject$ = new Subject<string>();
 
   // Maximum allowed date for date picker (today)
   readonly maxDate = new Date().toISOString().split('T')[0];
@@ -76,13 +87,62 @@ export class BirthDetailsComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
+    const target = event.target as HTMLElement;
+    const placeGroup = this.elementRef.nativeElement.querySelector('.place-group');
+    if (placeGroup && !placeGroup.contains(target)) {
       this.showPlaceDropdown.set(false);
+      this.highlightedIndex.set(-1);
     }
   }
 
   ngOnInit(): void {
+    this.setupPlaceAutocomplete();
     this.loadExistingDetails();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupPlaceAutocomplete(): void {
+    this.searchSubject$.pipe(
+      debounceTime(350),
+      distinctUntilChanged(),
+      switchMap(query => {
+        const trimmed = query ? query.trim() : '';
+        if (trimmed.length < 2) {
+          this.isSearchingPlaces.set(false);
+          this.placeSuggestions.set([]);
+          this.showPlaceDropdown.set(false);
+          this.placeSearchError.set(null);
+          this.hasSearched.set(false);
+          return of(null);
+        }
+
+        this.isSearchingPlaces.set(true);
+        this.placeSearchError.set(null);
+        this.hasSearched.set(true);
+
+        return this.birthDetailService.searchBirthPlaces(trimmed).pipe(
+          catchError(err => {
+            this.isSearchingPlaces.set(false);
+            this.placeSuggestions.set([]);
+            this.showPlaceDropdown.set(true);
+            this.placeSearchError.set(this.formatSearchErrorMessage(err));
+            return of(null);
+          })
+        );
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(response => {
+      this.isSearchingPlaces.set(false);
+      if (response) {
+        this.placeSuggestions.set(response.results || []);
+        this.showPlaceDropdown.set(true);
+        this.highlightedIndex.set(-1);
+      }
+    });
   }
 
   loadExistingDetails(): void {
@@ -128,19 +188,105 @@ export class BirthDetailsComponent implements OnInit {
   onPlaceInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const query = input.value || '';
-    const results = this.birthDetailService.searchPlaces(query);
-    this.placeSuggestions.set(results);
-    this.showPlaceDropdown.set(results.length > 0);
+
+    // Clear coordinates and timezone if user manually edits place after selecting a result
+    if (this.selectedPlace() !== null || this.birthForm.get('latitude')?.value !== null || this.birthForm.get('longitude')?.value !== null) {
+      this.selectedPlace.set(null);
+      this.birthForm.patchValue({ latitude: null, longitude: null, timezone: null });
+    }
+
+    if (query.trim().length < 2) {
+      this.placeSuggestions.set([]);
+      this.showPlaceDropdown.set(false);
+      this.isSearchingPlaces.set(false);
+      this.hasSearched.set(false);
+      this.placeSearchError.set(null);
+    }
+
+    this.searchSubject$.next(query);
   }
 
-  selectPlace(suggestion: PlaceSuggestion): void {
+  selectPlace(suggestion: BirthPlaceSearchResult): void {
+    this.selectedPlace.set(suggestion);
     this.birthForm.patchValue({
-      place_of_birth: suggestion.name,
+      place_of_birth: suggestion.formatted_address,
       latitude: suggestion.latitude,
       longitude: suggestion.longitude,
-      timezone: suggestion.timezone
+      timezone: suggestion.timezone || null
     });
     this.showPlaceDropdown.set(false);
+    this.highlightedIndex.set(-1);
+    this.placeSearchError.set(null);
+  }
+
+  onPlaceKeydown(event: KeyboardEvent): void {
+    const suggestions = this.placeSuggestions();
+
+    if (event.key === 'ArrowDown') {
+      if (!this.showPlaceDropdown() && suggestions.length > 0) {
+        this.showPlaceDropdown.set(true);
+        event.preventDefault();
+        return;
+      }
+      if (this.showPlaceDropdown() && suggestions.length > 0) {
+        event.preventDefault();
+        const nextIndex = this.highlightedIndex() < suggestions.length - 1 ? this.highlightedIndex() + 1 : 0;
+        this.highlightedIndex.set(nextIndex);
+        this.scrollHighlightedIntoView(nextIndex);
+      }
+    } else if (event.key === 'ArrowUp') {
+      if (this.showPlaceDropdown() && suggestions.length > 0) {
+        event.preventDefault();
+        const prevIndex = this.highlightedIndex() > 0 ? this.highlightedIndex() - 1 : suggestions.length - 1;
+        this.highlightedIndex.set(prevIndex);
+        this.scrollHighlightedIntoView(prevIndex);
+      }
+    } else if (event.key === 'Enter') {
+      if (this.showPlaceDropdown() && this.highlightedIndex() >= 0 && this.highlightedIndex() < suggestions.length) {
+        event.preventDefault();
+        this.selectPlace(suggestions[this.highlightedIndex()]);
+      }
+    } else if (event.key === 'Escape') {
+      if (this.showPlaceDropdown()) {
+        event.preventDefault();
+        this.showPlaceDropdown.set(false);
+        this.highlightedIndex.set(-1);
+      }
+    }
+  }
+
+  onPlaceFocus(): void {
+    const query = this.birthForm.get('place_of_birth')?.value || '';
+    if (query.trim().length >= 2 && (this.placeSuggestions().length > 0 || this.hasSearched() || this.placeSearchError())) {
+      this.showPlaceDropdown.set(true);
+    }
+  }
+
+  private scrollHighlightedIntoView(index: number): void {
+    const itemEl = this.elementRef.nativeElement.querySelector(`#place-opt-${index}`);
+    if (itemEl) {
+      itemEl.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  private formatSearchErrorMessage(error: any): string {
+    if (!error) {
+      return 'Unable to search locations right now. Please try again.';
+    }
+    const status = error.status;
+    if (status === 503 || status === 502) {
+      return 'Location service is temporarily unavailable. Please try again in a moment.';
+    }
+    if (status === 401) {
+      return 'Your session has expired. Please sign in again to search places.';
+    }
+    if (status === 403) {
+      return 'You do not have permission to search places.';
+    }
+    if (status === 0) {
+      return 'Unable to reach location service. Please check your connection.';
+    }
+    return 'Unable to search locations right now. Please try again.';
   }
 
   enableEdit(): void {

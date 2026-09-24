@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.core.config import GEOAPIFY_API_KEY
 from app.core.dependencies import get_current_user
 from app.database.connection import get_db
 from app.models.birth_detail import BirthDetail
@@ -9,6 +11,7 @@ from app.schemas.birth_detail import (
     BirthDetailCreate,
     BirthDetailUpdate,
     BirthDetailResponse,
+    BirthPlaceSearchResponse,
 )
 
 
@@ -17,6 +20,125 @@ router = APIRouter(
     prefix="/birth-details",
     tags=["Birth Details"],
 )
+
+
+@router.get(
+    "/places/search",
+    response_model=BirthPlaceSearchResponse,
+)
+def search_birth_places(
+    query: str = Query(..., min_length=2, max_length=100),
+    current_user: User = Depends(get_current_user),
+):
+    if not GEOAPIFY_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Geoapify is not configured.",
+        )
+
+    try:
+        response = httpx.get(
+            "https://api.geoapify.com/v1/geocode/search",
+            params={
+                "text": query,
+                "apiKey": GEOAPIFY_API_KEY,
+                "limit": 5,
+                "format": "json",
+            },
+            timeout=5.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except httpx.TimeoutException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            detail="The place search timed out.",
+        ) from exc
+    except httpx.RequestError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Unable to connect to Geoapify.",
+        ) from exc
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Geoapify rejected the place search request.",
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Geoapify returned an invalid response.",
+        ) from exc
+
+    if not isinstance(payload, dict):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Geoapify returned an invalid response.",
+        )
+
+    provider_results = payload.get("results", [])
+    if not isinstance(provider_results, list):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Geoapify returned an invalid response.",
+        )
+
+    places = []
+    for result in provider_results[:5]:
+        if not isinstance(result, dict):
+            continue
+
+        properties = result.get("properties", result)
+        if not isinstance(properties, dict):
+            continue
+
+        latitude = properties.get("lat")
+        longitude = properties.get("lon")
+        formatted_address = properties.get("formatted")
+        if not isinstance(latitude, (int, float)) or not isinstance(
+            longitude, (int, float)
+        ) or not isinstance(formatted_address, str):
+            continue
+
+        place_name = next(
+            (
+                properties.get(field)
+                for field in (
+                    "name",
+                    "city",
+                    "town",
+                    "village",
+                    "municipality",
+                    "county",
+                    "state",
+                    "country",
+                )
+                if isinstance(properties.get(field), str)
+                and properties.get(field).strip()
+            ),
+            formatted_address,
+        )
+
+        timezone_data = properties.get("timezone")
+        timezone_name = (
+            timezone_data.get("name")
+            if isinstance(timezone_data, dict)
+            and isinstance(timezone_data.get("name"), str)
+            else None
+        )
+        country = properties.get("country")
+        places.append(
+            {
+                "place_name": place_name,
+                "formatted_address": formatted_address,
+                "latitude": latitude,
+                "longitude": longitude,
+                "timezone": timezone_name,
+                "country": country if isinstance(country, str) else None,
+            }
+        )
+
+    return {"results": places}
 
 
 @router.post(

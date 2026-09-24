@@ -42,3 +42,16 @@ class BirthDetailResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+
+class BirthPlaceSearchResult(BaseModel):
+    place_name: str
+    formatted_address: str
+    latitude: float
+    longitude: float
+    timezone: str | None = None
+    country: str | None = None
+
+
+class BirthPlaceSearchResponse(BaseModel):
+    results: list[BirthPlaceSearchResult]

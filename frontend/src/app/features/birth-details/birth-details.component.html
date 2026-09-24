@@ -155,22 +155,75 @@
                 [placeholder]="t().birthDetails.pobPlaceholder"
                 autocomplete="off"
                 (input)="onPlaceInput($event)"
+                (keydown)="onPlaceKeydown($event)"
+                (focus)="onPlaceFocus()"
+                role="combobox"
+                aria-autocomplete="list"
+                [attr.aria-expanded]="showPlaceDropdown()"
+                aria-controls="places-listbox"
+                [attr.aria-activedescendant]="highlightedIndex() >= 0 ? 'place-opt-' + highlightedIndex() : null"
                 aria-required="true"
               />
+              @if (isSearchingPlaces()) {
+                <span class="input-spinner" aria-hidden="true" title="Searching places...">
+                  <span class="spinner spinner-xs"></span>
+                </span>
+              }
             </div>
 
-            @if (showPlaceDropdown() && placeSuggestions().length > 0) {
-              <ul class="suggestions-dropdown" role="listbox">
-                @for (place of placeSuggestions(); track place.name) {
-                  <li 
-                    (click)="selectPlace(place)"
-                    role="option"
-                    tabindex="0"
-                    (keydown.enter)="selectPlace(place)"
-                  >
-                    <span class="place-pin" aria-hidden="true">📍</span>
-                    <span class="place-text">{{ place.name }}</span>
+            <!-- Coordinate verification badge when a place is selected with coordinates -->
+            @if (birthForm.get('latitude')?.value !== null && birthForm.get('longitude')?.value !== null) {
+              <div class="coords-confirmed-badge">
+                <span class="badge-icon" aria-hidden="true">✓</span>
+                <span class="badge-text">
+                  Coordinates verified ({{ birthForm.get('latitude')?.value }}°, {{ birthForm.get('longitude')?.value }}°)
+                  @if (birthForm.get('timezone')?.value) {
+                    • {{ birthForm.get('timezone')?.value }}
+                  }
+                </span>
+              </div>
+            }
+
+            @if (showPlaceDropdown()) {
+              <ul 
+                id="places-listbox" 
+                class="suggestions-dropdown" 
+                role="listbox" 
+                aria-label="Location suggestions"
+              >
+                @if (isSearchingPlaces() && placeSuggestions().length === 0) {
+                  <li class="dropdown-status loading" role="status">
+                    <span class="spinner spinner-sm" aria-hidden="true"></span>
+                    <span>Searching locations...</span>
                   </li>
+                } @else if (placeSearchError()) {
+                  <li class="dropdown-status error" role="alert">
+                    <span class="status-icon" aria-hidden="true">⚠️</span>
+                    <span class="status-msg">{{ placeSearchError() }}</span>
+                  </li>
+                } @else if (placeSuggestions().length === 0 && hasSearched()) {
+                  <li class="dropdown-status empty" role="status">
+                    <span class="status-icon" aria-hidden="true">🔍</span>
+                    <span>No places found</span>
+                  </li>
+                } @else {
+                  @for (place of placeSuggestions(); track place.formatted_address; let i = $index) {
+                    <li 
+                      id="place-opt-{{ i }}"
+                      class="place-option"
+                      [class.is-highlighted]="highlightedIndex() === i"
+                      (mousedown)="$event.preventDefault(); selectPlace(place)"
+                      (mouseenter)="highlightedIndex.set(i)"
+                      role="option"
+                      [attr.aria-selected]="highlightedIndex() === i"
+                    >
+                      <span class="place-pin" aria-hidden="true">📍</span>
+                      <div class="place-details">
+                        <span class="place-name">{{ place.place_name }}</span>
+                        <span class="place-address">{{ place.formatted_address }}</span>
+                      </div>
+                    </li>
+                  }
                 }
               </ul>
             }
