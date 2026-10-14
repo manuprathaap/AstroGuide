@@ -11,6 +11,31 @@ from app.models.user import User
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 security = HTTPBearer()
+security_optional = HTTPBearer(auto_error=False)
+
+
+def get_optional_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_optional),
+    db: Session = Depends(get_db),
+) -> User | None:
+    if not credentials:
+        return None
+    try:
+        payload = jwt.decode(
+            credentials.credentials,
+            JWT_SECRET_KEY,
+            algorithms=[JWT_ALGORITHM],
+        )
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+        user = db.get(User, int(user_id))
+        if user and user.is_active:
+            return user
+    except Exception:
+        return None
+    return None
+
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),

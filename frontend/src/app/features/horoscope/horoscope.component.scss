@@ -1,0 +1,1807 @@
+.horoscope-page {
+  --horoscope-accent: var(--color-gold);
+  --horoscope-accent-hover: var(--color-gold-hover);
+  --horoscope-accent-text: var(--color-gold-text);
+  --horoscope-accent-soft: var(--bg-tag);
+  --horoscope-accent-border: var(--color-gold-border);
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: #1e293b;
+  padding-bottom: 4rem;
+}
+
+/* -------------------------------------------------------------
+   VIEW 1: FORM STYLES (Matching Images 1 & 2)
+------------------------------------------------------------- */
+.form-wrapper {
+  padding: 3rem 1rem 4rem;
+  display: flex;
+  justify-content: center;
+}
+
+.form-card {
+  max-width: 780px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  border: 1px solid #e2e8f0;
+  padding: 2.5rem 2rem;
+
+  @media (max-width: 640px) {
+    padding: 1.5rem 1rem;
+  }
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  .badge-sparkle-pill {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--horoscope-accent-text);
+    background: var(--horoscope-accent-soft);
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.5rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+  }
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.horoscope-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .row-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .row-inputs {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+  }
+}
+
+.label-with-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--horoscope-accent-text);
+    font-size: 0.8rem;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: left;
+  }
+}
+
+.form-control {
+  width: 100%;
+  height: 44px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--horoscope-accent);
+    box-shadow: 0 0 0 3px var(--color-gold-glow);
+  }
+}
+
+/* Name & Gender */
+.name-gender-inputs {
+  display: flex;
+  gap: 0.75rem;
+
+  .name-control {
+    flex: 1;
+  }
+
+  .gender-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .gender-pill-group {
+    display: flex;
+    background: #f1f5f9;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    gap: 0.25rem;
+
+    .pill-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #64748b;
+      border-radius: 0.35rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &.active {
+        background: var(--horoscope-accent);
+        color: #382505;
+      }
+    }
+  }
+}
+
+.field-error {
+  color: var(--color-error);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Date & Time */
+.datetime-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  .date-group {
+    display: flex;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 180px;
+
+    .date-sub-input {
+      flex: 0 0 60px;
+      width: 60px;
+      text-align: center;
+      padding-inline: 0.35rem;
+    }
+    .date-year-input {
+      flex: 0 0 82px;
+      width: 82px;
+      text-align: center;
+      padding-inline: 0.35rem;
+    }
+  }
+
+  .time-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    .time-sub-input {
+      flex: 0 0 60px;
+      width: 60px;
+      text-align: center;
+      padding-inline: 0.35rem;
+    }
+    .time-colon {
+      font-weight: 700;
+      color: #64748b;
+    }
+  }
+
+  .ampm-toggle {
+    display: flex;
+    background: #f1f5f9;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    gap: 0.25rem;
+
+    .ampm-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748b;
+      border-radius: 0.35rem;
+      cursor: pointer;
+
+      &.active {
+        background: var(--horoscope-accent);
+        color: #382505;
+      }
+    }
+  }
+}
+
+/* Place Autocomplete */
+.place-input-wrapper {
+  position: relative;
+  width: 100%;
+
+  .searching-spinner {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+  }
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+  z-index: 50;
+  max-height: 220px;
+  overflow-y: auto;
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    .place-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #0f172a;
+      display: block;
+    }
+    .place-sub {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+  }
+}
+
+/* Selection Grid (Matching Image 2) */
+.select-grid-row {
+  align-items: flex-start !important;
+}
+
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+
+  .grid-pill-btn {
+    height: 40px;
+    background: var(--horoscope-accent-soft);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--horoscope-accent-text);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--color-gold-highlight);
+    }
+
+    &.active {
+      background: var(--horoscope-accent);
+      color: #382505;
+    }
+  }
+}
+
+/* Phone Group */
+.phone-group {
+  .phone-code-select {
+    width: 100px;
+  }
+  .phone-number-input {
+    flex: 1;
+  }
+}
+
+/* CTA */
+.form-submit-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+
+  .no-signup-text {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .btn-show-horoscope {
+    width: 100%;
+    max-width: 380px;
+    height: 52px;
+    background: var(--horoscope-accent);
+    color: #382505;
+    border: none;
+    border-radius: 0.65rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-gold);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:hover:not(:disabled) {
+      background: var(--horoscope-accent-hover);
+      color: #382505;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-gold);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* -------------------------------------------------------------
+   VIEW 2: RESULT & REPORT STYLES (Matching Images 3, 4, 5)
+------------------------------------------------------------- */
+.result-wrapper {
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.top-nav-bar {
+  background: var(--horoscope-accent);
+  color: #382505;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--horoscope-accent-hover);
+
+  .bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .breadcrumb {
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .crumb-link {
+      opacity: 0.85;
+    }
+    .crumb-current {
+      color: #382505;
+    }
+  }
+
+  .top-bar-actions {
+    display: flex;
+    gap: 0.75rem;
+
+    .btn-action-outline {
+      background: transparent;
+      border: 1px solid rgba(56, 37, 5, 0.45);
+      color: #382505;
+      padding: 0.35rem 0.85rem;
+      border-radius: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(56, 37, 5, 0.08);
+      }
+    }
+
+    .btn-login-top-btn {
+      background: var(--bg-tag-active);
+      border: 1px solid var(--horoscope-accent-border);
+      color: var(--horoscope-accent-text);
+      font-weight: 700;
+
+      &:hover {
+        background: var(--color-gold-highlight);
+        color: var(--horoscope-accent-text);
+      }
+    }
+
+    .btn-action-primary {
+      background: var(--horoscope-accent);
+      border: none;
+      color: #382505;
+      padding: 0.35rem 1rem;
+      border-radius: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: var(--horoscope-accent-hover);
+        color: #382505;
+      }
+
+      &:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+    }
+
+    .btn-action-secondary {
+      background: rgba(56, 37, 5, 0.08);
+      border: 1px solid rgba(56, 37, 5, 0.35);
+      color: #382505;
+      padding: 0.35rem 0.85rem;
+      border-radius: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(56, 37, 5, 0.14);
+      }
+    }
+
+    .spinner-inline {
+      display: inline-block;
+      animation: spin 1s infinite linear;
+    }
+  }
+}
+
+.report-sheet {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  position: relative;
+  background: #fffefa;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* Floating Chapter Badge */
+.floating-chapter-nav {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--horoscope-accent-soft);
+  border: 1px solid var(--horoscope-accent);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  overflow: hidden;
+
+  .nav-arrow-btn {
+    border: none;
+    background: transparent;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+    color: var(--horoscope-accent-text);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-gold-highlight);
+    }
+  }
+
+  .chapter-badge {
+    background: var(--horoscope-accent);
+    color: #382505;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+}
+
+/* Person Header Section (Image 3) */
+.person-header-section {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+
+  .curved-banner-top {
+    color: var(--horoscope-accent-text);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .person-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #334155;
+    letter-spacing: 0.1em;
+    margin: 0 0 0.35rem;
+  }
+
+  .person-name {
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: #1e293b;
+    letter-spacing: 0.05em;
+    margin: 0 0 1.25rem;
+  }
+
+  .person-meta-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+
+    .meta-line {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #475569;
+      margin: 0;
+    }
+    .place-line {
+      color: #334155;
+      font-weight: 700;
+    }
+  }
+}
+
+/* Zodiac Sun & Moon Cards (Image 3) */
+.signs-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+
+  .zodiac-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .sign-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+
+    .sign-name-highlight {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--horoscope-accent-text);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+
+      &.malayalam-font {
+        font-family: inherit;
+        font-size: 1.45rem;
+      }
+    }
+
+    .zodiac-illustration-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--bg-tag-active) 0%, var(--bg-tag) 100%);
+      border: 3px solid var(--horoscope-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-gold);
+
+      .zodiac-symbol-art {
+        font-size: 3rem;
+        color: var(--horoscope-accent-text);
+      }
+    }
+  }
+}
+
+/* -------------------------------------------------------------
+   KERALA / SOUTH INDIAN 4x4 RASHI CHART (Image 4)
+------------------------------------------------------------- */
+.chart-section {
+  margin: 3rem auto;
+  max-width: 580px;
+
+  .section-badge-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--horoscope-accent-text);
+      margin: 0 0 0.35rem;
+    }
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin: 0;
+    }
+  }
+}
+
+.ornamental-chart-frame {
+  position: relative;
+  background: var(--bg-tag);
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-gold);
+}
+
+.kerala-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 85px);
+  gap: 0;
+  border: 3px solid var(--horoscope-accent);
+  background: #fffdf5;
+
+  .chart-box {
+    border: 1px solid var(--horoscope-accent-border);
+    position: relative;
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+
+    .box-sign-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--horoscope-accent-text);
+      opacity: 0.65;
+    }
+
+    .box-planets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.2rem;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      margin-bottom: auto;
+
+      .planet-pill {
+        font-size: 0.85rem;
+        font-weight: 800;
+        padding: 0.1rem 0.25rem;
+        border-radius: 0.2rem;
+
+        &.planet-ല, &.planet-Asc { color: #dc2626; } /* Lagna: Red */
+        &.planet-ര, &.planet-Su, &.planet-സ { color: #0284c7; } /* Sun (Ravi): Teal/Cyan */
+        &.planet-ച, &.planet-Mo { color: #2563eb; } /* Moon: Blue */
+        &.planet-കു, &.planet-Ma { color: #dc2626; } /* Mars: Red */
+        &.planet-ബു, &.planet-Me { color: #059669; } /* Mercury: Emerald */
+        &.planet-ഗു, &.planet-Ju { color: #ec4899; } /* Jupiter: Magenta/Pink */
+        &.planet-ശു, &.planet-Ve { color: #b91c1c; } /* Venus: Crimson */
+        &.planet-ശ, &.planet-Sa, &.planet-മ { color: #3b82f6; } /* Saturn: Slate */
+        &.planet-രാ, &.planet-Ra { color: #16a34a; } /* Rahu: Green */
+        &.planet-ശി, &.planet-Ke { color: #16a34a; } /* Ketu: Green */
+        &.planet-മാ, &.planet-Md { color: #1e293b; } /* Mandi: Slate/Black */
+      }
+    }
+  }
+
+  /* Center 2x2 merged box */
+  .chart-center-box {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    background: var(--bg-tag-active);
+    border: 2px solid var(--horoscope-accent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    text-align: center;
+
+    .center-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--horoscope-accent-text);
+      margin-bottom: 0.35rem;
+    }
+
+    .center-nakshatra {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--horoscope-accent-text);
+    }
+  }
+}
+
+/* Sacred Shloka Card (Image 4) */
+.sacred-shloka-card {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: var(--bg-tag);
+  border: 1px dashed var(--horoscope-accent);
+  border-radius: 0.75rem;
+
+  .shloka-devanagari {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--horoscope-accent-text);
+    line-height: 1.6;
+    margin: 0 0 1rem;
+    font-family: Georgia, serif;
+  }
+
+  .shloka-meaning {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.6;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+}
+
+/* -------------------------------------------------------------
+   CHAPTERS & PANCHANGA DETAILS (Image 5)
+------------------------------------------------------------- */
+.chapter-block {
+  margin-top: 2.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--horoscope-accent-border);
+  background: #ffffff;
+}
+
+.chapter-header-bar {
+  padding: 0.85rem 1.25rem;
+  background: var(--horoscope-accent);
+  color: #382505;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .ch-tag {
+    background: rgba(56, 37, 5, 0.12);
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ch-heading {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+  }
+  .ch-sub {
+    font-size: 0.85rem;
+    opacity: 0.9;
+  }
+
+  .btn-go-top {
+    margin-left: auto;
+    background: rgba(56, 37, 5, 0.08);
+    border: 1px solid rgba(56, 37, 5, 0.35);
+    color: #382505;
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(56, 37, 5, 0.14);
+    }
+  }
+}
+
+.ch-1-header,
+.ch-2-header,
+.ch-3-header,
+.ch-4-header {
+  background: var(--horoscope-accent);
+  color: #382505;
+}
+
+/* Hidden Predictions Notice Bar (Matching Reference) */
+.hidden-predictions-notice-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--bg-tag);
+  border: 1px solid var(--horoscope-accent-border);
+  border-left: 4px solid var(--horoscope-accent);
+  padding: 0.85rem 1.25rem;
+  margin: 0 0 1.25rem;
+  border-radius: 0.35rem;
+
+  .notice-text-content {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    .notice-lock-icon {
+      font-size: 1.15rem;
+    }
+
+    .notice-message {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--horoscope-accent-text);
+    }
+  }
+
+  .btn-notice-buy {
+    background: var(--horoscope-accent);
+    color: #382505;
+    border: none;
+    padding: 0.4rem 0.95rem;
+    border-radius: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--horoscope-accent-hover);
+      color: #382505;
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Sacred Chart Information Badges */
+.sacred-chart-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+
+  .chart-summary-badge-card {
+    background: var(--bg-tag);
+    border: 1px solid var(--horoscope-accent-border);
+    border-radius: 0.5rem;
+    padding: 1.15rem;
+
+    .badge-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--horoscope-accent-border);
+      padding-bottom: 0.4rem;
+
+      .badge-bullet {
+        color: var(--horoscope-accent-text);
+      }
+
+      .badge-card-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--horoscope-accent-text);
+        margin: 0;
+      }
+    }
+
+    .badge-card-details {
+      .badge-row {
+        font-size: 0.9rem;
+        color: #475569;
+        margin: 0.35rem 0;
+        line-height: 1.5;
+
+        strong {
+          color: #1e293b;
+        }
+
+        &.highlight-dasha {
+          color: var(--horoscope-accent-text);
+          font-weight: 700;
+          background: var(--bg-tag-active);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+/* Buy Full Horoscope Upgrade Callout */
+.buy-full-horoscope-callout {
+  margin-top: 2.5rem;
+  background: linear-gradient(135deg, var(--bg-tag) 0%, var(--bg-tag-active) 100%);
+  border: 2px dashed var(--horoscope-accent);
+  border-radius: 0.75rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-gold);
+
+  .callout-sparkle-pill {
+    display: inline-block;
+    background: var(--bg-tag-active);
+    border: 1px solid var(--horoscope-accent-border);
+    color: var(--horoscope-accent-text);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.75rem;
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
+  }
+
+  .callout-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--horoscope-accent-text);
+    margin: 0 0 0.5rem;
+  }
+
+  .callout-sub {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0 0 1rem;
+    font-weight: 600;
+  }
+
+  .callout-perks-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    margin: 0 0 1.35rem;
+
+    .perk-pill {
+      background: #ffffff;
+      border: 1px solid var(--horoscope-accent-border);
+      color: var(--horoscope-accent-text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  .btn-know-more {
+    background: var(--horoscope-accent);
+    color: #382505;
+    border: none;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow-gold);
+    transition: all 0.2s ease-in-out;
+
+    .lock-icon {
+      font-size: 1.05rem;
+    }
+
+    &:hover {
+      background: var(--horoscope-accent-hover);
+      color: #382505;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-gold);
+    }
+  }
+
+  .callout-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+  }
+
+  .btn-guidance-cta {
+    background: var(--horoscope-accent);
+    color: #382505;
+    box-shadow: var(--shadow-gold);
+
+    &:hover {
+      background: var(--horoscope-accent-hover);
+      color: #382505;
+      box-shadow: var(--shadow-gold);
+    }
+  }
+}
+
+/* End of Report Official Attribution Block */
+.end-of-report-block {
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+
+  .end-tag-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .end-line {
+      flex: 1;
+      height: 1px;
+      background: #cbd5e1;
+      max-width: 120px;
+    }
+
+    .end-tag-pill {
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      padding: 0.25rem 0.85rem;
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+  }
+
+  .organization-info {
+    margin-bottom: 1.5rem;
+
+    .wishes-line {
+      font-size: 1rem;
+      color: #1e293b;
+      margin: 0 0 0.35rem;
+
+      strong {
+        color: var(--horoscope-accent-text);
+      }
+    }
+
+    .address-line {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin: 0 0 0.35rem;
+    }
+
+    .version-stamp {
+      font-size: 0.8rem;
+      font-family: monospace;
+      color: #94a3b8;
+      margin: 0;
+    }
+  }
+
+  .report-disclaimer-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    max-width: 680px;
+    margin: 0 auto;
+
+    .disclaimer-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #475569;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .disclaimer-text {
+      font-size: 0.82rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+}
+
+.chapter-content-card {
+  padding: 1.5rem;
+}
+
+/* Data Table */
+.astro-data-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+    text-align: left;
+  }
+
+  .table-label {
+    width: 35%;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  .table-val {
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  thead th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+}
+
+/* Panchanga List Items (Image 5) */
+.panchanga-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .panchanga-row-item {
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 0.85rem;
+
+    .item-header-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.65rem;
+
+      .bullet-dot {
+        color: var(--horoscope-accent-text);
+      }
+      .item-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      .item-subtitle {
+        font-size: 0.95rem;
+        color: var(--horoscope-accent-text);
+        font-weight: 700;
+        margin-left: 0.5rem;
+      }
+    }
+
+    .item-description-text {
+      font-size: 0.9rem;
+      color: #475569;
+      line-height: 1.5;
+      margin: 0.35rem 0 0 1.5rem;
+    }
+  }
+}
+
+.planetary-table-container {
+  margin-top: 1.5rem;
+
+  .sub-table-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--horoscope-accent-text);
+    margin-bottom: 0.75rem;
+  }
+
+  .table-scroll-wrapper {
+    overflow-x: auto;
+  }
+
+  .graha-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .abbr-circle {
+      width: 26px;
+      height: 26px;
+      background: var(--bg-tag-active);
+      border: 1px solid var(--horoscope-accent);
+      color: var(--horoscope-accent-text);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+  }
+}
+
+/* Bhava Grid */
+.bhava-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+
+  .bhava-card {
+    background: var(--bg-tag);
+    border: 1px solid var(--horoscope-accent-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+
+    .bhava-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--horoscope-accent-text);
+      margin: 0 0 0.25rem;
+    }
+    .bhava-subtitle {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--horoscope-accent-text);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .bhava-description {
+      font-size: 0.85rem;
+      color: #475569;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
+/* Dasha Card */
+.dasha-info-card {
+  .dasha-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--horoscope-accent-text);
+    margin: 0 0 0.25rem;
+  }
+  .dasha-sub {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--horoscope-accent-text);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .dasha-desc {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+/* Decorative divider between report sections */
+.chapter-divider {
+  height: 1px;
+  margin: 1.5rem 0;
+  background: linear-gradient(90deg, transparent, var(--horoscope-accent), transparent);
+}
+
+/* Arrow Ribbon Header (Images 1, 2, 3, 4, 5) */
+.arrow-ribbon {
+  display: inline-block;
+  background: var(--horoscope-accent);
+  color: #382505;
+  padding: 0.45rem 2rem 0.45rem 1.15rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  clip-path: polygon(0% 0%, calc(100% - 18px) 0%, 100% 50%, calc(100% - 18px) 100%, 0% 100%);
+  margin-bottom: 0.85rem;
+  box-shadow: var(--shadow-gold);
+}
+
+/* Subtitle with Red Accent Bar (Images 1, 2, 3, 4) */
+.accent-subtitle-bar {
+  border-left: 4px solid var(--horoscope-accent);
+  padding-left: 0.75rem;
+  margin: 0.75rem 0 1rem;
+
+  .accent-text {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--horoscope-accent-text);
+    line-height: 1.5;
+  }
+}
+
+/* Vedic Sunrise Meta Note (Image 1) */
+.meta-note-paragraph {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.7;
+  margin-bottom: 0.85rem;
+}
+
+/* Main Prediction Paragraphs (Images 1, 2, 3, 4) */
+.prediction-body-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #334155;
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+/* Gray Significance Callout Box (Images 3 & 4) */
+.significance-callout-box {
+  background: #f8fafc;
+  border-left: 3px solid #64748b;
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
+
+  .significance-text {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+/* Chapter 4 Clock Scope Banner (Image 5) */
+.age-scope-banner {
+  background: #475569;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+
+  .clock-icon {
+    font-size: 1.25rem;
+  }
+  .scope-text {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.career-timing-section {
+  margin-top: 1rem;
+
+  .career-significance-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #334155;
+    margin: 1rem 0;
+  }
+
+  .career-subheading-accent {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--horoscope-accent-text);
+    margin: 1.5rem 0 1rem;
+  }
+}
+
+/* Career Timeline Cards (Image 5) */
+.timeline-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.career-timeline-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.15rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid var(--horoscope-accent-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
+
+  &:hover {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .card-left-icon {
+    font-size: 2.25rem;
+  }
+
+  .card-center-info {
+    flex: 1;
+
+    .status-badge-text {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    .age-range-text {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .duration-text {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .progress-bar-track {
+      height: 7px;
+      background: #f1f5f9;
+      border-radius: 9999px;
+      overflow: hidden;
+      max-width: 160px;
+
+      .progress-bar-fill {
+        height: 100%;
+        border-radius: 9999px;
+      }
+    }
+  }
+
+  .card-right-dates {
+    text-align: right;
+    min-width: 150px;
+
+    .date-range-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #475569;
+      line-height: 1.5;
+      display: block;
+    }
+  }
+
+  /* Status Colors */
+  &.status-low {
+    .card-left-icon { color: var(--horoscope-accent-text); }
+    .status-badge-text { color: var(--horoscope-accent-text); }
+    .progress-bar-fill { background: var(--horoscope-accent); }
+  }
+
+  &.status-favorable {
+    .card-left-icon { color: var(--horoscope-accent-text); }
+    .status-badge-text { color: var(--horoscope-accent-text); }
+    .progress-bar-fill { background: var(--horoscope-accent); }
+  }
+
+  &.status-neutral {
+    .card-left-icon { color: #64748b; }
+    .status-badge-text { color: #64748b; }
+    .progress-bar-fill { background: #64748b; }
+  }
+}
+
+/* -------------------------------------------------------------
+   TABLE OF PREDICTIONS SUMMARY CARDS
+------------------------------------------------------------- */
+.predictions-summary-card-block {
+  margin: 2.5rem 0 3rem;
+  background: var(--bg-tag);
+  border: 2px solid var(--horoscope-accent-border);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-gold);
+
+  .predictions-summary-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .pred-ribbon-tag {
+      display: inline-block;
+      padding: 0.25rem 0.85rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--horoscope-accent-text);
+      background: var(--bg-tag-active);
+      border-radius: 9999px;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .pred-summary-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--horoscope-accent-text);
+      letter-spacing: 0.05em;
+      margin: 0 0 0.5rem;
+    }
+
+    .pred-summary-subtitle {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #475569;
+      margin: 0;
+    }
+  }
+
+  .predictions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .prediction-card {
+    background: #ffffff;
+    border: 1px solid var(--horoscope-accent-border);
+    border-radius: 0.85rem;
+    padding: 1.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-gold);
+    }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed var(--horoscope-accent-border);
+      padding-bottom: 0.5rem;
+
+      .pred-category-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--horoscope-accent-text);
+      }
+
+      .pred-count-pill {
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #ffffff;
+        background: var(--horoscope-accent);
+        color: #382505;
+        min-width: 42px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+        padding: 0 0.6rem;
+        box-shadow: var(--shadow-gold);
+      }
+    }
+
+    .pred-description-text {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #334155;
+      margin: 0;
+    }
+  }
+}
+
+/* -------------------------------------------------------------
+   CHAPTER 1: 4 SUB-TABLES GRID
+------------------------------------------------------------- */
+.sub-tables-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 840px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sub-table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+
+    .sub-table-header-bar {
+      background: linear-gradient(90deg, var(--bg-tag-active) 0%, var(--bg-tag) 100%);
+      border-bottom: 2px solid var(--horoscope-accent);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .sub-table-bullet {
+        color: var(--horoscope-accent-text);
+        font-size: 0.95rem;
+      }
+
+      .sub-table-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--horoscope-accent-text);
+        margin: 0;
+      }
+    }
+
+    .sub-astro-table {
+      margin: 0;
+      border: none;
+
+      th {
+        width: 45%;
+        background: #f8fafc;
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 700;
+        padding: 0.65rem 0.85rem;
+      }
+
+      td {
+        font-size: 0.9rem;
+        color: #0f172a;
+        font-weight: 600;
+        padding: 0.65rem 0.85rem;
+      }
+
+      .multiline-table-val {
+        white-space: pre-line;
+        line-height: 1.5;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+/* -------------------------------------------------------------
+   CHAPTER 2: TRADITIONAL PREAMBLE CARD (ശ്രീ...)
+------------------------------------------------------------- */
+.traditional-preamble-card {
+  background: var(--bg-tag);
+  border: 2px solid var(--horoscope-accent-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  position: relative;
+  text-align: center;
+  box-shadow: var(--shadow-gold);
+
+  .preamble-lotus-top {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--horoscope-accent-text);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.75rem;
+  }
+
+  .preamble-text {
+    font-size: 0.98rem;
+    line-height: 1.85;
+    color: #451a03;
+    font-weight: 600;
+    margin: 0;
+    text-align: justify;
+  }
+}
+
+.multiline-body {
+  white-space: pre-line;
+}
+
+.report-print-footer {
+  display: none;
+}
+
+/* -------------------------------------------------------------
+   PRINT & PDF DOWNLOAD STYLING
+------------------------------------------------------------- */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .no-print, app-navbar, app-footer {
+    display: none !important;
+  }
+
+  .horoscope-page {
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .report-sheet {
+    max-width: 100% !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  .chapter-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-top: 1.5rem !important;
+  }
+
+  .chart-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .report-print-footer {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #cbd5e1;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+}

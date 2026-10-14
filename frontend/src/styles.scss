@@ -521,4 +521,70 @@ p {
   to { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
 }
 
+/* ============================================================
+   GLOBAL PRINT & PDF EXPORT OPTIMIZATIONS
+   ============================================================ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  app-navbar,
+  app-footer,
+  .no-print,
+  .floating-chapter-nav,
+  .top-nav-bar {
+    display: none !important;
+  }
+
+  .horoscope-page {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .report-sheet {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+  }
+
+  .chapter-block,
+  .chart-section,
+  .traditional-preamble-card,
+  .sub-table-card,
+  .predictions-summary-card-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .report-print-footer {
+    display: block !important;
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #cbd5e1;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+}
+
 

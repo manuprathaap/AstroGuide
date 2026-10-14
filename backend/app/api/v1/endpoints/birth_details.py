@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.config import GEOAPIFY_API_KEY
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_optional_current_user
 from app.database.connection import get_db
 from app.models.birth_detail import BirthDetail
 from app.models.user import User
@@ -28,7 +28,7 @@ router = APIRouter(
 )
 def search_birth_places(
     query: str = Query(..., min_length=2, max_length=100),
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
     if not GEOAPIFY_API_KEY:
         raise HTTPException(

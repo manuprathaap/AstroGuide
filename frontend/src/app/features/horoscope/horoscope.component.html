@@ -1,0 +1,1079 @@
+<app-navbar></app-navbar>
+
+<main class="horoscope-page">
+  <!-- View 1: Input Form (Matching User Reference Images 1 & 2) -->
+  @if (activeView() === 'form') {
+    <div class="form-wrapper">
+      <div class="astro-container form-card">
+        <div class="form-header">
+          <div class="badge-sparkle-pill">✦ സൗജന്യ ജാതകം ✦</div>
+          <h1 class="form-title">Create Your Vedic Horoscope</h1>
+          <p class="form-subtitle">Enter your birth details to generate your authentic Kerala Rashi & Navamsha charts</p>
+        </div>
+
+        @if (error()) {
+          <div class="alert-error" role="alert">
+            <span class="alert-icon">⚠️</span>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="horoscope-form">
+          <!-- Name & Gender Row -->
+          <div class="form-row">
+            <label class="row-label">NAME & GENDER</label>
+            <div class="row-inputs name-gender-inputs">
+              <input
+                type="text"
+                formControlName="name"
+                class="form-control name-control"
+                placeholder="Your full name here"
+                id="horoscope-name-input"
+              />
+              <div class="gender-options">
+                <div
+                  class="gender-pill-group"
+                  role="group"
+                  aria-label="Choose gender"
+                  aria-required="true"
+                  [attr.aria-invalid]="genderSelectionError()"
+                  [attr.aria-describedby]="genderSelectionError() ? 'gender-selection-error' : null"
+                >
+                  <button
+                    type="button"
+                    class="pill-btn"
+                    [class.active]="selectedGender() === 'Male'"
+                    [attr.aria-pressed]="selectedGender() === 'Male'"
+                    (click)="setGender('Male')"
+                    id="gender-male-btn"
+                  >
+                    Male
+                  </button>
+                  <button
+                    type="button"
+                    class="pill-btn"
+                    [class.active]="selectedGender() === 'Female'"
+                    [attr.aria-pressed]="selectedGender() === 'Female'"
+                    (click)="setGender('Female')"
+                    id="gender-female-btn"
+                  >
+                    Female
+                  </button>
+                </div>
+                @if (genderSelectionError()) {
+                  <span class="field-error" id="gender-selection-error" role="alert">Please select your gender.</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Date & Time of Birth Row -->
+          <div class="form-row">
+            <div class="label-with-link">
+              <label class="row-label">DATE & TIME OF BIRTH</label>
+              <button type="button" class="link-btn" (click)="setNoBirthTime()">I don't know my Birth time</button>
+            </div>
+            <div class="row-inputs datetime-inputs">
+              <div class="date-group">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  formControlName="dob_day"
+                  class="form-control date-sub-input"
+                  placeholder="DD"
+                  maxlength="2"
+                  aria-label="Birth Day"
+                />
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  formControlName="dob_month"
+                  class="form-control date-sub-input"
+                  placeholder="MM"
+                  maxlength="2"
+                  aria-label="Birth Month"
+                />
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  formControlName="dob_year"
+                  class="form-control date-year-input"
+                  placeholder="YYYY"
+                  maxlength="4"
+                  aria-label="Birth Year"
+                />
+              </div>
+
+              <div class="time-group">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  formControlName="tob_hour"
+                  class="form-control time-sub-input"
+                  placeholder="HH"
+                  maxlength="2"
+                  aria-label="Birth Hour"
+                />
+                <span class="time-colon">:</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  formControlName="tob_minute"
+                  class="form-control time-sub-input"
+                  placeholder="MM"
+                  maxlength="2"
+                  aria-label="Birth Minute"
+                />
+                <div class="ampm-toggle">
+                  <button
+                    type="button"
+                    class="ampm-btn"
+                    [class.active]="selectedAmPm() === 'AM'"
+                    (click)="setAmPm('AM')"
+                  >
+                    AM
+                  </button>
+                  <button
+                    type="button"
+                    class="ampm-btn"
+                    [class.active]="selectedAmPm() === 'PM'"
+                    (click)="setAmPm('PM')"
+                  >
+                    PM
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Birth Place Row -->
+          <div class="form-row place-autocomplete-container">
+            <label class="row-label" for="horoscope-place-input">BIRTH PLACE</label>
+            <div class="row-inputs place-input-wrapper">
+              <input
+                type="text"
+                formControlName="place_of_birth"
+                class="form-control place-control"
+                placeholder="Start typing, then choose a place from list"
+                (input)="onPlaceInput($event)"
+                (focus)="placeSuggestions().length > 0 && showPlaceDropdown.set(true)"
+                id="horoscope-place-input"
+                autocomplete="off"
+              />
+              @if (isSearchingPlaces()) {
+                <span class="searching-spinner" aria-hidden="true">⏳</span>
+              }
+
+              <!-- Autocomplete suggestions dropdown -->
+              @if (showPlaceDropdown() && placeSuggestions().length > 0) {
+                <ul class="suggestions-dropdown" role="listbox">
+                  @for (place of placeSuggestions(); track place.formatted_address; let idx = $index) {
+                    <li
+                      class="suggestion-item"
+                      role="option"
+                      [attr.aria-selected]="highlightedIndex() === idx"
+                      (click)="selectPlace(place)"
+                    >
+                      <span class="place-icon" aria-hidden="true">📍</span>
+                      <div class="place-details">
+                        <span class="place-name">{{ place.place_name }}</span>
+                        <span class="place-sub">{{ place.formatted_address }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+
+          <!-- Choose a Report Language (Selector Grid as in Image 2) -->
+          <div class="form-row select-grid-row">
+            <label class="row-label">CHOOSE A REPORT LANGUAGE</label>
+            <div class="selection-grid">
+              @for (lang of languages; track lang.id) {
+                <button
+                  type="button"
+                  class="grid-pill-btn"
+                  [class.active]="selectedLanguage() === lang.id"
+                  (click)="setLanguage(lang.id)"
+                >
+                  {{ lang.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Choose a Chart Style (Selector Grid as in Image 2) -->
+          <div class="form-row select-grid-row">
+            <label class="row-label">CHOOSE A CHART STYLE</label>
+            <div class="selection-grid chart-style-grid">
+              @for (style of chartStyles; track style.id) {
+                <button
+                  type="button"
+                  class="grid-pill-btn"
+                  [class.active]="selectedChartStyle() === style.id"
+                  (click)="setChartStyle(style.id)"
+                >
+                  {{ style.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Email & Phone (Optional) -->
+          <div class="form-row">
+            <label class="row-label" for="horoscope-email-input">EMAIL</label>
+            <div class="row-inputs">
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control"
+                placeholder="Your email here (optional)"
+                id="horoscope-email-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="row-label" for="horoscope-phone-input">PHONE NUMBER</label>
+            <div class="row-inputs phone-group">
+              <select formControlName="phone_code" class="form-control phone-code-select" aria-label="Country Code">
+                <option value="+91">IN +91</option>
+                <option value="+1">US +1</option>
+                <option value="+44">UK +44</option>
+                <option value="+971">AE +971</option>
+              </select>
+              <input
+                type="tel"
+                formControlName="phone_number"
+                class="form-control phone-number-input"
+                placeholder="Your phone number here (optional)"
+                id="horoscope-phone-input"
+              />
+            </div>
+          </div>
+
+          <!-- Submit CTA -->
+          <div class="form-submit-container">
+            <p class="no-signup-text">No signup or credit card required</p>
+            <button
+              type="submit"
+              class="btn-show-horoscope"
+              [disabled]="isGenerating()"
+              id="show-horoscope-btn"
+            >
+              @if (isGenerating()) {
+                <span class="btn-spinner" aria-hidden="true"></span>
+                <span>Calculating Charts...</span>
+              } @else {
+                <span>Show my horoscope</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- View 2: Result View (Matching User Reference Images 3, 4, 5) -->
+  @if (activeView() === 'result' && horoscope()) {
+    <div class="result-wrapper" id="printable-horoscope-report">
+      <!-- Breadcrumb & Top Bar -->
+      <div class="top-nav-bar no-print">
+        <div class="astro-container bar-content">
+          <div class="breadcrumb">
+            <span class="crumb-link">Introduction</span>
+            <span class="crumb-separator">»</span>
+            <span class="crumb-current">ജാതക സംഗ്രഹം</span>
+          </div>
+
+          <div class="top-bar-actions">
+            @if (!isAuthenticated()) {
+              <button type="button" class="btn-action-outline btn-login-top-btn" (click)="loginToUnlock()" id="top-bar-login-btn" title="Sign in to save this horoscope and unlock all predictions">
+                <span>🔒 Sign In</span>
+              </button>
+            }
+            <button type="button" class="btn-action-outline" (click)="showForm()" id="edit-horoscope-btn" title="Edit birth details with current data preserved">
+              <span>✎ Edit Details</span>
+            </button>
+            <button type="button" class="btn-action-outline" (click)="createNewHoroscope()" id="new-horoscope-btn" title="Clear data and enter a new horoscope">
+              <span>+ New Horoscope</span>
+            </button>
+            <button type="button" class="btn-action-primary" (click)="downloadPdf()" [disabled]="isDownloadingPdf()" id="download-horoscope-btn" title="Generate and download PDF file">
+              @if (isDownloadingPdf()) {
+                <span class="spinner-inline">⏳</span>
+                <span>Generating PDF...</span>
+              } @else {
+                <span>📥 Download PDF</span>
+              }
+            </button>
+            <button type="button" class="btn-action-secondary" (click)="printReport()" id="print-horoscope-btn" title="Open print dialog">
+              <span>🖨️ Print</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Horoscope Paper -->
+      <div class="astro-container report-sheet">
+        <!-- Floating Chapter Jump Navigation (Image 4 & 5) -->
+        <aside class="floating-chapter-nav no-print" aria-label="Chapters Quick Jump">
+          <button type="button" class="nav-arrow-btn" (click)="prevChapter()" title="Previous Chapter" aria-label="Previous Chapter">
+            ▲
+          </button>
+          <div class="chapter-badge">
+            <span class="ch-text">Ch {{ activeChapter() }}</span>
+          </div>
+          <button type="button" class="nav-arrow-btn" (click)="nextChapter()" title="Next Chapter" aria-label="Next Chapter">
+            ▼
+          </button>
+        </aside>
+
+        <!-- Person Summary Header (Image 3) -->
+        <header class="person-header-section">
+          <div class="curved-banner-top">
+            <span class="banner-ornament">✧ ✦ ✧</span>
+          </div>
+
+          <h1 class="person-title">HOROSCOPE OF</h1>
+          <h2 class="person-name">{{ horoscope()!.personal_info.name | uppercase }}</h2>
+
+          <div class="person-meta-details">
+            <p class="meta-line">
+              {{ horoscope()!.personal_info.gender_display || horoscope()!.personal_info.gender_malayalam }}, {{ horoscope()!.personal_info.age_display || (horoscope()!.personal_info.age + ' വയസ്സ്') }}
+            </p>
+            <p class="meta-line">
+              {{ horoscope()!.personal_info.date_of_birth_formatted }}
+            </p>
+            <p class="meta-line">
+              {{ horoscope()!.personal_info.day_of_week_display || horoscope()!.personal_info.day_of_week_malayalam }}, {{ horoscope()!.personal_info.time_of_birth_formatted }}
+            </p>
+            <p class="meta-line place-line">
+              {{ horoscope()!.personal_info.place_of_birth }}
+            </p>
+          </div>
+
+          <!-- Sun Sign & Moon Sign Cards (Image 3) -->
+          <div class="signs-container">
+            <!-- Sun Sign -->
+            <div class="zodiac-card sun-sign-card">
+              <span class="sign-label">{{ horoscope()!.sun_sign.label || 'Your sun sign is' }}</span>
+              <span class="sign-name-highlight">{{ horoscope()!.sun_sign.sign_display || horoscope()!.sun_sign.name }}</span>
+              <div class="zodiac-illustration-circle">
+                <span class="zodiac-symbol-art">♒</span>
+              </div>
+            </div>
+
+            <!-- Moon Sign -->
+            <div class="zodiac-card moon-sign-card">
+              <span class="sign-label">{{ horoscope()!.moon_sign.label || 'Your moon sign is' }}</span>
+              <span class="sign-name-highlight malayalam-font">{{ horoscope()!.moon_sign.sign_display || horoscope()!.moon_sign.malayalam }}</span>
+              <div class="zodiac-illustration-circle">
+                <span class="zodiac-symbol-art">♓</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Traditional Sacred Rashi Chart (Image 4) -->
+        <section class="chart-section" id="rashi-chart-container">
+          <div class="ornamental-chart-frame">
+            <div class="chart-lotus-top"></div>
+
+            <!-- South Indian / Kerala 4x4 Grid -->
+            <div class="kerala-chart-grid">
+              <!-- Row 1: Boxes 0 (Pisces), 1 (Aries), 2 (Taurus), 3 (Gemini) -->
+              <div class="chart-box box-0">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[0].sign_display || horoscope()!.rashi_chart.boxes[0].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[0].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-1">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[1].sign_display || horoscope()!.rashi_chart.boxes[1].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[1].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-2">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[2].sign_display || horoscope()!.rashi_chart.boxes[2].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[2].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-3">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[3].sign_display || horoscope()!.rashi_chart.boxes[3].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[3].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 2: Box 11 (Aquarius), Center Box (2x2), Box 4 (Cancer) -->
+              <div class="chart-box box-11">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[11].sign_display || horoscope()!.rashi_chart.boxes[11].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[11].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-center-box">
+                <span class="center-title">{{ horoscope()!.rashi_chart.center_title }}</span>
+                <span class="center-nakshatra">{{ horoscope()!.rashi_chart.center_subtitle }}</span>
+              </div>
+
+              <div class="chart-box box-4">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[4].sign_display || horoscope()!.rashi_chart.boxes[4].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[4].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 3: Box 10 (Capricorn), Center Box continuation, Box 5 (Leo) -->
+              <div class="chart-box box-10">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[10].sign_display || horoscope()!.rashi_chart.boxes[10].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[10].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-5">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[5].sign_display || horoscope()!.rashi_chart.boxes[5].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[5].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 4: Boxes 9 (Sagittarius), 8 (Scorpio), 7 (Libra), 6 (Virgo) -->
+              <div class="chart-box box-9">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[9].sign_display || horoscope()!.rashi_chart.boxes[9].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[9].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-8">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[8].sign_display || horoscope()!.rashi_chart.boxes[8].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[8].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-7">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[7].sign_display || horoscope()!.rashi_chart.boxes[7].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[7].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="chart-box box-6">
+                <span class="box-sign-tag">{{ horoscope()!.rashi_chart.boxes[6].sign_display || horoscope()!.rashi_chart.boxes[6].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.rashi_chart.boxes[6].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-lotus-bottom"></div>
+          </div>
+
+          <!-- Sacred Sanskrit Shloka & Malayalam Meaning (Image 4) -->
+          <div class="sacred-shloka-card">
+            <h3 class="shloka-devanagari">
+              जननी जन्म सौख्यानाम<br/>
+              वर्धनी कुल संपदाम<br/>
+              पदवी पूर्व पुण्यानाम<br/>
+              लिख्यते जन्म पत्रिका
+            </h3>
+
+            <p class="shloka-meaning">
+              {{ horoscope()!.shloka.meaning }}
+            </p>
+          </div>
+
+          <!-- TABLE OF PREDICTIONS (Matching Reference) -->
+          @if (horoscope()!.table_of_predictions) {
+            <div class="predictions-summary-card-block" id="predictions-summary">
+              <div class="predictions-summary-header">
+                <div class="pred-ribbon-tag">PREDICTIONS OVERVIEW</div>
+                <h3 class="pred-summary-title">{{ horoscope()!.table_of_predictions!.header }}</h3>
+                <p class="pred-summary-subtitle">{{ horoscope()!.table_of_predictions!.summary_text }}</p>
+              </div>
+
+              <div class="predictions-grid">
+                @for (card of horoscope()!.table_of_predictions!.cards; track card.category) {
+                  <div class="prediction-card card-{{ card.category | lowercase }}">
+                    <div class="card-top-row">
+                      <span class="pred-category-title">{{ card.category_malayalam }}</span>
+                      <span class="pred-count-pill">{{ card.count }}</span>
+                    </div>
+                    <p class="pred-description-text">{{ card.description }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+
+        <!-- Navamsha Chart (D-9) -->
+        <section class="chart-section navamsha-section" id="navamsha-chart-container">
+          <div class="section-badge-header">
+            <h2 class="section-title">{{ horoscope()!.navamsha_chart.center_title }}</h2>
+            <p class="section-subtitle">{{ horoscope()!.navamsha_chart.center_subtitle }}</p>
+          </div>
+
+          <div class="ornamental-chart-frame">
+            <div class="kerala-chart-grid">
+              <!-- Row 1 -->
+              <div class="chart-box box-0">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[0].sign_display || horoscope()!.navamsha_chart.boxes[0].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[0].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-1">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[1].sign_display || horoscope()!.navamsha_chart.boxes[1].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[1].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-2">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[2].sign_display || horoscope()!.navamsha_chart.boxes[2].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[2].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-3">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[3].sign_display || horoscope()!.navamsha_chart.boxes[3].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[3].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 2 -->
+              <div class="chart-box box-11">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[11].sign_display || horoscope()!.navamsha_chart.boxes[11].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[11].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-center-box">
+                <span class="center-title">{{ horoscope()!.navamsha_chart.center_title }}</span>
+                <span class="center-nakshatra">{{ horoscope()!.navamsha_chart.center_subtitle }}</span>
+              </div>
+              <div class="chart-box box-4">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[4].sign_display || horoscope()!.navamsha_chart.boxes[4].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[4].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 3 -->
+              <div class="chart-box box-10">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[10].sign_display || horoscope()!.navamsha_chart.boxes[10].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[10].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-5">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[5].sign_display || horoscope()!.navamsha_chart.boxes[5].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[5].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Row 4 -->
+              <div class="chart-box box-9">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[9].sign_display || horoscope()!.navamsha_chart.boxes[9].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[9].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-8">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[8].sign_display || horoscope()!.navamsha_chart.boxes[8].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[8].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-7">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[7].sign_display || horoscope()!.navamsha_chart.boxes[7].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[7].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-box box-6">
+                <span class="box-sign-tag">{{ horoscope()!.navamsha_chart.boxes[6].sign_display || horoscope()!.navamsha_chart.boxes[6].sign_malayalam }}</span>
+                <div class="box-planets">
+                  @for (p of horoscope()!.navamsha_chart.boxes[6].planets; track p.name) {
+                    <span class="planet-pill planet-{{ p.abbreviation }}">{{ p.abbreviation }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chapter 1: ജനന വിശദാംശങ്ങൾ -->
+        <section class="chapter-block" id="chapter-1">
+          <div class="chapter-header-bar ch-1-header">
+            <span class="ch-tag">Chapter 1 »</span>
+            <div class="ch-titles">
+              <h2 class="ch-heading">{{ horoscope()!.chapters[0].title }}</h2>
+              <span class="ch-sub">{{ horoscope()!.chapters[0].subtitle }}</span>
+            </div>
+            <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
+              <span>▲ Go to top</span>
+            </button>
+          </div>
+
+          <!-- Hidden Predictions Notice Bar (Matching User Reference) -->
+          <div class="hidden-predictions-notice-bar no-print">
+            <div class="notice-text-content">
+              <span class="notice-lock-icon">🔒</span>
+              <span class="notice-message">Some of the important predictions in this section are hidden. Buy Full Horoscope to read those.</span>
+            </div>
+            <button type="button" class="btn-notice-buy" (click)="scrollToBuyOffer()">
+              <span>Buy now</span>
+              <span class="arrow-right-icon">❯</span>
+            </button>
+          </div>
+
+          <div class="chapter-content-card">
+            @if (horoscope()!.chapters[0].items[0]?.sub_tables) {
+              <div class="sub-tables-grid">
+                @for (subTable of horoscope()!.chapters[0].items[0].sub_tables; track subTable.title) {
+                  <div class="sub-table-card">
+                    <div class="sub-table-header-bar">
+                      <span class="sub-table-bullet">❖</span>
+                      <h3 class="sub-table-title">{{ subTable.title }}</h3>
+                    </div>
+                    <div class="details-table-wrapper">
+                      <table class="astro-data-table sub-astro-table">
+                        <tbody>
+                          @for (row of subTable.rows; track row.label) {
+                            <tr>
+                              <th class="table-label">{{ row.label }}</th>
+                              <td class="table-val" [class.multiline-table-val]="row.value.includes('\n')">{{ row.value }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="details-table-wrapper">
+                <table class="astro-data-table">
+                  <tbody>
+                    @for (item of horoscope()!.chapters[0].items; track item.title) {
+                      <tr>
+                        <th class="table-label">{{ item.title }}</th>
+                        <td class="table-val">{{ item.value }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Chapter 2: സ്വഭാവ സവിശേഷതകൾ (Panchanga Phalams - Matching User Images 1 & 2) -->
+        <section class="chapter-block" id="chapter-2">
+          <div class="chapter-header-bar ch-2-header">
+            <span class="ch-tag">Chapter 2 »</span>
+            <div class="ch-titles">
+              <h2 class="ch-heading">താങ്കളുടെ സ്വഭാവ സവിശേഷതകൾ</h2>
+              <span class="ch-sub">പഞ്ചാംഗ ഫലങ്ങൾ</span>
+            </div>
+            <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
+              <span>▲ Go to top</span>
+            </button>
+          </div>
+
+          <!-- Hidden Predictions Notice Bar (Matching User Reference) -->
+          <div class="hidden-predictions-notice-bar no-print">
+            <div class="notice-text-content">
+              <span class="notice-lock-icon">🔒</span>
+              <span class="notice-message">Some of the important predictions in this section are hidden. Buy Full Horoscope to read those.</span>
+            </div>
+            <button type="button" class="btn-notice-buy" (click)="scrollToBuyOffer()">
+              <span>Buy now</span>
+              <span class="arrow-right-icon">❯</span>
+            </button>
+          </div>
+
+          <div class="chapter-content-card">
+            @if (horoscope()!.chapters[1].preamble) {
+              <div class="traditional-preamble-card">
+                <div class="preamble-lotus-top">✦ ശ്രീ ✦</div>
+                <p class="preamble-text">{{ horoscope()!.chapters[1].preamble }}</p>
+              </div>
+            }
+
+            <div class="chapter-divider" aria-hidden="true"></div>
+
+            @for (item of horoscope()!.chapters[1].items; track item.title; let idx = $index) {
+              <div class="panchanga-section-item">
+                <!-- Ribbon Header -->
+                @if (item.ribbon_title) {
+                  <div class="arrow-ribbon">
+                    <span class="ribbon-text">{{ item.ribbon_title }}</span>
+                  </div>
+                }
+
+                <!-- Subtitle with Red Accent Bar -->
+                @if (item.subtitle_accent) {
+                  <div class="accent-subtitle-bar">
+                    <span class="accent-text">{{ item.subtitle_accent }}</span>
+                  </div>
+                }
+
+                <!-- Vedic Sunrise Meta Note (If applicable, Image 1) -->
+                @if (item.meta_note) {
+                  <p class="meta-note-paragraph">
+                    {{ item.meta_note }}
+                  </p>
+                }
+
+                <!-- Main Prediction Paragraphs -->
+                @if (item.prediction_text) {
+                  <p class="prediction-body-text">
+                    {{ item.prediction_text }}
+                  </p>
+                }
+
+                @if (idx < horoscope()!.chapters[1].items.length - 1) {
+                  <div class="chapter-divider" aria-hidden="true"></div>
+                }
+              </div>
+            }
+
+            <!-- Planetary Positions Table (ജനന സമയത്തെ ഗ്രഹ സ്ഥാനം) -->
+            <div class="planetary-table-container">
+              <h3 class="sub-table-title">ജനന സമയത്തെ ഗ്രഹ സ്ഥാനം (Planetary Positions)</h3>
+              <div class="table-scroll-wrapper">
+                <table class="astro-data-table planets-table">
+                  <thead>
+                    <tr>
+                      <th>ഗ്രഹം</th>
+                      <th>രാശി</th>
+                      <th>ഡിഗ്രി</th>
+                      <th>ഭാവം</th>
+                      <th>നക്ഷത്രം</th>
+                      <th>പാദം</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (p of horoscope()!.planetary_positions; track p.graha) {
+                      <tr>
+                        <td class="graha-cell">
+                          <span class="abbr-circle">{{ p.abbreviation }}</span>
+                          <span class="graha-name">{{ p.malayalam }}</span>
+                        </td>
+                        <td>{{ p.sign_malayalam }} ({{ p.sign }})</td>
+                        <td>{{ p.formatted_degree }}</td>
+                        <td>{{ p.house }}</td>
+                        <td>{{ p.nakshatra_malayalam }}</td>
+                        <td>{{ p.pada }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Sacred Chart Information Badges (Matching User Reference) -->
+            <div class="sacred-chart-badges-grid">
+              <div class="chart-summary-badge-card rashi-badge-card">
+                <div class="badge-card-header">
+                  <span class="badge-bullet">❖</span>
+                  <h4 class="badge-card-title">രാശി ചാർട്ട്</h4>
+                </div>
+                <div class="badge-card-details">
+                  <p class="badge-row"><strong>നക്ഷത്രം:</strong> {{ horoscope()!.panchanga.nakshatra.malayalam }}</p>
+                  <p class="badge-row"><strong>ജനന തീയതി & സമയം:</strong> {{ horoscope()!.personal_info.date_of_birth_formatted }}, {{ horoscope()!.personal_info.time_of_birth_formatted }}</p>
+                  <p class="badge-row"><strong>നിർദ്ദേശാങ്കങ്ങൾ:</strong> അക്ഷാംശം +{{ horoscope()!.personal_info.latitude | number:'1.2-2' }}, രേഖാംശം -{{ horoscope()!.personal_info.longitude | number:'1.2-2' }}</p>
+                  <p class="badge-row highlight-dasha"><strong>ശിഷ്ടദശ:</strong> ജന്മ ശിഷ്ടദശ = {{ horoscope()!.panchanga.nakshatra.lord }} 1 വർഷം, 0 മാസം, 13 ദിവസം</p>
+                </div>
+              </div>
+
+              <div class="chart-summary-badge-card navamsha-badge-card">
+                <div class="badge-card-header">
+                  <span class="badge-bullet">❖</span>
+                  <h4 class="badge-card-title">നവാംശ ചാർട്ട്</h4>
+                </div>
+                <div class="badge-card-details">
+                  <p class="badge-row"><strong>വർഗ്ഗം:</strong> നവാംശം (D-9 Chart)</p>
+                  <p class="badge-row"><strong>പ്രാധാന്യം:</strong> ഭാഗ്യം, ധർമ്മം, ആത്മീയ സാധന, ദാമ്പത്യ സൗഖ്യം</p>
+                  <p class="badge-row"><strong>ലഗ്ന നവാംശം:</strong> കർക്കിടകം നവാംശകത്തിൽ ചന്ദ്രൻ</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chapter 3: ജീവിതത്തെ സ്വാധീനിക്കുന്നവ - ഭാവഫലങ്ങൾ (Matching User Images 3 & 4) -->
+        <section class="chapter-block" id="chapter-3">
+          <div class="chapter-header-bar ch-3-header">
+            <span class="ch-tag">Chapter 3 »</span>
+            <div class="ch-titles">
+              <h2 class="ch-heading">താങ്കളുടെ ജീവിതത്തെ സ്വാധീനിക്കുന്നവ</h2>
+              <span class="ch-sub">ഭാവഫലങ്ങൾ</span>
+            </div>
+            <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
+              <span>▲ Go to top</span>
+            </button>
+          </div>
+
+          <!-- Hidden Predictions Notice Bar (Authentication Aware) -->
+          <div class="hidden-predictions-notice-bar no-print">
+            <div class="notice-text-content">
+              <span class="notice-lock-icon">{{ isAuthenticated() ? '✨' : '🔒' }}</span>
+              @if (!isAuthenticated()) {
+                <span class="notice-message">Want to know more? Log in with your account to read all in-depth predictions and remedies.</span>
+              } @else {
+                <span class="notice-message">Logged in as {{ currentUser()?.full_name || currentUser()?.email }}. Complete astrological analysis is unlocked for your profile.</span>
+              }
+            </div>
+            @if (!isAuthenticated()) {
+              <button type="button" class="btn-notice-buy" (click)="loginToUnlock()" id="notice-login-btn">
+                <span>Login to unlock</span>
+                <span class="arrow-right-icon">❯</span>
+              </button>
+            } @else {
+              <button type="button" class="btn-notice-buy" (click)="scrollToBuyOffer()" id="notice-explore-btn">
+                <span>View Full Analysis</span>
+                <span class="arrow-right-icon">❯</span>
+              </button>
+            }
+          </div>
+
+          <div class="chapter-content-card">
+            @for (item of horoscope()!.chapters[2].items; track item.title; let idx = $index) {
+              <div class="bhava-section-item">
+                <div class="chapter-divider" aria-hidden="true"></div>
+
+                <!-- Ribbon Title (e.g. സാമൂഹിക സ്ഥിതി, സഹോദരങ്ങൾ, സ്വത്ത്) -->
+                @if (item.ribbon_title) {
+                  <div class="arrow-ribbon">
+                    <span class="ribbon-text">{{ item.ribbon_title }}</span>
+                  </div>
+                }
+
+                <!-- Subtitle with Red Accent Bar -->
+                @if (item.subtitle_accent) {
+                  <div class="accent-subtitle-bar">
+                    <span class="accent-text">{{ item.subtitle_accent }}</span>
+                  </div>
+                }
+
+                <!-- Gray Significance Callout Box (Images 3 & 4) -->
+                @if (item.significance_box) {
+                  <div class="significance-callout-box">
+                    <p class="significance-text">{{ item.significance_box }}</p>
+                  </div>
+                }
+
+                <!-- Prediction Body Text -->
+                @if (item.prediction_text) {
+                  <p class="prediction-body-text">
+                    {{ item.prediction_text }}
+                  </p>
+                }
+              </div>
+            }
+
+            <!-- In-Depth Vedic Insights Callout (Prices Cleared - Gated with Login) -->
+            <div class="buy-full-horoscope-callout" id="full-horoscope-buy-offer">
+              <div class="callout-sparkle-pill">✦ FULL ASTROLOGICAL REPORT ✦</div>
+
+              @if (!isAuthenticated()) {
+                <h3 class="callout-heading">Want to know more about your future?</h3>
+                <p class="callout-sub">
+                  If you want to know more, please log in with the site to read all the predictions and personalized remedies hidden in this report.
+                </p>
+                <div class="callout-perks-pills">
+                  <span class="perk-pill">✨ In-Depth 12 Bhava Life Predictions</span>
+                  <span class="perk-pill">🔮 Sacred Planetary Remedies & Gemstones</span>
+                  <span class="perk-pill">📅 Detailed Dasha Periods & Timeline</span>
+                </div>
+                <button type="button" class="btn-know-more btn-login-action-cta" (click)="loginToUnlock()" id="btn-login-to-unlock-horoscope">
+                  <span class="lock-icon" aria-hidden="true">🔒</span>
+                  <span>Login with AstroGuide to Know More</span>
+                  <span class="arrow-right-icon">❯</span>
+                </button>
+              } @else {
+                <h3 class="callout-heading">Full Report Access Active</h3>
+                <p class="callout-sub">
+                  Welcome back, {{ currentUser()?.full_name || currentUser()?.email }}! All in-depth predictions and remedies are available for your profile.
+                </p>
+                <div class="callout-perks-pills">
+                  <span class="perk-pill">✓ Profile Synchronized</span>
+                  <span class="perk-pill">✓ Birth Details Saved</span>
+                  <span class="perk-pill">✓ AI Astrologer Consultation Ready</span>
+                </div>
+                <div class="callout-actions-row">
+                  <button type="button" class="btn-know-more" (click)="loginToUnlock()" id="btn-view-predictions-horoscope" title="Scroll to unlocked predictions on this page">
+                    <span>📜 Read All Bhava Predictions</span>
+                    <span class="arrow-right-icon">▲</span>
+                  </button>
+                  <button type="button" class="btn-know-more btn-guidance-cta" (click)="goToGuidance()" id="btn-explore-guidance-horoscope" title="Consult AI Astrologer on Guidance Page">
+                    <span>💬 Consult AI Astrologer (Next Page)</span>
+                    <span class="arrow-right-icon">❯</span>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+
+        <!-- Chapter 4: അനുകൂല സമയങ്ങൾ (Matching User Image 5) -->
+        <section class="chapter-block" id="chapter-4">
+          <div class="chapter-header-bar ch-4-header">
+            <span class="ch-tag">Chapter 4 »</span>
+            <div class="ch-titles">
+              <h2 class="ch-heading">അനുകൂല സമയങ്ങൾ</h2>
+              <span class="ch-sub">ദശാഫലങ്ങളും കർമ്മ മേഖല അപഗ്രഥനവും</span>
+            </div>
+            <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
+              <span>▲ Go to top</span>
+            </button>
+          </div>
+
+          <div class="chapter-content-card">
+            <!-- Clock Icon Banner (Image 5) -->
+            <div class="age-scope-banner">
+              <span class="clock-icon" aria-hidden="true">🕒</span>
+              <span class="scope-text">ഈ പ്രവചനം ഉൾക്കൊള്ളുന്ന പ്രായപരിധി 15 മുതൽ 80 വരെ</span>
+            </div>
+
+            @for (item of horoscope()!.chapters[3].items; track item.title) {
+              <div class="career-timing-section">
+                <!-- Ribbon Title -->
+                @if (item.ribbon_title) {
+                  <div class="arrow-ribbon">
+                    <span class="ribbon-text">{{ item.ribbon_title }}</span>
+                  </div>
+                }
+
+                <!-- Significance Explanation -->
+                @if (item.significance_box) {
+                  <p class="career-significance-text">
+                    {{ item.significance_box }}
+                  </p>
+                }
+
+                <!-- Subheading -->
+                @if (item.subtitle_accent) {
+                  <h3 class="career-subheading-accent">
+                    {{ item.subtitle_accent }}.
+                  </h3>
+                }
+
+                <!-- Timeline Cards (Image 5) -->
+                @if (item.timeline_cards && item.timeline_cards.length > 0) {
+                  <div class="timeline-cards-list">
+                    @for (card of item.timeline_cards; track card.age_range) {
+                      <div class="career-timeline-card status-{{ card.status_type }}">
+                        <div class="card-left-icon">
+                          <span class="briefcase-icon" aria-hidden="true">💼</span>
+                        </div>
+
+                        <div class="card-center-info">
+                          <span class="status-badge-text">{{ card.status }}</span>
+                          <span class="age-range-text">{{ card.age_range }}</span>
+                          <span class="duration-text">{{ card.duration }}</span>
+                          <div class="progress-bar-track">
+                            <div class="progress-bar-fill" [style.width.%]="card.progress_percent"></div>
+                          </div>
+                        </div>
+
+                        <div class="card-right-dates">
+                          <span class="date-range-text">{{ card.date_range }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Official Report Footer & Attribution Block (Matching User Reference) -->
+        <footer class="end-of-report-block">
+          <div class="end-tag-divider">
+            <span class="end-line"></span>
+            <span class="end-tag-pill">END OF THE REPORT</span>
+            <span class="end-line"></span>
+          </div>
+
+          <div class="organization-info">
+            <p class="wishes-line">With best wishes : <strong>Astro-Vision Futuretech Pvt.Ltd.</strong> • AstroGuide</p>
+            <p class="address-line">First Floor, White Tower, Kuthappadi Road, Thammanam P.O, Kochi, Kerala, India - 682032</p>
+            <p class="version-stamp">[In-Depth CC Horoscope - 1.0.0.53--06-10-2026]</p>
+          </div>
+
+          <div class="report-disclaimer-box">
+            <span class="disclaimer-label">Note:</span>
+            <p class="disclaimer-text">
+              This report is based on the data provided by you and the best possible research support we have received so far. We do not assume any responsibility for the accuracy or the effect of any decision that may be taken on the basis of this report.
+            </p>
+          </div>
+        </footer>
+      </div>
+    </div>
+  }
+</main>
+
+<app-footer></app-footer>

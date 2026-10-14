@@ -39,6 +39,11 @@ export const routes: Routes = [
     title: 'Dashboard — AstroGuide'
   },
   {
+    path: 'horoscope',
+    loadComponent: () => import('./features/horoscope/horoscope.component').then(m => m.HoroscopeComponent),
+    title: 'Free Horoscope & Kundli — AstroGuide'
+  },
+  {
     path: 'birth-details',
     loadComponent: () => import('./features/birth-details/birth-details.component').then(m => m.BirthDetailsComponent),
     canActivate: [authGuard],
