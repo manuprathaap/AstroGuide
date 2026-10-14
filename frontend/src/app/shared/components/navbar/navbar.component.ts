@@ -24,7 +24,7 @@ export class NavbarComponent {
   readonly currentLanguage = this.languageService.currentLanguage;
   readonly currentLanguageLabel = computed(() => {
     const lang = this.languageService.currentLanguage();
-    return lang?.native_name || lang?.name || 'Language';
+    return lang?.name || 'English';
   });
   readonly currentUrl = computed(() => this.router.url);
 

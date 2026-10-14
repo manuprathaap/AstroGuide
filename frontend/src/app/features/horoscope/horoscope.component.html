@@ -6,7 +6,7 @@
     <div class="form-wrapper">
       <div class="astro-container form-card">
         <div class="form-header">
-          <div class="badge-sparkle-pill">✦ സൗജന്യ ജാതകം ✦</div>
+          <div class="badge-sparkle-pill">{{ isMalayalam() ? '✦ സൗജന്യ ജാതകം ✦' : '✦ FREE HOROSCOPE ✦' }}</div>
           <h1 class="form-title">Create Your Vedic Horoscope</h1>
           <p class="form-subtitle">Enter your birth details to generate your authentic Kerala Rashi & Navamsha charts</p>
         </div>
@@ -284,10 +284,26 @@
           <div class="breadcrumb">
             <span class="crumb-link">Introduction</span>
             <span class="crumb-separator">»</span>
-            <span class="crumb-current">ജാതക സംഗ്രഹം</span>
+            <span class="crumb-current">{{ isMalayalam() ? 'ജാതക സംഗ്രഹം' : 'Horoscope Summary' }}</span>
           </div>
 
           <div class="top-bar-actions">
+            <!-- Language Switcher in Result Toolbar -->
+            <div class="result-lang-picker" title="Change Report Language">
+              <span class="result-lang-icon" aria-hidden="true">🌐</span>
+              <select
+                id="result-lang-select"
+                class="result-lang-dropdown"
+                [value]="selectedLanguage()"
+                (change)="onLanguageSelectChange($event)"
+                aria-label="Select Report Language"
+              >
+                @for (lang of languages; track lang.id) {
+                  <option [value]="lang.id">{{ lang.label }}</option>
+                }
+              </select>
+            </div>
+
             @if (!isAuthenticated()) {
               <button type="button" class="btn-action-outline btn-login-top-btn" (click)="loginToUnlock()" id="top-bar-login-btn" title="Sign in to save this horoscope and unlock all predictions">
                 <span>🔒 Sign In</span>
@@ -340,13 +356,13 @@
 
           <div class="person-meta-details">
             <p class="meta-line">
-              {{ horoscope()!.personal_info.gender_display || horoscope()!.personal_info.gender_malayalam }}, {{ horoscope()!.personal_info.age_display || (horoscope()!.personal_info.age + ' വയസ്സ്') }}
+              {{ horoscope()!.personal_info.gender_display || (isMalayalam() ? horoscope()!.personal_info.gender_malayalam : horoscope()!.personal_info.gender) }}, {{ horoscope()!.personal_info.age_display || (isMalayalam() ? (horoscope()!.personal_info.age + ' വയസ്സ്') : (horoscope()!.personal_info.age + ' Years')) }}
             </p>
             <p class="meta-line">
               {{ horoscope()!.personal_info.date_of_birth_formatted }}
             </p>
             <p class="meta-line">
-              {{ horoscope()!.personal_info.day_of_week_display || horoscope()!.personal_info.day_of_week_malayalam }}, {{ horoscope()!.personal_info.time_of_birth_formatted }}
+              {{ horoscope()!.personal_info.day_of_week_display || (isMalayalam() ? horoscope()!.personal_info.day_of_week_malayalam : horoscope()!.personal_info.day_of_week) }}, {{ horoscope()!.personal_info.time_of_birth_formatted }}
             </p>
             <p class="meta-line place-line">
               {{ horoscope()!.personal_info.place_of_birth }}
@@ -360,16 +376,16 @@
               <span class="sign-label">{{ horoscope()!.sun_sign.label || 'Your sun sign is' }}</span>
               <span class="sign-name-highlight">{{ horoscope()!.sun_sign.sign_display || horoscope()!.sun_sign.name }}</span>
               <div class="zodiac-illustration-circle">
-                <span class="zodiac-symbol-art">♒</span>
+                <span class="zodiac-symbol-art">{{ horoscope()!.sun_sign.symbol || '♒' }}</span>
               </div>
             </div>
 
             <!-- Moon Sign -->
             <div class="zodiac-card moon-sign-card">
               <span class="sign-label">{{ horoscope()!.moon_sign.label || 'Your moon sign is' }}</span>
-              <span class="sign-name-highlight malayalam-font">{{ horoscope()!.moon_sign.sign_display || horoscope()!.moon_sign.malayalam }}</span>
+              <span class="sign-name-highlight" [class.malayalam-font]="isMalayalam()">{{ horoscope()!.moon_sign.sign_display || (isMalayalam() ? horoscope()!.moon_sign.malayalam : horoscope()!.moon_sign.name) }}</span>
               <div class="zodiac-illustration-circle">
-                <span class="zodiac-symbol-art">♓</span>
+                <span class="zodiac-symbol-art">{{ horoscope()!.moon_sign.symbol || '♓' }}</span>
               </div>
             </div>
           </div>
@@ -530,7 +546,7 @@
                 @for (card of horoscope()!.table_of_predictions!.cards; track card.category) {
                   <div class="prediction-card card-{{ card.category | lowercase }}">
                     <div class="card-top-row">
-                      <span class="pred-category-title">{{ card.category_malayalam }}</span>
+                      <span class="pred-category-title">{{ isMalayalam() ? card.category_malayalam : card.category }}</span>
                       <span class="pred-count-pill">{{ card.count }}</span>
                     </div>
                     <p class="pred-description-text">{{ card.description }}</p>
@@ -732,8 +748,8 @@
           <div class="chapter-header-bar ch-2-header">
             <span class="ch-tag">Chapter 2 »</span>
             <div class="ch-titles">
-              <h2 class="ch-heading">താങ്കളുടെ സ്വഭാവ സവിശേഷതകൾ</h2>
-              <span class="ch-sub">പഞ്ചാംഗ ഫലങ്ങൾ</span>
+              <h2 class="ch-heading">{{ horoscope()!.chapters[1].title }}</h2>
+              <span class="ch-sub">{{ horoscope()!.chapters[1].subtitle }}</span>
             </div>
             <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
               <span>▲ Go to top</span>
@@ -755,7 +771,7 @@
           <div class="chapter-content-card">
             @if (horoscope()!.chapters[1].preamble) {
               <div class="traditional-preamble-card">
-                <div class="preamble-lotus-top">✦ ശ്രീ ✦</div>
+                <div class="preamble-lotus-top">✦ {{ isMalayalam() ? 'ശ്രീ' : 'Shree' }} ✦</div>
                 <p class="preamble-text">{{ horoscope()!.chapters[1].preamble }}</p>
               </div>
             }
@@ -798,19 +814,19 @@
               </div>
             }
 
-            <!-- Planetary Positions Table (ജനന സമയത്തെ ഗ്രഹ സ്ഥാനം) -->
+            <!-- Planetary Positions Table -->
             <div class="planetary-table-container">
-              <h3 class="sub-table-title">ജനന സമയത്തെ ഗ്രഹ സ്ഥാനം (Planetary Positions)</h3>
+              <h3 class="sub-table-title">{{ isMalayalam() ? 'ജനന സമയത്തെ ഗ്രഹ സ്ഥാനം (Planetary Positions)' : 'Planetary Positions at Birth' }}</h3>
               <div class="table-scroll-wrapper">
                 <table class="astro-data-table planets-table">
                   <thead>
                     <tr>
-                      <th>ഗ്രഹം</th>
-                      <th>രാശി</th>
-                      <th>ഡിഗ്രി</th>
-                      <th>ഭാവം</th>
-                      <th>നക്ഷത്രം</th>
-                      <th>പാദം</th>
+                      <th>{{ isMalayalam() ? 'ഗ്രഹം' : 'Graha / Planet' }}</th>
+                      <th>{{ isMalayalam() ? 'രാശി' : 'Rashi / Sign' }}</th>
+                      <th>{{ isMalayalam() ? 'ഡിഗ്രി' : 'Degrees' }}</th>
+                      <th>{{ isMalayalam() ? 'ഭാവം' : 'House' }}</th>
+                      <th>{{ isMalayalam() ? 'നക്ഷത്രം' : 'Nakshatra' }}</th>
+                      <th>{{ isMalayalam() ? 'പാദം' : 'Pada' }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -818,12 +834,12 @@
                       <tr>
                         <td class="graha-cell">
                           <span class="abbr-circle">{{ p.abbreviation }}</span>
-                          <span class="graha-name">{{ p.malayalam }}</span>
+                          <span class="graha-name">{{ isMalayalam() ? p.malayalam : p.graha }}</span>
                         </td>
-                        <td>{{ p.sign_malayalam }} ({{ p.sign }})</td>
+                        <td>{{ isMalayalam() ? p.sign_malayalam : p.sign }}</td>
                         <td>{{ p.formatted_degree }}</td>
                         <td>{{ p.house }}</td>
-                        <td>{{ p.nakshatra_malayalam }}</td>
+                        <td>{{ isMalayalam() ? p.nakshatra_malayalam : p.nakshatra }}</td>
                         <td>{{ p.pada }}</td>
                       </tr>
                     }
@@ -837,25 +853,25 @@
               <div class="chart-summary-badge-card rashi-badge-card">
                 <div class="badge-card-header">
                   <span class="badge-bullet">❖</span>
-                  <h4 class="badge-card-title">രാശി ചാർട്ട്</h4>
+                  <h4 class="badge-card-title">{{ isMalayalam() ? 'രാശി ചാർട്ട്' : 'Rashi Chart' }}</h4>
                 </div>
                 <div class="badge-card-details">
-                  <p class="badge-row"><strong>നക്ഷത്രം:</strong> {{ horoscope()!.panchanga.nakshatra.malayalam }}</p>
-                  <p class="badge-row"><strong>ജനന തീയതി & സമയം:</strong> {{ horoscope()!.personal_info.date_of_birth_formatted }}, {{ horoscope()!.personal_info.time_of_birth_formatted }}</p>
-                  <p class="badge-row"><strong>നിർദ്ദേശാങ്കങ്ങൾ:</strong> അക്ഷാംശം +{{ horoscope()!.personal_info.latitude | number:'1.2-2' }}, രേഖാംശം -{{ horoscope()!.personal_info.longitude | number:'1.2-2' }}</p>
-                  <p class="badge-row highlight-dasha"><strong>ശിഷ്ടദശ:</strong> ജന്മ ശിഷ്ടദശ = {{ horoscope()!.panchanga.nakshatra.lord }} 1 വർഷം, 0 മാസം, 13 ദിവസം</p>
+                  <p class="badge-row"><strong>{{ isMalayalam() ? 'നക്ഷത്രം:' : 'Nakshatra:' }}</strong> {{ isMalayalam() ? horoscope()!.panchanga.nakshatra.malayalam : (horoscope()!.panchanga.nakshatra.display_name || horoscope()!.panchanga.nakshatra.name) }}</p>
+                  <p class="badge-row"><strong>{{ isMalayalam() ? 'ജനന തീയതി & സമയം:' : 'Date & Time of Birth:' }}</strong> {{ horoscope()!.personal_info.date_of_birth_formatted }}, {{ horoscope()!.personal_info.time_of_birth_formatted }}</p>
+                  <p class="badge-row"><strong>{{ isMalayalam() ? 'നിർദ്ദേശാങ്കങ്ങൾ:' : 'Coordinates:' }}</strong> {{ isMalayalam() ? 'അക്ഷാംശം' : 'Lat' }} +{{ horoscope()!.personal_info.latitude | number:'1.2-2' }}, {{ isMalayalam() ? 'രേഖാംശം' : 'Long' }} -{{ horoscope()!.personal_info.longitude | number:'1.2-2' }}</p>
+                  <p class="badge-row highlight-dasha"><strong>{{ isMalayalam() ? 'ശിഷ്ടദശ:' : 'Balance Dasha:' }}</strong> {{ isMalayalam() ? ('ജന്മ ശിഷ്ടദശ = ' + (horoscope()!.panchanga.nakshatra.lord || '') + ' 1 വർഷം, 0 മാസം, 13 ദിവസം') : ('Balance of Dasha at Birth = ' + (horoscope()!.panchanga.nakshatra.lord || '') + ' 1 Year, 0 Month, 13 Days') }}</p>
                 </div>
               </div>
 
               <div class="chart-summary-badge-card navamsha-badge-card">
                 <div class="badge-card-header">
                   <span class="badge-bullet">❖</span>
-                  <h4 class="badge-card-title">നവാംശ ചാർട്ട്</h4>
+                  <h4 class="badge-card-title">{{ isMalayalam() ? 'നവാംശ ചാർട്ട്' : 'Navamsha Chart' }}</h4>
                 </div>
                 <div class="badge-card-details">
-                  <p class="badge-row"><strong>വർഗ്ഗം:</strong> നവാംശം (D-9 Chart)</p>
-                  <p class="badge-row"><strong>പ്രാധാന്യം:</strong> ഭാഗ്യം, ധർമ്മം, ആത്മീയ സാധന, ദാമ്പത്യ സൗഖ്യം</p>
-                  <p class="badge-row"><strong>ലഗ്ന നവാംശം:</strong> കർക്കിടകം നവാംശകത്തിൽ ചന്ദ്രൻ</p>
+                  <p class="badge-row"><strong>{{ isMalayalam() ? 'വർഗ്ഗം:' : 'Varga:' }}</strong> {{ isMalayalam() ? 'നവാംശം (D-9 Chart)' : 'Navamsha (D-9 Chart)' }}</p>
+                  <p class="badge-row"><strong>{{ isMalayalam() ? 'പ്രാധാന്യം:' : 'Significance:' }}</strong> {{ isMalayalam() ? 'ഭാഗ്യം, ധർമ്മം, ആത്മീയ സാധന, ദാമ്പത്യ സൗഖ്യം' : 'Fortune, Dharma, Spiritual Path & Marital Harmony' }}</p>
+                  <p class="badge-row"><strong>{{ isMalayalam() ? 'ലഗ്ന നവാംശം:' : 'Lagna Navamsha:' }}</strong> {{ isMalayalam() ? 'കർക്കിടകം നവാംശകത്തിൽ ചന്ദ്രൻ' : 'Moon in Cancer Navamsha' }}</p>
                 </div>
               </div>
             </div>
@@ -867,8 +883,8 @@
           <div class="chapter-header-bar ch-3-header">
             <span class="ch-tag">Chapter 3 »</span>
             <div class="ch-titles">
-              <h2 class="ch-heading">താങ്കളുടെ ജീവിതത്തെ സ്വാധീനിക്കുന്നവ</h2>
-              <span class="ch-sub">ഭാവഫലങ്ങൾ</span>
+              <h2 class="ch-heading">{{ horoscope()!.chapters[2].title }}</h2>
+              <span class="ch-sub">{{ horoscope()!.chapters[2].subtitle }}</span>
             </div>
             <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
               <span>▲ Go to top</span>
@@ -982,8 +998,8 @@
           <div class="chapter-header-bar ch-4-header">
             <span class="ch-tag">Chapter 4 »</span>
             <div class="ch-titles">
-              <h2 class="ch-heading">അനുകൂല സമയങ്ങൾ</h2>
-              <span class="ch-sub">ദശാഫലങ്ങളും കർമ്മ മേഖല അപഗ്രഥനവും</span>
+              <h2 class="ch-heading">{{ horoscope()!.chapters[3].title }}</h2>
+              <span class="ch-sub">{{ horoscope()!.chapters[3].subtitle }}</span>
             </div>
             <button type="button" class="btn-go-top no-print" (click)="scrollToChapter(0)" title="Go to top">
               <span>▲ Go to top</span>
@@ -994,7 +1010,7 @@
             <!-- Clock Icon Banner (Image 5) -->
             <div class="age-scope-banner">
               <span class="clock-icon" aria-hidden="true">🕒</span>
-              <span class="scope-text">ഈ പ്രവചനം ഉൾക്കൊള്ളുന്ന പ്രായപരിധി 15 മുതൽ 80 വരെ</span>
+              <span class="scope-text">{{ isMalayalam() ? 'ഈ പ്രവചനം ഉൾക്കൊള്ളുന്ന പ്രായപരിധി 15 മുതൽ 80 വരെ' : 'This prediction covers the age span from 15 to 80 years' }}</span>
             </div>
 
             @for (item of horoscope()!.chapters[3].items; track item.title) {

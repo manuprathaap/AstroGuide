@@ -12,9 +12,9 @@
 
     <!-- Right: Language Selector & Compact Controls -->
     <div class="header-right">
-      <a routerLink="/horoscope" class="lang-pill" id="header-horoscope-link" title="Free Horoscope">
+      <a routerLink="/horoscope" class="lang-pill" id="header-horoscope-link" [title]="t().nav.birthChart || 'Free Horoscope'">
         <span aria-hidden="true">🪐</span>
-        <span class="lang-text">സൗജന്യ ജാതകം</span>
+        <span class="lang-text">{{ t().nav.birthChart || 'Free Horoscope' }}</span>
       </a>
 
       <!-- Language Selector -->

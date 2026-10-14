@@ -20,10 +20,13 @@ export class LanguageService {
   private getInitialStoredLanguage(): Language | null {
     try {
       const item = localStorage.getItem(this.selectedLangStorageKey);
-      return item ? JSON.parse(item) : null;
+      if (item) {
+        return JSON.parse(item);
+      }
     } catch {
-      return null;
+      // ignore JSON parse error
     }
+    return { id: 1, code: 'en', name: 'English', native_name: 'English' };
   }
 
   getLanguages(): Observable<Language[]> {

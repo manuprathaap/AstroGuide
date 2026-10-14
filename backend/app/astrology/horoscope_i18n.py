@@ -10,7 +10,7 @@ SUPPORTED_LANGUAGES = ["Malayalam", "English", "Hindi", "Tamil"]
 
 def normalize_language(lang: str | None) -> str:
     if not lang:
-        return "Malayalam"
+        return "English"
     cleaned = lang.strip().lower()
     if cleaned in ("en", "english"):
         return "English"
@@ -20,7 +20,7 @@ def normalize_language(lang: str | None) -> str:
         return "Tamil"
     if cleaned in ("ml", "malayalam"):
         return "Malayalam"
-    return "Malayalam"
+    return "English"
 
 
 SIGN_I18N: dict[str, list[tuple[str, str, int]]] = {

@@ -22,20 +22,41 @@ def test_horoscope_calculator_direct():
     )
     res = calc.generate(req)
 
+    # Defaults to English
     assert res.personal_info["name"] == "Manu Prathap"
-    assert res.personal_info["gender_malayalam"] == "പുരുഷൻ"
+    assert res.personal_info["gender"] == "Male"
     assert res.personal_info["day_of_week"] == "Wednesday"
-    assert res.personal_info["day_of_week_malayalam"] == "ബുധൻ"
     assert res.sun_sign["name"] == "AQUARIUS"
-    assert res.moon_sign["malayalam"] == "മീനം"
-    assert res.panchanga["nakshatra"]["malayalam"] in ["പൂരൂരുട്ടാതി", "പൂരുരുട്ടാതി"]
+    assert res.moon_sign["name"] == "Pisces"
     assert len(res.rashi_chart.boxes) == 12
     assert len(res.navamsha_chart.boxes) == 12
-    assert res.rashi_chart.center_title == "രാശി ചാർട്ട്"
-    assert res.rashi_chart.center_subtitle in ["പൂരൂരുട്ടാതി", "പൂരുരുട്ടാതി"]
-    assert "നവാംശ ചാർട്ട്" in res.navamsha_chart.center_title
+    assert res.rashi_chart.center_title == "Rasi Chart"
+    assert "Navamsha Chart" in res.navamsha_chart.center_title
     assert len(res.chapters) == 4
+    assert res.chapters[0].title == "Your Birth Details"
+    assert res.chapters[1].title == "Your Character and Temperament"
     assert res.shloka["sanskrit"].startswith("जननी")
+
+    # Explicit Malayalam
+    req_ml = HoroscopeGenerateRequest(
+        name="Manu Prathap",
+        gender="Male",
+        date_of_birth=date(2003, 2, 5),
+        time_of_birth=time(4, 5),
+        place_of_birth="Pannimattom",
+        latitude=9.92,
+        longitude=76.84,
+        timezone="Asia/Kolkata",
+        language="Malayalam",
+    )
+    res_ml = calc.generate(req_ml)
+    assert res_ml.personal_info["gender_malayalam"] == "പുരുഷൻ"
+    assert res_ml.personal_info["day_of_week_malayalam"] == "ബുധൻ"
+    assert res_ml.moon_sign["malayalam"] == "മീനം"
+    assert res_ml.panchanga["nakshatra"]["malayalam"] in ["പൂരൂരുട്ടാതി", "പൂരുരുട്ടാതി"]
+    assert res_ml.rashi_chart.center_title == "രാശി ചാർട്ട്"
+    assert "നവാംശ ചാർട്ട്" in res_ml.navamsha_chart.center_title
+    assert res_ml.chapters[1].title == "താങ്കളുടെ സ്വഭാവ സവിശേഷതകൾ"
 
 
 def test_horoscope_generate_endpoint_public():

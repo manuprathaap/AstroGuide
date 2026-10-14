@@ -128,6 +128,7 @@ export interface HoroscopeResponse {
     timezone: string;
     ayanamsa: string;
     ayanamsa_degrees: number;
+    language?: string;
   };
   sun_sign: {
     name: string;
@@ -147,18 +148,20 @@ export interface HoroscopeResponse {
   };
   ascendant: {
     sign: string;
+    sign_display?: string;
     sign_malayalam: string;
     degree: number;
     nakshatra: string;
+    nakshatra_display?: string;
     nakshatra_malayalam: string;
     pada: number;
   };
   panchanga: {
-    vara: { name: string; malayalam: string; lord: string; quality?: string };
-    nakshatra: { name: string; malayalam: string; pada: number; lord: string; quality?: string };
-    tithi: { name: string; malayalam: string; paksha: string; paksha_malayalam: string };
-    karana: { name: string; malayalam: string };
-    yoga: { name: string; malayalam: string };
+    vara: { name: string; display_name?: string; malayalam: string; lord: string; quality?: string };
+    nakshatra: { name: string; display_name?: string; malayalam: string; pada: number; lord: string; quality?: string };
+    tithi: { name: string; display_name?: string; malayalam: string; paksha: string; paksha_display?: string; paksha_malayalam: string };
+    karana: { name: string; display_name?: string; malayalam: string };
+    yoga: { name: string; display_name?: string; malayalam: string };
   };
   rashi_chart: ChartData;
   navamsha_chart: ChartData;

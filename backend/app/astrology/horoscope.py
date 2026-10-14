@@ -897,7 +897,7 @@ class HoroscopeCalculator:
 
         # Nakshatra authentic attributes
         nak_meta = get_nakshatra_attributes(nak_name)
-        lang_key = lang if lang in ("English", "Malayalam", "Hindi", "Tamil") else "Malayalam"
+        lang_key = lang if lang in ("English", "Malayalam", "Hindi", "Tamil") else "English"
 
         ganam_val = nak_meta["ganam"].get(lang_key, nak_meta["ganam"]["Malayalam"])
         yoni_gender_val = nak_meta["yoni_gender"].get(lang_key, nak_meta["yoni_gender"]["Malayalam"])

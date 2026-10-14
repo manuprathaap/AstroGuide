@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -58,8 +58,12 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
   readonly selectedGender = signal<'Male' | 'Female' | null>(null);
   readonly genderSelectionError = signal(false);
   readonly selectedChartStyle = signal<string>('Kerala');
-  readonly selectedLanguage = signal<string>('Malayalam');
+  readonly selectedLanguage = signal<string>('English');
   readonly selectedAmPm = signal<'AM' | 'PM'>('AM');
+
+  isMalayalam(): boolean {
+    return this.selectedLanguage() === 'Malayalam';
+  }
   readonly activeChapter = signal<number>(1);
   readonly expandedItems = signal<Set<string>>(new Set(['item-0', 'item-1', 'item-2']));
   readonly isDownloadingPdf = signal<boolean>(false);
@@ -75,10 +79,10 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
   private readonly searchSubject$ = new Subject<string>();
 
   readonly languages = [
-    { id: 'Malayalam', label: 'Malayalam' },
     { id: 'English', label: 'English' },
-    { id: 'Tamil', label: 'Tamil' },
+    { id: 'Malayalam', label: 'Malayalam' },
     { id: 'Hindi', label: 'Hindi' },
+    { id: 'Tamil', label: 'Tamil' },
     { id: 'Telugu', label: 'Telugu' },
     { id: 'Kannada', label: 'Kannada' },
     { id: 'Bengali', label: 'Bengali' },
@@ -153,9 +157,9 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
       if (savedForm.language) this.selectedLanguage.set(savedForm.language);
     }
 
-    // Sync selectedLanguage with global language if one is already active and no saved form
+    // Sync selectedLanguage with global language preference (defaults to English)
     const currentGlobal = this.languageService.currentLanguage();
-    if (currentGlobal && !savedForm?.language) {
+    if (currentGlobal) {
       const match = this.languages.find(
         l => l.id.toLowerCase() === currentGlobal.name.toLowerCase() ||
              l.id.toLowerCase() === currentGlobal.code.toLowerCase()
@@ -163,11 +167,23 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
       if (match) {
         this.selectedLanguage.set(match.id);
       }
+    } else if (savedForm?.language) {
+      this.selectedLanguage.set(savedForm.language);
     }
 
     // If horoscope already exists, show result
     if (this.horoscope()) {
       this.activeView.set('result');
+      // If the cached horoscope was in a different language than the active language,
+      // regenerate immediately so all elements reflect the chosen language!
+      const currentLang = this.selectedLanguage();
+      if (
+        this.horoscope()?.personal_info?.language !== currentLang &&
+        this.form.valid &&
+        this.selectedGender()
+      ) {
+        this.onSubmit();
+      }
     }
   }
 
@@ -202,6 +218,18 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
           error: () => {},
         });
       }
+    }
+
+    // Language Conversion Event: If result view is active, immediately regenerate the horoscope!
+    if (this.activeView() === 'result' && this.form.valid && this.selectedGender()) {
+      this.onSubmit();
+    }
+  }
+
+  onLanguageSelectChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    if (target && target.value) {
+      this.setLanguage(target.value);
     }
   }
 

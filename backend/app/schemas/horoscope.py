@@ -13,7 +13,7 @@ class HoroscopeGenerateRequest(BaseModel):
     longitude: float = Field(..., ge=-180, le=180)
     timezone: str = Field(default="Asia/Kolkata", max_length=100)
     chart_style: str = Field(default="Kerala", max_length=50)
-    language: str = Field(default="Malayalam", max_length=50)
+    language: str = Field(default="English", max_length=50)
     email: str | None = Field(default=None, max_length=255)
     phone_number: str | None = Field(default=None, max_length=50)
 
