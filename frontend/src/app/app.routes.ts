@@ -21,6 +21,19 @@ export const routes: Routes = [
     title: 'Create Account — AstroGuide'
   },
   {
+    path: 'auth/forgot-password',
+    loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
+    canActivate: [guestGuard],
+    title: 'Reset Password — AstroGuide'
+  },
+  {
+    path: 'auth/reset-password',
+    loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
+    canActivate: [guestGuard],
+    title: 'Reset Password — AstroGuide'
+  },
+
+  {
     path: 'language',
     loadComponent: () => import('./features/language/language-selection/language-selection.component').then(m => m.LanguageSelectionComponent),
     canActivate: [authGuard],
@@ -42,6 +55,16 @@ export const routes: Routes = [
     path: 'horoscope',
     loadComponent: () => import('./features/horoscope/horoscope.component').then(m => m.HoroscopeComponent),
     title: 'Free Horoscope & Kundli — AstroGuide'
+  },
+  {
+    path: 'palmistry',
+    loadComponent: () => import('./features/palmistry/palmistry.component').then(m => m.PalmistryComponent),
+    title: 'Palm Reading & Hastarekha Analysis — AstroGuide'
+  },
+  {
+    path: 'palm-reading',
+    redirectTo: 'palmistry',
+    pathMatch: 'full'
   },
   {
     path: 'birth-details',

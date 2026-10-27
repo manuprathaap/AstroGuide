@@ -1,0 +1,753 @@
+<app-navbar></app-navbar>
+
+<main class="palmistry-page">
+  <!-- ==========================================
+       VIEW 1: UPLOAD & INPUT FORM
+       ========================================== -->
+  @if (activeView() === 'form') {
+    <div class="form-wrapper">
+      <div class="astro-container form-card">
+        <!-- Form Header -->
+        <header class="form-header">
+          <div class="badge-sparkle-pill">
+            ✦ {{ isMalayalam() ? 'ഹസ്തരേഖാ ശാസ്ത്രം' : 'HASTAREKHA SHASTRA' }} ✦
+          </div>
+          <h1 class="form-title">
+            {{ isMalayalam() ? 'ഹസ്തരേഖാ അപഗ്രഥനം' : 'Palm Reading Analysis' }}
+          </h1>
+          <p class="form-subtitle">
+            {{ isMalayalam()
+                ? 'പ്രാചീന ഹസ്തരേഖാ ശാസ്ത്ര പ്രകാരം ഇടതുകൈയിലെയും വലതുകൈയിലെയും രേഖകളും പർവ്വതങ്ങളും പരിശോധിച്ച് നിങ്ങളുടെ ആയുസ്സ്, തൊഴിൽ, ദാമ്പത്യം എന്നിവ മനസ്സിലാക്കൂ.'
+                : 'Upload high-resolution photos of your left and right palms for ancient Hastarekha lines, mounts, and life energy readings.' }}
+          </p>
+        </header>
+
+        @if (error()) {
+          <div class="alert-error" role="alert">
+            <span class="alert-icon">⚠️</span>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <!-- Dual Palm Uploader Grid -->
+        <div class="dual-uploader-section">
+          <h2 class="section-label">
+            {{ isMalayalam() ? 'കൈത്തല ഫോട്ടോകൾ അപ്‌ലോഡ് ചെയ്യുക' : 'STEP 1: UPLOAD YOUR PALM PHOTOS' }}
+          </h2>
+
+          <div class="upload-grid">
+            <!-- Left Hand Uploader (Prarabdha / Inherent Karma) -->
+            <div class="palm-upload-box" [class.has-preview]="leftImagePreview()" id="left-palm-dropzone">
+              <div class="box-badge">
+                <span class="hand-side">{{ isMalayalam() ? 'ഇടതുകൈ' : 'LEFT PALM' }}</span>
+                <span class="karmic-role">({{ isMalayalam() ? 'പ്രാരബ്ധ കർമ്മം / ജന്മനാ ഉള്ളത്' : 'Prarabdha / Latent Destiny' }})</span>
+              </div>
+
+              @if (leftImagePreview()) {
+                <div class="preview-container">
+                  <img [src]="leftImagePreview()" alt="Left Palm Preview" class="palm-preview-img" />
+                  <button type="button" class="btn-remove-preview" (click)="removeImage('left', $event)" title="Remove Photo">
+                    ✕
+                  </button>
+                  <span class="preview-ready-tag">✓ Ready to Analyze</span>
+                </div>
+              } @else {
+                <label for="left-palm-input" class="upload-dropzone">
+                  <div class="upload-icon-circle">✋</div>
+                  <span class="upload-title">{{ isMalayalam() ? 'ഇടതുകൈ ചിത്രം ചേർക്കുക' : 'Upload Left Palm' }}</span>
+                  <span class="upload-hint">{{ isMalayalam() ? 'ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ ഡ്രാഗ് ചെയ്യുക' : 'Click to browse or drag & drop photo' }}</span>
+                  <input
+                    type="file"
+                    id="left-palm-input"
+                    accept="image/*"
+                    class="visually-hidden"
+                    (change)="onFileSelected($event, 'left')"
+                  />
+                </label>
+              }
+            </div>
+
+            <!-- Right Hand Uploader (Purushartha / Manifested Actions) -->
+            <div class="palm-upload-box" [class.has-preview]="rightImagePreview()" id="right-palm-dropzone">
+              <div class="box-badge">
+                <span class="hand-side">{{ isMalayalam() ? 'വലതുകൈ' : 'RIGHT PALM' }}</span>
+                <span class="karmic-role">({{ isMalayalam() ? 'പുരുഷാർത്ഥം / കർമ്മഫലം' : 'Purushartha / Manifested Karma' }})</span>
+              </div>
+
+              @if (rightImagePreview()) {
+                <div class="preview-container">
+                  <img [src]="rightImagePreview()" alt="Right Palm Preview" class="palm-preview-img" />
+                  <button type="button" class="btn-remove-preview" (click)="removeImage('right', $event)" title="Remove Photo">
+                    ✕
+                  </button>
+                  <span class="preview-ready-tag">✓ Ready to Analyze</span>
+                </div>
+              } @else {
+                <label for="right-palm-input" class="upload-dropzone">
+                  <div class="upload-icon-circle">🤚</div>
+                  <span class="upload-title">{{ isMalayalam() ? 'വലതുകൈ ചിത്രം ചേർക്കുക' : 'Upload Right Palm' }}</span>
+                  <span class="upload-hint">{{ isMalayalam() ? 'ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ ഡ്രാഗ് ചെയ്യുക' : 'Click to browse or drag & drop photo' }}</span>
+                  <input
+                    type="file"
+                    id="right-palm-input"
+                    accept="image/*"
+                    class="visually-hidden"
+                    (change)="onFileSelected($event, 'right')"
+                  />
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- Photo Capture Guidelines Accordion / Box -->
+          <div class="photo-guidance-card">
+            <div class="guidance-title">
+              <span class="bulb-icon">💡</span>
+              <strong>{{ isMalayalam() ? 'കൃത്യമായ ഫലത്തിനായി ഫോട്ടോ ടിപ്പുകൾ:' : 'Best Photo Guidelines for Accurate Reading:' }}</strong>
+            </div>
+            <ul class="guidance-list">
+              <li>✦ {{ isMalayalam() ? 'ഉള്ളംകൈ നിവർത്തി വിരലുകൾ ചെറുതായി വിടർത്തി വെയ്ക്കുക' : 'Keep your palm flat with fingers slightly spread under natural lighting' }}</li>
+              <li>✦ {{ isMalayalam() ? 'നിഴലുകൾ ഒഴിവാക്കുക, പ്രധാന രേഖകൾ വ്യക്തമായി കാണണം' : 'Avoid heavy shadows; primary skin creases should be distinctly visible' }}</li>
+              <li>✦ {{ isMalayalam() ? 'കൈത്തണ്ടയിലെ മണിബന്ധ രേഖകൾ ഉൾപ്പെടെ പകർത്തുക' : 'Include the base of the palm to capture the bracelets (Manibandha lines)' }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Seeker Profile Form -->
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="palm-form">
+          <h2 class="section-label">
+            {{ isMalayalam() ? 'വ്യക്തിഗത വിവരങ്ങൾ' : 'STEP 2: SEEKER DETAILS & PREFERENCES' }}
+          </h2>
+
+          <!-- Full Name -->
+          <div class="form-row">
+            <label class="row-label">{{ isMalayalam() ? 'പേര്' : 'YOUR FULL NAME' }}</label>
+            <input
+              type="text"
+              formControlName="name"
+              class="form-control"
+              placeholder="Enter your name"
+              id="palm-name-input"
+            />
+          </div>
+
+          <!-- Gender Selection -->
+          <div class="form-row">
+            <label class="row-label">{{ isMalayalam() ? 'ലിംഗം' : 'GENDER' }}</label>
+            <div class="pill-group">
+              <button
+                type="button"
+                class="pill-btn"
+                [class.active]="selectedGender() === 'Male'"
+                (click)="setGender('Male')"
+              >
+                {{ isMalayalam() ? 'പുരുഷൻ' : 'Male' }}
+              </button>
+              <button
+                type="button"
+                class="pill-btn"
+                [class.active]="selectedGender() === 'Female'"
+                (click)="setGender('Female')"
+              >
+                {{ isMalayalam() ? 'സ്ത്രീ' : 'Female' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Dominant Hand Selection -->
+          <div class="form-row">
+            <label class="row-label">{{ isMalayalam() ? 'പ്രധാന കൈ' : 'DOMINANT HAND (ACTIVE)' }}</label>
+            <div class="pill-group">
+              <button
+                type="button"
+                class="pill-btn"
+                [class.active]="selectedDominantHand() === 'Right'"
+                (click)="setDominantHand('Right')"
+              >
+                {{ isMalayalam() ? 'വലതുകൈ (Right)' : 'Right Hand' }}
+              </button>
+              <button
+                type="button"
+                class="pill-btn"
+                [class.active]="selectedDominantHand() === 'Left'"
+                (click)="setDominantHand('Left')"
+              >
+                {{ isMalayalam() ? 'ഇടതുകൈ (Left)' : 'Left Hand' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Report Language -->
+          <div class="form-row">
+            <label class="row-label">{{ isMalayalam() ? 'റിപ്പോർട്ട് ഭാഷ' : 'REPORT LANGUAGE' }}</label>
+            <div class="selection-grid">
+              @for (lang of languages; track lang.id) {
+                <button
+                  type="button"
+                  class="grid-pill-btn"
+                  [class.active]="selectedLanguage() === lang.id"
+                  (click)="setLanguage(lang.id)"
+                >
+                  {{ lang.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="form-actions-container">
+            <button
+              type="submit"
+              class="btn-primary-scan"
+              id="btn-scan-palms"
+              [disabled]="isAnalyzing()"
+            >
+              <span class="sparkle-icon">✦</span>
+              <span>{{ isMalayalam() ? 'കൈത്തലം പരിശോധിച്ച് ഫലം കാണുക' : 'Scan & Analyze Palms' }}</span>
+              <span class="arrow-icon">❯</span>
+            </button>
+
+            <!-- Quick Demo Button -->
+            <button
+              type="button"
+              class="btn-demo-try"
+              (click)="useSampleDemo()"
+              id="btn-demo-palms"
+              title="Instantly analyze sample hands without uploading photos"
+            >
+              <span>✨ {{ isMalayalam() ? 'ഫോട്ടോകൾ ഇല്ലാതെ സാമ്പിൾ ഫലം കാണുക (Quick Demo)' : 'Try Instant Demo with Sample Palm Photos' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- ==========================================
+       VIEW 2: SACRED SCANNING ANIMATION
+       ========================================== -->
+  @else if (activeView() === 'scanning') {
+    <div class="scanning-wrapper">
+      <div class="astro-container scanning-card">
+        <div class="scanner-visual">
+          <div class="hand-silhouette-container">
+            <!-- Stylized Sacred Hand Silhouette -->
+            <svg class="hand-svg-scanner" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M 60 230 C 50 180 30 160 20 130 C 15 110 30 95 42 110 C 48 118 52 135 55 145 C 55 110 50 70 65 60 C 75 55 82 70 82 95 C 85 70 88 35 102 30 C 115 28 118 55 118 90 C 122 70 128 48 140 45 C 152 45 152 70 150 105 C 155 90 165 80 175 85 C 185 92 180 120 170 145 C 160 175 160 200 145 230 Z"
+                stroke="rgba(217, 119, 6, 0.6)"
+                stroke-width="2"
+                fill="rgba(217, 119, 6, 0.04)"
+              />
+              <!-- Laser Scanning Bar -->
+              <line x1="10" y1="30" x2="190" y2="30" class="laser-beam" />
+              <!-- Landmark Pulses -->
+              <circle cx="85" cy="90" r="4" class="pulse-point p1" />
+              <circle cx="102" cy="75" r="4" class="pulse-point p2" />
+              <circle cx="120" cy="85" r="4" class="pulse-point p3" />
+              <circle cx="145" cy="100" r="4" class="pulse-point p4" />
+              <circle cx="80" cy="160" r="4" class="pulse-point p5" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="scanner-details">
+          <div class="scanner-badge">✦ HASTAREKHA AI SCANNING ✦</div>
+          <h2 class="scanner-title">Deciphering Celestial Palm Inscriptions</h2>
+          <p class="scanner-status">{{ scanStatusText() }}</p>
+
+          <div class="scan-progress-bar">
+            <div class="progress-fill" [style.width.%]="scanProgress()"></div>
+          </div>
+          <span class="progress-percent">{{ scanProgress() }}% Complete</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==========================================
+       VIEW 3: HASTAREKHA REPORT SHEET
+       ========================================== -->
+  @else if (activeView() === 'result' && reading()) {
+    <div class="result-wrapper" id="printable-palm-report">
+      <!-- Top Navigation & Action Bar -->
+      <div class="top-nav-bar no-print">
+        <div class="astro-container bar-content">
+          <div class="breadcrumb">
+            <span class="crumb-link">AstroGuide</span>
+            <span class="crumb-separator">»</span>
+            <span class="crumb-current">{{ isMalayalam() ? 'ഹസ്തരേഖാ ഫലം' : 'Palmistry Reading' }}</span>
+          </div>
+
+          <div class="top-bar-actions">
+            <!-- Language Picker -->
+            <div class="result-lang-picker" title="Change Language">
+              <span class="result-lang-icon" aria-hidden="true">🌐</span>
+              <select
+                id="result-lang-select"
+                class="result-lang-dropdown"
+                [value]="selectedLanguage()"
+                (change)="onLanguageSelectChange($event)"
+                aria-label="Select Language"
+              >
+                @for (lang of languages; track lang.id) {
+                  <option [value]="lang.id">{{ lang.label }}</option>
+                }
+              </select>
+            </div>
+
+            <button type="button" class="btn-action-outline" (click)="showForm()" id="edit-palm-btn" title="Edit birth or palm details">
+              <span>✎ Edit Photos</span>
+            </button>
+            <button type="button" class="btn-action-outline" (click)="newReading()" id="new-palm-btn" title="Start a fresh palm reading">
+              <span>+ New Reading</span>
+            </button>
+            <button type="button" class="btn-action-primary" (click)="downloadPdf()" [disabled]="isDownloadingPdf()" id="download-palm-btn" title="Save or Print PDF">
+              <span>📥 Download PDF</span>
+            </button>
+            <button type="button" class="btn-action-secondary" (click)="printReport()" id="print-palm-btn" title="Open Print Dialog">
+              <span>🖨️ Print</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Paper Sheet Container -->
+      <div class="astro-container report-sheet">
+        <!-- Header Banner -->
+        <header class="report-header-section">
+          <div class="curved-banner-top">
+            <span class="banner-ornament">✧ ✦ ✧</span>
+          </div>
+
+          <h1 class="report-title">{{ isMalayalam() ? 'ഹസ്തരേഖാ ജാതകം' : 'HASTAREKHA READING OF' }}</h1>
+          <h2 class="person-name">{{ reading()!.native_name | uppercase }}</h2>
+
+          <div class="person-meta-details">
+            <p class="meta-line">
+              <strong>{{ isMalayalam() ? 'ലിംഗം:' : 'Gender:' }}</strong> {{ reading()!.gender }},
+              <strong>{{ isMalayalam() ? 'പ്രധാന കൈ:' : 'Dominant Hand:' }}</strong> {{ reading()!.dominant_hand }} Hand
+            </p>
+            <p class="meta-line">
+              <strong>{{ isMalayalam() ? 'പരിശോധിച്ച തീയതി:' : 'Analyzed On:' }}</strong> {{ reading()!.analyzed_at }}
+            </p>
+          </div>
+
+          <!-- Element & Vitality Scorecard -->
+          <div class="constitution-scorecard">
+            <div class="scorecard-item">
+              <span class="sc-label">{{ isMalayalam() ? 'ഹസ്ത തത്വം (Element)' : 'Hand Element' }}</span>
+              <span class="sc-val element-highlight">{{ reading()!.hand_constitution.element }}</span>
+              <span class="sc-desc">{{ reading()!.hand_constitution.element_description }}</span>
+            </div>
+
+            <div class="scorecard-divider" aria-hidden="true"></div>
+
+            <div class="scorecard-item vitality-item">
+              <span class="sc-label">{{ isMalayalam() ? 'ശാരീരിക ഓജസ്സ് (Vitality Score)' : 'Prana Vitality Index' }}</span>
+              <div class="vitality-meter-wrap">
+                <div class="vitality-score-num">{{ reading()!.hand_constitution.vitality_index }}<span class="sc-max">/100</span></div>
+                <div class="vitality-bar-track">
+                  <div class="vitality-bar-fill" [style.width.%]="reading()!.hand_constitution.vitality_index"></div>
+                </div>
+              </div>
+              <span class="sc-desc">{{ isMalayalam() ? 'ഉയർന്ന ശാരീരിക-മാനസിക പ്രതിരോധം' : 'Robust physical & mental stamina' }}</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Prarabdha vs Purushartha Synthesis Box -->
+        <section class="karmic-synthesis-card">
+          <div class="synthesis-header">
+            <span class="synthesis-badge">❖ {{ isMalayalam() ? 'കർമ്മ സമന്വയം' : 'KARMIC BLUEPRINT' }} ❖</span>
+            <h3 class="synthesis-title">
+              {{ isMalayalam() ? 'പ്രാരബ്ധവും പുരുഷാർത്ഥവും (Left vs Right Palm Analysis)' : 'Prarabdha vs Purushartha (Dual Palm Synthesis)' }}
+            </h3>
+          </div>
+          <p class="synthesis-text">
+            {{ reading()!.prarabdha_vs_purushartha_summary }}
+          </p>
+        </section>
+
+        <!-- Interactive Palm Visualizer (SVG) -->
+        <section class="interactive-palm-section">
+          <div class="section-badge-header">
+            <h2 class="section-title">
+              {{ isMalayalam() ? 'ഇന്ററാക്ടീവ് ഹസ്തരേഖാ ചാർട്ട്' : 'Interactive Hastarekha Diagram' }}
+            </h2>
+            <p class="section-subtitle">
+              {{ isMalayalam()
+                  ? 'പ്രധാന രേഖകളിലോ പർവ്വതങ്ങളിലോ ക്ലിക്ക് ചെയ്താൽ അവയുടെ വിശദമായ ഫലങ്ങൾ ഹൈലൈറ്റ് ചെയ്യപ്പെടും.'
+                  : 'Click or hover on any major line or planetary mount to reveal its detailed Vedic reading.' }}
+            </p>
+          </div>
+
+          <div class="diagram-interactive-card">
+            <div class="svg-hand-wrapper">
+              <svg class="interactive-hand-svg" viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Palm Contour -->
+                <path
+                  d="M 120 450 C 100 370 70 330 45 270 C 35 230 65 200 90 225 C 102 240 108 275 115 295 C 115 230 105 150 135 130 C 155 120 170 145 170 195 C 176 150 182 80 208 70 C 232 66 238 120 238 185 C 246 145 258 105 282 100 C 304 100 306 145 304 215 C 314 185 334 165 354 175 C 374 188 364 245 344 295 C 324 355 324 400 294 450 Z"
+                  class="svg-palm-base"
+                />
+
+                <!-- Mount Touchpoints (Planetary Glyphs) -->
+                <!-- Guru / Jupiter Mount (Base of Index) -->
+                <g class="mount-target" [class.highlighted]="activeMountKey() === 'jupiter'" (click)="selectMount('jupiter')">
+                  <circle cx="150" cy="180" r="18" class="mount-circle" />
+                  <text x="150" y="185" class="mount-glyph">♃</text>
+                  <text x="150" y="208" class="mount-label">Jupiter</text>
+                </g>
+
+                <!-- Shani / Saturn Mount (Base of Middle) -->
+                <g class="mount-target" [class.highlighted]="activeMountKey() === 'saturn'" (click)="selectMount('saturn')">
+                  <circle cx="210" cy="165" r="18" class="mount-circle" />
+                  <text x="210" y="170" class="mount-glyph">♄</text>
+                  <text x="210" y="193" class="mount-label">Saturn</text>
+                </g>
+
+                <!-- Surya / Sun Mount (Base of Ring) -->
+                <g class="mount-target" [class.highlighted]="activeMountKey() === 'sun'" (click)="selectMount('sun')">
+                  <circle cx="270" cy="175" r="18" class="mount-circle" />
+                  <text x="270" y="180" class="mount-glyph">☉</text>
+                  <text x="270" y="203" class="mount-label">Sun</text>
+                </g>
+
+                <!-- Budha / Mercury Mount (Base of Pinky) -->
+                <g class="mount-target" [class.highlighted]="activeMountKey() === 'mercury'" (click)="selectMount('mercury')">
+                  <circle cx="325" cy="215" r="18" class="mount-circle" />
+                  <text x="325" y="220" class="mount-glyph">☿</text>
+                  <text x="325" y="243" class="mount-label">Mercury</text>
+                </g>
+
+                <!-- Shukra / Venus Mount (Base of Thumb) -->
+                <g class="mount-target" [class.highlighted]="activeMountKey() === 'venus'" (click)="selectMount('venus')">
+                  <circle cx="140" cy="330" r="28" class="mount-circle venus-mount" />
+                  <text x="140" y="336" class="mount-glyph">♀</text>
+                  <text x="140" y="366" class="mount-label">Venus</text>
+                </g>
+
+                <!-- Chandra / Moon Mount (Percussion lower right) -->
+                <g class="mount-target" [class.highlighted]="activeMountKey() === 'moon'" (click)="selectMount('moon')">
+                  <circle cx="280" cy="360" r="28" class="mount-circle moon-mount" />
+                  <text x="280" y="366" class="mount-glyph">☽</text>
+                  <text x="280" y="396" class="mount-label">Moon</text>
+                </g>
+
+                <!-- Primary Lines -->
+                <!-- 1. Heart Line (Hridaya Rekha) -->
+                <path
+                  d="M 330 250 C 270 240 210 230 170 200"
+                  class="svg-line line-heart"
+                  [class.active-line]="activeLineKey() === 'heart'"
+                  (click)="selectLine('heart')"
+                />
+
+                <!-- 2. Head Line (Mastishk Rekha) -->
+                <path
+                  d="M 120 270 C 180 275 240 295 285 340"
+                  class="svg-line line-head"
+                  [class.active-line]="activeLineKey() === 'head'"
+                  (click)="selectLine('head')"
+                />
+
+                <!-- 3. Life Line (Ayur Rekha) -->
+                <path
+                  d="M 120 270 C 135 320 145 370 175 425"
+                  class="svg-line line-life"
+                  [class.active-line]="activeLineKey() === 'life'"
+                  (click)="selectLine('life')"
+                />
+
+                <!-- 4. Fate Line (Bhagya Rekha) -->
+                <path
+                  d="M 215 420 C 215 350 215 280 210 185"
+                  class="svg-line line-fate"
+                  [class.active-line]="activeLineKey() === 'fate'"
+                  (click)="selectLine('fate')"
+                />
+
+                <!-- 5. Sun Line (Surya Rekha) -->
+                <path
+                  d="M 270 310 L 270 195"
+                  class="svg-line line-sun"
+                  [class.active-line]="activeLineKey() === 'sun'"
+                  (click)="selectLine('sun')"
+                />
+              </svg>
+            </div>
+
+            <!-- Line Legend Chips -->
+            <div class="line-legend-chips">
+              <button
+                type="button"
+                class="legend-chip chip-life"
+                [class.active]="activeLineKey() === 'life'"
+                (click)="selectLine('life')"
+              >
+                <span class="chip-color"></span>
+                <span>{{ isMalayalam() ? 'ആയുർ രേഖ (Life Line)' : 'Life Line (Ayur)' }}</span>
+              </button>
+              <button
+                type="button"
+                class="legend-chip chip-head"
+                [class.active]="activeLineKey() === 'head'"
+                (click)="selectLine('head')"
+              >
+                <span class="chip-color"></span>
+                <span>{{ isMalayalam() ? 'ബുദ്ധി രേഖ (Head Line)' : 'Head Line (Mastishk)' }}</span>
+              </button>
+              <button
+                type="button"
+                class="legend-chip chip-heart"
+                [class.active]="activeLineKey() === 'heart'"
+                (click)="selectLine('heart')"
+              >
+                <span class="chip-color"></span>
+                <span>{{ isMalayalam() ? 'ഹൃദയ രേഖ (Heart Line)' : 'Heart Line (Hridaya)' }}</span>
+              </button>
+              <button
+                type="button"
+                class="legend-chip chip-fate"
+                [class.active]="activeLineKey() === 'fate'"
+                (click)="selectLine('fate')"
+              >
+                <span class="chip-color"></span>
+                <span>{{ isMalayalam() ? 'ഭാഗ്യ രേഖ (Fate Line)' : 'Fate Line (Bhagya)' }}</span>
+              </button>
+              <button
+                type="button"
+                class="legend-chip chip-sun"
+                [class.active]="activeLineKey() === 'sun'"
+                (click)="selectLine('sun')"
+              >
+                <span class="chip-color"></span>
+                <span>{{ isMalayalam() ? 'സൂര്യ രേഖ (Sun Line)' : 'Sun Line (Surya)' }}</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Deep Line Readings (5 Primary Rekhas) -->
+        <section class="lines-analysis-section">
+          <div class="section-badge-header">
+            <h2 class="section-title">
+              {{ isMalayalam() ? 'പ്രധാന രേഖകളുടെ സമഗ്ര അപഗ്രഥനം' : 'The Five Primary Lines (Pancha Maha Rekhas)' }}
+            </h2>
+            <p class="section-subtitle">
+              {{ isMalayalam()
+                  ? 'ആയുസ്സ്, ബുദ്ധിശക്തി, പ്രണയം, സാമ്പത്തിക വിധി എന്നിവ വെളിപ്പെടുത്തുന്ന വിശദമായ വിശകലനം'
+                  : 'Detailed readings of vitality, intellectual destiny, relationships, and wealth milestones' }}
+            </p>
+          </div>
+
+          <div class="lines-cards-grid">
+            @for (line of reading()!.major_lines; track line.key) {
+              <div
+                class="line-detail-card"
+                [class.highlight-active]="activeLineKey() === line.key"
+                id="card-line-{{ line.key }}"
+              >
+                <div class="line-card-header">
+                  <div class="line-title-group">
+                    <span class="line-dot dot-{{ line.key }}"></span>
+                    <h3 class="line-card-title">{{ line.name }}</h3>
+                  </div>
+                  <div class="line-score-badge">
+                    <span class="score-label">{{ isMalayalam() ? 'ബലം:' : 'Strength:' }}</span>
+                    <span class="score-num">{{ line.strength_score }}%</span>
+                  </div>
+                </div>
+
+                <div class="line-attributes-row">
+                  <span class="attr-pill"><strong>Quality:</strong> {{ line.quality }}</span>
+                  <span class="attr-pill"><strong>Length:</strong> {{ line.length }}</span>
+                </div>
+
+                <p class="line-interpretation-text">
+                  {{ line.interpretation }}
+                </p>
+
+                <!-- Age Milestones Timeline -->
+                @if (line.age_milestones && line.age_milestones.length > 0) {
+                  <div class="milestones-timeline-block">
+                    <h4 class="timeline-title">✦ {{ isMalayalam() ? 'പ്രായഘട്ടങ്ങളിലെ വഴിത്തിരിവുകൾ' : 'Key Age Milestones' }}</h4>
+                    <div class="timeline-items">
+                      @for (m of line.age_milestones; track m.age_range) {
+                        <div class="timeline-item">
+                          <span class="m-age-pill">{{ m.age_range }}</span>
+                          <span class="m-event-desc">{{ m.event }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Sapta Graha Parvatas (7 Planetary Mounts Grid) -->
+        <section class="mounts-analysis-section">
+          <div class="section-badge-header">
+            <h2 class="section-title">
+              {{ isMalayalam() ? 'സപ്ത ഗ്രഹ പർവ്വതങ്ങൾ' : 'Sapta Graha Parvatas (Planetary Mounts)' }}
+            </h2>
+            <p class="section-subtitle">
+              {{ isMalayalam()
+                  ? '7 ഗ്രഹങ്ങളുടെ അനുഗ്രഹവും ഊർജ്ജ നിലയും വ്യക്തമാക്കുന്ന പർവ്വത സ്ഥാനങ്ങൾ'
+                  : 'Energy distribution and planetary resonance across the 7 sacred zones of your palm' }}
+            </p>
+          </div>
+
+          <div class="mounts-grid">
+            @for (mount of reading()!.planetary_mounts; track mount.key) {
+              <div
+                class="mount-card"
+                [class.highlight-active]="activeMountKey() === mount.key"
+                id="card-mount-{{ mount.key }}"
+              >
+                <div class="mount-card-top">
+                  <h3 class="mount-card-name">{{ mount.name }}</h3>
+                  <span class="mount-score-pill">{{ mount.score }}/100</span>
+                </div>
+
+                <div class="mount-meta-row">
+                  <span class="mount-graha-tag">🪐 {{ mount.graha }}</span>
+                  <span class="mount-dev-tag">✦ {{ mount.development }}</span>
+                </div>
+
+                <p class="mount-significance-text">{{ mount.significance }}</p>
+
+                <div class="mount-remedy-box">
+                  <span class="remedy-label">🔮 {{ isMalayalam() ? 'പരിഹാരം:' : 'Remedy:' }}</span>
+                  <p class="remedy-text">{{ mount.remedy }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Auspicious Signs & Sacred Marks (Shubha Chihnas) -->
+        @if (reading()!.special_signs && reading()!.special_signs.length > 0) {
+          <section class="special-signs-section">
+            <div class="section-badge-header">
+              <h2 class="section-title">
+                {{ isMalayalam() ? 'വിശേഷ ശുഭ ചിഹ്നങ്ങൾ' : 'Sacred Marks & Auspicious Signs' }}
+              </h2>
+              <p class="section-subtitle">
+                {{ isMalayalam()
+                    ? 'ദൈവികമായ കൃപയും സവിശേഷ ഭാഗ്യവും സമ്മാനിക്കുന്ന വിശുദ്ധ മുദ്രകൾ'
+                    : 'Rare celestial signs detected upon your palm bestowing divine protection and prosperity' }}
+              </p>
+            </div>
+
+            <div class="signs-grid">
+              @for (sign of reading()!.special_signs; track sign.symbol) {
+                <div class="sign-card">
+                  <div class="sign-icon-circle">🔱</div>
+                  <h3 class="sign-title">{{ sign.symbol }}</h3>
+                  <span class="sign-loc-badge">📍 {{ sign.location }}</span>
+                  <p class="sign-desc">{{ sign.significance }}</p>
+                  <span class="sign-auspicious-pill">✨ {{ sign.auspiciousness }}</span>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Life Predictions (Career, Wealth, Love, Vitality) -->
+        <section class="predictions-section">
+          <div class="section-badge-header">
+            <h2 class="section-title">
+              {{ isMalayalam() ? 'ജീവിത പ്രവചനങ്ങൾ' : 'Hastarekha Life Predictions' }}
+            </h2>
+            <p class="section-subtitle">
+              {{ isMalayalam()
+                  ? 'തൊഴിൽ, കുടുംബം, ദാമ്പത്യം, ആരോഗ്യം എന്നിവയിലെ വിശദമായ ദിശാസൂചനകൾ'
+                  : 'Comprehensive guidance across career milestones, marriage, wealth, and spiritual growth' }}
+            </p>
+          </div>
+
+          <div class="predictions-grid">
+            <div class="prediction-card card-career">
+              <div class="pred-card-header">
+                <span class="pred-icon">💼</span>
+                <h3 class="pred-title">{{ isMalayalam() ? 'തൊഴിലും ധനഭാഗ്യവും' : 'Career & Financial Destiny' }}</h3>
+              </div>
+              <p class="pred-text">{{ reading()!.life_predictions['career_and_wealth'] }}</p>
+            </div>
+
+            <div class="prediction-card card-marriage">
+              <div class="pred-card-header">
+                <span class="pred-icon">💍</span>
+                <h3 class="pred-title">{{ isMalayalam() ? 'ദാമ്പത്യവും പ്രണയവും' : 'Love & Matrimonial Harmony' }}</h3>
+              </div>
+              <p class="pred-text">{{ reading()!.life_predictions['love_and_marriage'] }}</p>
+            </div>
+
+            <div class="prediction-card card-vitality">
+              <div class="pred-card-header">
+                <span class="pred-icon">🌿</span>
+                <h3 class="pred-title">{{ isMalayalam() ? 'ആരോഗ്യവും ഊർജ്ജവും' : 'Vitality, Health & Longevity' }}</h3>
+              </div>
+              <p class="pred-text">{{ reading()!.life_predictions['vitality_and_health'] }}</p>
+            </div>
+
+            <div class="prediction-card card-spiritual">
+              <div class="pred-card-header">
+                <span class="pred-icon">🕉️</span>
+                <h3 class="pred-title">{{ isMalayalam() ? 'ആത്മീയ സാധന' : 'Spiritual & Intuitive Destiny' }}</h3>
+              </div>
+              <p class="pred-text">{{ reading()!.life_predictions['spiritual_path'] }}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gemstones & Sacred Astrological Remedies -->
+        <section class="remedies-section">
+          <div class="section-badge-header">
+            <h2 class="section-title">
+              {{ isMalayalam() ? 'രത്ന നിർദ്ദേശങ്ങളും വേദിക് പരിഹാരങ്ങളും' : 'Sacred Gemstones & Astrological Remedies' }}
+            </h2>
+            <p class="section-subtitle">
+              {{ isMalayalam()
+                  ? 'പർവ്വതങ്ങളിലെ ദോഷങ്ങൾ പരിഹരിക്കാനും ഭാഗ്യം ഇരട്ടിയാക്കാനുമുള്ള നിർദ്ദേശങ്ങൾ'
+                  : 'Harmonize planetary mounts and amplify positive energetic currents' }}
+            </p>
+          </div>
+
+          <!-- Gemstones Row -->
+          <div class="gemstones-grid">
+            @for (g of reading()!.gemstone_recommendations; track g.gemstone) {
+              <div class="gemstone-card">
+                <div class="gemstone-sparkle">💎</div>
+                <h3 class="gemstone-name">{{ g.gemstone }}</h3>
+                <div class="gemstone-meta">
+                  <span><strong>Planetary Energy:</strong> {{ g.graha }}</span>
+                  <span><strong>Wear on:</strong> {{ g.finger }} ({{ g.metal }})</span>
+                </div>
+                <p class="gemstone-purpose">{{ g.purpose }}</p>
+              </div>
+            }
+          </div>
+
+          <!-- Daily Spiritual Remedies -->
+          <div class="daily-remedies-card">
+            <h3 class="daily-remedies-title">✦ {{ isMalayalam() ? 'നിത്യേന ആചരിക്കേണ്ട പരിഹാരങ്ങൾ' : 'Prescribed Daily Spiritual Practices' }}</h3>
+            <ul class="remedies-bullets">
+              @for (rem of reading()!.sacred_remedies; track rem) {
+                <li>
+                  <span class="bullet-star">✧</span>
+                  <span>{{ rem }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+</main>
+
+<app-footer></app-footer>

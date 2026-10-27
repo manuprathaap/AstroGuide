@@ -64,7 +64,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .forgot-link {
+    font-size: 0.825rem;
+    color: var(--color-gold-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast, 0.2s ease);
+
+    &:hover {
+      color: var(--color-gold-hover);
+      text-decoration: underline;
+    }
+  }
 }
+
 
 .w-full {
   width: 100%;

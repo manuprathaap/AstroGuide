@@ -8,6 +8,8 @@ from app.database.base import Base
 
 if TYPE_CHECKING:
     from app.models.language import Language
+    from app.models.birth_detail import BirthDetail
+    from app.models.password_reset_token import PasswordResetToken
 
 
 class User(Base):
@@ -65,8 +67,14 @@ class User(Base):
     )
 
     birth_details: Mapped["BirthDetail | None"] = relationship(
-    "BirthDetail",
-    back_populates="user",
-    uselist=False,
-    cascade="all, delete-orphan",
-)
+        "BirthDetail",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+
+    reset_tokens: Mapped[list["PasswordResetToken"]] = relationship(
+        "PasswordResetToken",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

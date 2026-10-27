@@ -1,5 +1,12 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators,
+  AbstractControl,
+  ValidationErrors
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
@@ -29,20 +36,42 @@ interface GuidanceTopic {
   };
 }
 
+function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('newPassword');
+  const confirmPassword = control.get('confirmPassword');
+
+  if (password && confirmPassword && password.value && confirmPassword.value) {
+    if (password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    } else {
+      if (confirmPassword.hasError('passwordMismatch')) {
+        const errors = { ...confirmPassword.errors };
+        delete errors['passwordMismatch'];
+        confirmPassword.setErrors(Object.keys(errors).length ? errors : null);
+      }
+    }
+  }
+  return null;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
+
 export class DashboardComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly languageService = inject(LanguageService);
   private readonly translationService = inject(TranslationService);
   private readonly router = inject(Router);
 
   readonly currentUser = this.authService.currentUser;
+
   readonly t = this.translationService.t;
   readonly languages = signal<Language[]>([]);
   readonly currentLanguage = computed(() => this.languageService.currentLanguage());
@@ -59,6 +88,25 @@ export class DashboardComponent implements OnInit {
   readonly selectedOption = signal<string>('');
   readonly customQuery = signal<string>('');
   readonly showReadingResult = signal<boolean>(false);
+
+  // Security / Change Password State
+  readonly showChangePassword = signal<boolean>(false);
+  readonly isChangingPassword = signal<boolean>(false);
+  readonly changePasswordSuccess = signal<string | null>(null);
+  readonly changePasswordError = signal<string | null>(null);
+  readonly showCurrentPassword = signal<boolean>(false);
+  readonly showNewPassword = signal<boolean>(false);
+  readonly showConfirmPassword = signal<boolean>(false);
+
+  readonly changePasswordForm = this.fb.group(
+    {
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]]
+    },
+    { validators: passwordMatchValidator }
+  );
+
 
   readonly explorationCards = computed<ExplorationCard[]>(() => {
     const cards = this.t().dashboard.cards;
@@ -205,7 +253,7 @@ export class DashboardComponent implements OnInit {
     } else if (id === 'chart') {
       this.router.navigate(['/birth-details']);
     } else if (id === 'palm') {
-      this.activeView.set('palm_reading');
+      this.router.navigate(['/palmistry']);
     }
   }
 
@@ -228,7 +276,60 @@ export class DashboardComponent implements OnInit {
     this.showReadingResult.set(false);
   }
 
+  toggleChangePassword(): void {
+    const nextState = !this.showChangePassword();
+    this.showChangePassword.set(nextState);
+    if (!nextState) {
+      this.changePasswordForm.reset();
+      this.changePasswordError.set(null);
+      this.changePasswordSuccess.set(null);
+    }
+  }
+
+  toggleCurrentPasswordVisibility(): void {
+    this.showCurrentPassword.update((v) => !v);
+  }
+
+  toggleNewPasswordVisibility(): void {
+    this.showNewPassword.update((v) => !v);
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword.update((v) => !v);
+  }
+
+  onSubmitChangePassword(): void {
+    if (this.changePasswordForm.invalid || this.isChangingPassword()) {
+      this.changePasswordForm.markAllAsTouched();
+      return;
+    }
+
+    this.isChangingPassword.set(true);
+    this.changePasswordError.set(null);
+    this.changePasswordSuccess.set(null);
+
+    const { currentPassword, newPassword } = this.changePasswordForm.getRawValue();
+
+    this.authService
+      .changePassword({
+        current_password: currentPassword!,
+        new_password: newPassword!
+      })
+      .subscribe({
+        next: (res) => {
+          this.isChangingPassword.set(false);
+          this.changePasswordSuccess.set(res.message || 'Your password has been changed successfully.');
+          this.changePasswordForm.reset();
+        },
+        error: (err) => {
+          this.isChangingPassword.set(false);
+          this.changePasswordError.set(this.authService.formatErrorMessage(err));
+        }
+      });
+  }
+
   logout(): void {
     this.authService.logout();
   }
 }
+

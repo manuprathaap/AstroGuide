@@ -5,7 +5,14 @@ from sqlalchemy import engine_from_config, pool
 
 from app.database.base import Base
 from app.database.connection import DATABASE_URL
-from app.models import User  # noqa: F401
+from app.models import (  # noqa: F401
+    BirthDetail,
+    Guidance,
+    Language,
+    PasswordResetToken,
+    User,
+)
+
 
 
 config = context.config

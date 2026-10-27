@@ -17,6 +17,11 @@
         <span class="lang-text">{{ t().nav.birthChart || 'Free Horoscope' }}</span>
       </a>
 
+      <a routerLink="/palmistry" class="lang-pill" id="header-palmistry-link" [title]="t().nav.palmistry || 'Palm Reading'">
+        <span aria-hidden="true">✋</span>
+        <span class="lang-text">{{ t().nav.palmistry || 'Palm Reading' }}</span>
+      </a>
+
       <!-- Language Selector -->
       <a 
         routerLink="/language" 

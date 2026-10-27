@@ -3,8 +3,21 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.model';
+import {
+  AuthResponse,
+  ChangePasswordRequest,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  LoginRequest,
+  MessageResponse,
+  RegisterRequest,
+  ResetPasswordRequest,
+  VerifyOtpRequest,
+  VerifyOtpResponse
+} from '../models/auth.model';
+
 import { User } from '../models/user.model';
+
 
 @Injectable({
   providedIn: 'root'
@@ -74,6 +87,24 @@ export class AuthService {
       })
     );
   }
+
+  forgotPassword(payload: ForgotPasswordRequest): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(`${this.apiUrl}/auth/forgot-password`, payload);
+  }
+
+  verifyOtp(payload: VerifyOtpRequest): Observable<VerifyOtpResponse> {
+    return this.http.post<VerifyOtpResponse>(`${this.apiUrl}/auth/verify-otp`, payload);
+  }
+
+  resetPassword(payload: ResetPasswordRequest): Observable<MessageResponse> {
+
+    return this.http.post<MessageResponse>(`${this.apiUrl}/auth/reset-password`, payload);
+  }
+
+  changePassword(payload: ChangePasswordRequest): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.apiUrl}/auth/change-password`, payload);
+  }
+
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/auth/me`).pipe(

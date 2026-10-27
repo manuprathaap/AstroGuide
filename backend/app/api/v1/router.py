@@ -7,6 +7,7 @@ from app.api.v1.endpoints.birth_details import router as birth_details_router
 from app.api.v1.endpoints.guidance import router as guidance_router
 from app.api.v1.endpoints.astrology import router as astrology_router
 from app.api.v1.endpoints.horoscope import router as horoscope_router
+from app.api.v1.endpoints.palmistry import router as palmistry_router
 
 api_router = APIRouter(
     prefix="/api/v1",
@@ -19,3 +20,4 @@ api_router.include_router(birth_details_router)
 api_router.include_router(guidance_router)
 api_router.include_router(astrology_router)
 api_router.include_router(horoscope_router)
+api_router.include_router(palmistry_router)
