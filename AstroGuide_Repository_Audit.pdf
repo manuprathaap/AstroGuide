@@ -1,0 +1,314 @@
+%PDF-1.4
+%ту╧╙
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 6 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Length 4249 >>
+stream
+0.080 0.140 0.250 rg 48 616 516 112 re f
+0.730 0.830 0.960 rg BT /F2 10 Tf 1 0 0 1 68.0 697.0 Tm (FULL-STACK REPOSITORY) Tj ET
+1.000 1.000 1.000 rg BT /F2 24 Tf 1 0 0 1 68.0 662.0 Tm (Structure & DX Audit) Tj ET
+0.910 0.940 0.980 rg BT /F1 10 Tf 1 0 0 1 68.0 637.0 Tm (AstroGuide | Angular frontend + Python/FastAPI backend) Tj ET
+0.990 0.930 0.910 rg 48 552 516 48 re f
+0.700 0.190 0.160 rg BT /F2 11 Tf 1 0 0 1 62.0 581.0 Tm (VERDICT: NEEDS IMPORTANT CLEANUP) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.5 Tf 1 0 0 1 62.0 564.5 Tm (Sound project split; sanitize credential examples and untrack the venv.) Tj ET
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 523.0 Tm (Executive summary) Tj ET
+0.930 0.960 0.990 RG .8 w 48 515 m 564 515 l S
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 498.0 Tm (The repository has distinct backend/ and frontend/ directories, each with its own dependency) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 486.0 Tm (definition. Angular has a matching npm lockfile. You already run the services in separate) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 474.0 Tm (terminals; that is a clear and appropriate local development workflow. Docker Compose or a) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 462.0 Tm (concurrent runner is optional, not a required fix.) Tj ET
+0.700 0.190 0.160 rg BT /F1 9 Tf 1 0 0 1 48.0 446.0 Tm (Two findings merit prompt action: a backend virtual environment is committed to Git, and the) Tj ET
+0.700 0.190 0.160 rg BT /F1 9 Tf 1 0 0 1 48.0 434.0 Tm (tracked root .env.example contains values that do not look like safe placeholders. Do not copy or) Tj ET
+0.700 0.190 0.160 rg BT /F1 9 Tf 1 0 0 1 48.0 422.0 Tm (reuse those values. Rotate any credentials that were real; changing the file alone does not remove) Tj ET
+0.700 0.190 0.160 rg BT /F1 9 Tf 1 0 0 1 48.0 410.0 Tm (its earlier Git history.) Tj ET
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 388.0 Tm (Priority actions) Tj ET
+0.930 0.960 0.990 RG .8 w 48 380 m 564 380 l S
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 362.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 363.2 Tm (HIGH - credentials: Replace values in the tracked .env.example with unmistakable placeholders.) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 351.2 Tm (Rotate any real credentials and review Git history/deployment secrets.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 335.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 336.2 Tm (HIGH - repository hygiene: backend/.venv312 has 5,011 tracked files. Ignore it and remove it) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 324.2 Tm (from the Git index; preserve local files until you confirm it is unused.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 308.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 309.2 Tm (MEDIUM - configuration: Complete the backend environment template, align its SMTP setting with) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 297.2 Tm (code, and configure the production API URL and CORS origins.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 281.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 282.2 Tm (LOW - onboarding: Add a root README describing the existing two-terminal workflow. Orchestration) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 270.2 Tm (remains optional.) Tj ET
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 249.0 Tm (Scope and evidence) Tj ET
+0.930 0.960 0.990 RG .8 w 48 241 m 564 241 l S
+0.380 0.420 0.480 rg BT /F1 8.5 Tf 1 0 0 1 48.0 224.5 Tm (Inspected tracked paths, ignore rules, dependency manifests, environment variable names \(not) Tj ET
+0.380 0.420 0.480 rg BT /F1 8.5 Tf 1 0 0 1 48.0 213.0 Tm (values\), backend config/startup, Angular environment settings, and lockfile metadata. The local) Tj ET
+0.380 0.420 0.480 rg BT /F1 8.5 Tf 1 0 0 1 48.0 201.5 Tm (.env is ignored and was not tracked in the inspected index. No secret values are included here.) Tj ET
+0.930 0.960 0.990 RG .8 w 48 38 m 564 38 l S
+0.380 0.420 0.480 rg BT /F1 7 Tf 1 0 0 1 48.0 23.0 Tm (Prepared 10 Nov 2026 | Local repository audit; no credentials reproduced) Tj ET
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 545.0 22.0 Tm (1) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 6083 >>
+stream
+0.120 0.340 0.620 rg 0 785 612 7 re f
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 48.0 761.0 Tm (ASTROGUIDE / REPOSITORY STRUCTURE AUDIT) Tj ET
+0.930 0.960 0.990 RG .8 w 48 747 m 564 747 l S
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 713.0 Tm (Findings in detail) Tj ET
+0.930 0.960 0.990 RG .8 w 48 705 m 564 705 l S
+0.700 0.190 0.160 rg BT /F2 10.5 Tf 1 0 0 1 48.0 686.5 Tm (1. Tracked virtual environment - HIGH) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 672.5 Tm (The Git index contains 5,011 files under backend/.venv312. Committing a venv bloats clones and can) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 660.5 Tm (include machine-specific binaries. A second backend environment, backend/.venv, is present locally) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 648.5 Tm (and is ignored. Choose one working environment; do not remove either local directory until you know) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 636.5 Tm (which one you use.) Tj ET
+0.700 0.190 0.160 rg BT /F2 10.5 Tf 1 0 0 1 48.0 619.0 Tm (2. Unsafe tracked environment template - HIGH) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 605.0 Tm (The committed root .env.example contains database and JWT values that are not clearly placeholders.) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 593.0 Tm (This audit cannot determine whether these are live credentials. Replace them with unmistakable) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 581.0 Tm (placeholders, rotate any real values, and review Git history and deployment secrets. Keep) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 569.0 Tm (.env.example committed only after sanitizing it; keep .env ignored.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10.5 Tf 1 0 0 1 48.0 551.5 Tm (3. Ignore strategy - MEDIUM) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 537.5 Tm (The root .gitignore covers several common Python, Angular, and secret files; frontend/.gitignore) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 525.5 Tm (supplies Angular-specific rules. Root rules miss .venv312, pytest caches, and SQLite files.) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 513.5 Tm (Consolidate common rules at the root; keeping frontend/.gitignore for Angular-only exceptions is) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 501.5 Tm (optional.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10.5 Tf 1 0 0 1 48.0 484.0 Tm (4. Environment template mismatch - MEDIUM) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 470.0 Tm (Backend code reads GEOAPIFY_API_KEY, GEMINI_API_KEY, LLM_PROVIDER, OLLAMA_BASE_URL, OLLAMA_MODEL,) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 458.0 Tm (and GEMINI_VISION_MODEL, among others, while the tracked template omits these. The template defines) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 446.0 Tm (SMTP_TLS, but email_service.py checks SMTP_SSL and otherwise uses STARTTLS. Document settings) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 434.0 Tm (actually consumed by the application.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10.5 Tf 1 0 0 1 48.0 416.5 Tm (5. Production frontend configuration - MEDIUM) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 402.5 Tm (Angular production environment currently points at 127.0.0.1:8000, which points to each end user?s) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 390.5 Tm (own machine after deployment. Set the deployed API base URL in production build configuration and) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 378.5 Tm (allow only deployed frontend origin\(s\) in backend CORS. Never place server API keys in Angular) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 366.5 Tm (source.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10.5 Tf 1 0 0 1 48.0 349.0 Tm (6. Run workflow and dependency tracking - LOW) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 335.0 Tm (The two-terminal workflow is fine and matches how you already run the app.) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 323.0 Tm (frontend/package-lock.json exists and its root name/version match package.json.) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 311.0 Tm (backend/requirements.txt pins exact versions but is not hash-locked. No root README or one-command) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 299.0 Tm (orchestration file was found. requirements.txt is UTF-16 encoded; local pip parsed it, but the) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 287.0 Tm (offline dry-run could not complete because an unavailable package was not cached.) Tj ET
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 265.0 Tm (Recommended layout) Tj ET
+0.930 0.960 0.990 RG .8 w 48 257.0 m 564 257.0 l S
+0.930 0.960 0.990 rg 48 81.0 516 168 re f
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 234.3 Tm (AstroGuide/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 220.3 Tm (.gitignore) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 206.3 Tm (.env.example              # backend template; placeholders only) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 192.3 Tm (README.md                 # prerequisites and two-terminal run steps) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 178.3 Tm (backend/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 164.3 Tm (.venv/                  # local Python environment; ignored) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 150.3 Tm (requirements.txt) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 136.3 Tm (alembic.ini, alembic/, app/, tests/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 122.3 Tm (frontend/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 108.3 Tm (package.json, package-lock.json, angular.json) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 94.3 Tm (src/environments/       # API URL only; no secrets) Tj ET
+0.930 0.960 0.990 RG .8 w 48 38 m 564 38 l S
+0.380 0.420 0.480 rg BT /F1 7 Tf 1 0 0 1 48.0 23.0 Tm (Prepared 10 Nov 2026 | Local repository audit; no credentials reproduced) Tj ET
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 545.0 22.0 Tm (2) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 1387 >>
+stream
+0.120 0.340 0.620 rg 0 785 612 7 re f
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 48.0 761.0 Tm (ASTROGUIDE / REPOSITORY STRUCTURE AUDIT) Tj ET
+0.930 0.960 0.990 RG .8 w 48 747 m 564 747 l S
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 713.0 Tm (Step-by-step remediation) Tj ET
+0.930 0.960 0.990 RG .8 w 48 705 m 564 705 l S
+0.080 0.140 0.250 rg BT /F2 10.5 Tf 1 0 0 1 48.0 686.5 Tm (1. Sanitize the tracked template and rotate credentials) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 672.5 Tm (Edit .env.example: replace every credential-like value with replace_me, list only backend) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 660.5 Tm (variables, and correct the SMTP flag to SMTP_SSL=false \(or document SSL explicitly\). Add Geoapify,) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 648.5 Tm (Gemini/LLM, database, JWT, and mail variables as applicable. Rotate any real credentials first. Do) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 636.5 Tm (not put secrets in frontend source.) Tj ET
+0.080 0.140 0.250 rg BT /F2 10.5 Tf 1 0 0 1 48.0 619.0 Tm (2. Replace root .gitignore with this shared baseline) Tj ET
+0.930 0.960 0.990 RG .8 w 48 38 m 564 38 l S
+0.380 0.420 0.480 rg BT /F1 7 Tf 1 0 0 1 48.0 23.0 Tm (Prepared 10 Nov 2026 | Local repository audit; no credentials reproduced) Tj ET
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 545.0 22.0 Tm (3) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 4029 >>
+stream
+0.120 0.340 0.620 rg 0 785 612 7 re f
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 48.0 761.0 Tm (ASTROGUIDE / REPOSITORY STRUCTURE AUDIT) Tj ET
+0.930 0.960 0.990 RG .8 w 48 747 m 564 747 l S
+0.930 0.960 0.990 rg 48 56 516 672 re f
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 713.3 Tm (# Secrets and local environment files) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 699.3 Tm (.env) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 685.3 Tm (.env.*) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 671.3 Tm (!.env.example) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 657.3 Tm (!.env.*.example) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 643.3 Tm () Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 629.3 Tm (# Python) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 615.3 Tm (__pycache__/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 601.3 Tm (*.py[cod]) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 587.3 Tm (*$py.class) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 573.3 Tm (.Python) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 559.3 Tm (.venv/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 545.3 Tm (.venv*/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 531.3 Tm (venv/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 517.3 Tm (ENV/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 503.3 Tm (.pytest_cache/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 489.3 Tm (.mypy_cache/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 475.3 Tm (.ruff_cache/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 461.3 Tm (.coverage) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 447.3 Tm (.coverage.*) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 433.3 Tm (htmlcov/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 419.3 Tm () Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 405.3 Tm (# Node and frontend build output) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 391.3 Tm (node_modules/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 377.3 Tm (dist/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 363.3 Tm (build/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 349.3 Tm (.angular/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 335.3 Tm (.next/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 321.3 Tm (.nuxt/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 307.3 Tm (coverage/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 293.3 Tm (npm-debug.log*) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 279.3 Tm (yarn-debug.log*) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 265.3 Tm (yarn-error.log*) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 251.3 Tm () Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 237.3 Tm (# Local databases) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 223.3 Tm (*.db) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 209.3 Tm (*.sqlite) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 195.3 Tm (*.sqlite3) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 181.3 Tm () Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 167.3 Tm (# Logs, temporary files, IDE and OS) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 153.3 Tm (*.log) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 139.3 Tm (tmp/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 125.3 Tm (temp/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 111.3 Tm (.idea/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 97.3 Tm (.vscode/) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 83.3 Tm (.DS_Store) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 69.3 Tm (Thumbs.db) Tj ET
+0.930 0.960 0.990 RG .8 w 48 38 m 564 38 l S
+0.380 0.420 0.480 rg BT /F1 7 Tf 1 0 0 1 48.0 23.0 Tm (Prepared 10 Nov 2026 | Local repository audit; no credentials reproduced) Tj ET
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 545.0 22.0 Tm (4) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 1548 >>
+stream
+0.120 0.340 0.620 rg 0 785 612 7 re f
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 48.0 761.0 Tm (ASTROGUIDE / REPOSITORY STRUCTURE AUDIT) Tj ET
+0.930 0.960 0.990 RG .8 w 48 747 m 564 747 l S
+0.380 0.420 0.480 rg BT /F1 8.3 Tf 1 0 0 1 48.0 719.7 Tm (The frontend-specific ignore file may remain if it carries Angular-only exclusions; shared rules) Tj ET
+0.380 0.420 0.480 rg BT /F1 8.3 Tf 1 0 0 1 48.0 708.4 Tm (belong at the repository root.) Tj ET
+0.080 0.140 0.250 rg BT /F2 10.5 Tf 1 0 0 1 48.0 690.9 Tm (3. Untrack the committed venv \(local files are preserved\)) Tj ET
+0.930 0.960 0.990 rg 48 615.9 516 70 re f
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 671.2 Tm (git rm -r --cached --ignore-unmatch -- backend/.venv312) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 657.2 Tm (git add .gitignore .env.example) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 643.2 Tm (git status --short) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 629.2 Tm (git ls-files backend/.venv312) Tj ET
+0.380 0.420 0.480 rg BT /F1 8.3 Tf 1 0 0 1 48.0 600.6 Tm (The last command should print no paths. The index removal does not delete the local venv. Remove) Tj ET
+0.380 0.420 0.480 rg BT /F1 8.3 Tf 1 0 0 1 48.0 589.3 Tm (that local directory only after confirming you no longer need it.) Tj ET
+0.930 0.960 0.990 RG .8 w 48 38 m 564 38 l S
+0.380 0.420 0.480 rg BT /F1 7 Tf 1 0 0 1 48.0 23.0 Tm (Prepared 10 Nov 2026 | Local repository audit; no credentials reproduced) Tj ET
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 545.0 22.0 Tm (5) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 4537 >>
+stream
+0.120 0.340 0.620 rg 0 785 612 7 re f
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 48.0 761.0 Tm (ASTROGUIDE / REPOSITORY STRUCTURE AUDIT) Tj ET
+0.930 0.960 0.990 RG .8 w 48 747 m 564 747 l S
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 713.0 Tm (Run, deploy & verify) Tj ET
+0.930 0.960 0.990 RG .8 w 48 705 m 564 705 l S
+0.080 0.140 0.250 rg BT /F2 10.5 Tf 1 0 0 1 48.0 686.5 Tm (4. Keep your existing two-terminal workflow) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 672.5 Tm (Terminal 1 - from the repository root \(use backend/.venv if that is your working environment\):) Tj ET
+0.930 0.960 0.990 rg 48 623.5 516 42 re f
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 650.8 Tm (.\\backend\\.venv\\Scripts\\python.exe -m uvicorn app.main:app --app-dir backend --reload --host) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 636.8 Tm (  127.0.0.1 --port 8000) Tj ET
+0.150 0.180 0.230 rg BT /F1 9 Tf 1 0 0 1 48.0 607.5 Tm (Terminal 2 - start Angular:) Tj ET
+0.930 0.960 0.990 rg 48 544.5 516 56 re f
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 585.8 Tm (Set-Location frontend) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 571.8 Tm (npm ci) Tj ET
+0.080 0.140 0.250 rg BT /F3 7.7 Tf 1 0 0 1 57.0 557.8 Tm (npm start) Tj ET
+0.080 0.140 0.250 rg BT /F2 10.5 Tf 1 0 0 1 48.0 527.0 Tm (5. Update deployment settings and document setup) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 512.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 513.2 Tm (Set Angular production API URL to the deployed backend address; the URL is configuration, not a) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 501.2 Tm (secret.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 485.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 486.2 Tm (Set backend CORS allow_origins to the actual frontend URL\(s\); avoid wildcard origins when) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 474.2 Tm (credentials are enabled.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 458.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 459.2 Tm (Add a root README with Python/Node versions, database/migrations, environment setup, the) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 447.2 Tm (two-terminal commands, tests, and production configuration.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 431.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 432.2 Tm (Optionally generate a hash-locked backend requirements file if strict reproducibility is needed.) Tj ET
+0.080 0.140 0.250 rg BT /F2 15 Tf 1 0 0 1 48.0 411.0 Tm (Completion checklist) Tj ET
+0.930 0.960 0.990 RG .8 w 48 403.0 m 564 403.0 l S
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 385.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 386.2 Tm (.env.example contains placeholders only; any formerly valid credential is rotated.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 370.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 371.2 Tm (git check-ignore backend/.venv312 and git check-ignore frontend/node_modules both confirm) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 359.2 Tm (ignored paths.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 343.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 344.2 Tm (git ls-files backend/.venv312 returns no output; no generated environment or build artifacts) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 332.2 Tm (remain tracked.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 316.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 317.2 Tm (Frontend production API URL and backend CORS origins match deployment.) Tj ET
+0.120 0.340 0.620 rg BT /F2 10 Tf 1 0 0 1 52.0 301.0 Tm (Х) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 302.2 Tm (From clean environments, npm ci and pip install -r backend/requirements.txt complete; then run) Tj ET
+0.150 0.180 0.230 rg BT /F1 8.8 Tf 1 0 0 1 67.0 290.2 Tm (the frontend build and backend tests.) Tj ET
+0.930 0.960 0.990 rg 48 236.0 516 44 re f
+0.120 0.340 0.620 rg BT /F2 8 Tf 1 0 0 1 60.0 264.0 Tm (RECOMMENDATION) Tj ET
+0.080 0.140 0.250 rg BT /F2 9 Tf 1 0 0 1 60.0 248.0 Tm (Sanitize credential handling and untrack the venv before the next push.) Tj ET
+0.930 0.960 0.990 RG .8 w 48 38 m 564 38 l S
+0.380 0.420 0.480 rg BT /F1 7 Tf 1 0 0 1 48.0 23.0 Tm (Prepared 10 Nov 2026 | Local repository audit; no credentials reproduced) Tj ET
+0.380 0.420 0.480 rg BT /F2 8 Tf 1 0 0 1 545.0 22.0 Tm (6) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 16 0 R >>
+endobj
+xref
+0 18
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000155 00000 n 
+0000000252 00000 n 
+0000000354 00000 n 
+0000000449 00000 n 
+0000004750 00000 n 
+0000004896 00000 n 
+0000011031 00000 n 
+0000011177 00000 n 
+0000012617 00000 n 
+0000012765 00000 n 
+0000016847 00000 n 
+0000016995 00000 n 
+0000018596 00000 n 
+0000018744 00000 n 
+0000023334 00000 n 
+trailer
+<< /Size 18 /Root 1 0 R >>
+startxref
+23482
+%%EOF
