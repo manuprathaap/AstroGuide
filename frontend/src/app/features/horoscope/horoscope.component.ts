@@ -47,9 +47,6 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
     { id: 4, code: 'ta', name: 'Tamil', native_name: 'தமிழ்' },
     { id: 5, code: 'te', name: 'Telugu', native_name: 'తెలుగు' },
     { id: 6, code: 'kn', name: 'Kannada', native_name: 'ಕನ್ನಡ' },
-    { id: 7, code: 'bn', name: 'Bengali', native_name: 'বাংলা' },
-    { id: 8, code: 'mr', name: 'Marathi', native_name: 'मराठी' },
-    { id: 9, code: 'gu', name: 'Gujarati', native_name: 'ગુજરાતી' },
   ];
   private availableLanguages: Language[] = [...this.defaultLanguages];
 
@@ -83,12 +80,8 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
     { id: 'Malayalam', label: 'Malayalam' },
     { id: 'Hindi', label: 'Hindi' },
     { id: 'Tamil', label: 'Tamil' },
-    { id: 'Telugu', label: 'Telugu' },
-    { id: 'Kannada', label: 'Kannada' },
-    { id: 'Bengali', label: 'Bengali' },
-    { id: 'Marathi', label: 'Marathi' },
-    { id: 'Gujarati', label: 'Gujarati' },
   ];
+  readonly languagePreferenceError = signal<string | null>(null);
 
   readonly chartStyles = [
     { id: 'Kerala', label: 'Kerala' },
@@ -154,7 +147,9 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
       }
       if (savedForm.ampm) this.selectedAmPm.set(savedForm.ampm);
       if (savedForm.chartStyle) this.selectedChartStyle.set(savedForm.chartStyle);
-      if (savedForm.language) this.selectedLanguage.set(savedForm.language);
+      if (this.languages.some(language => language.id === savedForm.language)) {
+        this.selectedLanguage.set(savedForm.language);
+      }
     }
 
     // Sync selectedLanguage with global language preference (defaults to English)
@@ -206,6 +201,11 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
   }
 
   setLanguage(lang: string): void {
+    if (!this.languages.some(language => language.id === lang)) {
+      return;
+    }
+
+    this.languagePreferenceError.set(null);
     this.selectedLanguage.set(lang);
 
     const matched = this.findMatchingLanguage(lang);
@@ -215,7 +215,11 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
       if (this.authService.isAuthenticated() && matched.id <= 6) {
         this.languageService.updateUserLanguage(matched.id).subscribe({
           next: () => this.authService.updateCurrentUserLanguage(matched.id),
-          error: () => {},
+          error: () => {
+            this.languagePreferenceError.set(
+              'The report language changed, but your saved account language could not be updated.'
+            );
+          },
         });
       }
     }
@@ -418,7 +422,7 @@ export class HoroscopeComponent implements OnInit, OnDestroy {
     } else {
       // Save current state so returning after login retains full horoscope and inputs
       this.saveCurrentState();
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/horoscope' } });
+      this.router.navigate(['/auth/login'], { queryParams: { returnUrl: '/horoscope' } });
     }
   }
 

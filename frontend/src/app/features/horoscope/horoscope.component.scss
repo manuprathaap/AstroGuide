@@ -74,6 +74,33 @@
   gap: 0.75rem;
 }
 
+.language-support-note,
+.language-preference-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+}
+
+.language-support-note {
+  color: var(--text-secondary);
+}
+
+.language-preference-error {
+  color: #b91c1c;
+}
+
+.language-support-note,
+.language-preference-error {
+  @media (min-width: 768px) {
+    grid-column: 2;
+  }
+}
+
+.result-language-preference-error {
+  max-width: 1100px;
+  margin: 0.75rem auto;
+  padding: 0 1rem;
+}
+
 .horoscope-form {
   display: flex;
   flex-direction: column;

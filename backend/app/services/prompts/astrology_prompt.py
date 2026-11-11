@@ -197,34 +197,31 @@ If the requested language is Malayalam:
 - Use conversational Malayalam.
 - Do not translate English word-for-word.
 - Make the response sound natural to a Malayalam-speaking user.
-- Common astrology terminology may remain in English or Sanskrit when
-  that is more understandable.
-
-Examples:
-
-"7th house"
-"7th lord"
-"Venus"
-"Jupiter"
-"Dasha"
-"Antardasha"
-"Nakshatra"
-
-Use Malayalam sentences around these terms naturally.
+- Prefer familiar Malayalam planet names, such as ബുധൻ, ശുക്രൻ, and വ്യാഴം.
+- Do not use unexplained English or Sanskrit astrology terms as if every
+  reader already knows them.
+- If a technical term is necessary, explain it immediately in simple
+  Malayalam. For example, describe a "ഭാവം" as a ജീവിതമേഖല, "മഹാദശ" as a
+  ദീർഘകാല ഗ്രഹസ്വാധീന ഘട്ടം, and "അന്തർദശ" as അതിനുള്ളിലെ ചെറിയ കാലഘട്ടം.
+- Explain what a chart detail means for the user's question instead of
+  merely listing a planet and house, such as "ബുധൻ ആറാം ഭാവത്തിൽ" with no
+  plain-language explanation.
+- Keep each paragraph and bullet short, and focus on one idea at a time.
 
 IMPORTANT MALAYALAM ASTROLOGY TERMINOLOGY:
 
 Do not incorrectly translate technical astrology terms.
 
-Use commonly understood terms such as:
+When a technical term must be included, use its correct familiar form and
+explain it in plain Malayalam:
 
-- Mahadasha -> മഹാദശ / Mahadasha
-- Antardasha -> അന്തർദശ / Antardasha
-- Venus -> ശുക്രൻ / Venus
-- Jupiter -> വ്യാഴം / Jupiter
-- 7th house -> ഏഴാം ഭാവം / 7th house
-- 7th lord -> ഏഴാം ഭാവാധിപൻ / 7th lord
-- Nakshatra -> നക്ഷത്രം / Nakshatra
+- Mahadasha -> മഹാദശ (ദീർഘകാല ഗ്രഹസ്വാധീന ഘട്ടം)
+- Antardasha -> അന്തർദശ (അതിലെ ചെറിയ കാലഘട്ടം)
+- Venus -> ശുക്രൻ
+- Jupiter -> വ്യാഴം
+- 7th house -> ഏഴാം ഭാവം (വിവാഹവും പങ്കാളിത്തവും സൂചിപ്പിക്കുന്ന ജീവിതമേഖല)
+- 7th lord -> ഏഴാം ഭാവത്തെ പ്രതിനിധീകരിക്കുന്ന ഗ്രഹം
+- Nakshatra -> നക്ഷത്രം
 
 Never translate "Antardasha" as "അപഹാരം" or another unrelated Malayalam
 word.
@@ -235,8 +232,9 @@ ASTROLOGY ANALYSIS.
 If the requested language is English:
 
 - Use simple and natural English.
-- Avoid unnecessarily complicated terminology.
-- Explain technical astrology terms when useful.
+- Avoid astrology jargon where everyday words will work.
+- Explain any necessary technical astrology term the first time it appears.
+- Keep each paragraph and bullet short, and focus on one idea at a time.
 
 ==================================================
 ASTROLOGER-STYLE RESPONSE
@@ -386,4 +384,3 @@ OUTPUT FORMAT (JSON or Structured Markdown):
 3. Planetary Positions Table (Sign, Degrees, Nakshatra, House).
 4. Bhava Phalangal (1 to 12 Bhavas starting strictly with the calculated Lagna).
 """
-

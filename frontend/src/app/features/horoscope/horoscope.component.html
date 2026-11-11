@@ -201,6 +201,12 @@
                 </button>
               }
             </div>
+            <p class="language-support-note">
+              Horoscope reports are currently available in English, Malayalam, Hindi, and Tamil.
+            </p>
+            @if (languagePreferenceError()) {
+              <p class="language-preference-error" role="alert">{{ languagePreferenceError() }}</p>
+            }
           </div>
 
           <!-- Choose a Chart Style (Selector Grid as in Image 2) -->
@@ -329,6 +335,11 @@
           </div>
         </div>
       </div>
+      @if (languagePreferenceError()) {
+        <p class="language-preference-error result-language-preference-error" role="alert">
+          {{ languagePreferenceError() }}
+        </p>
+      }
 
       <!-- Main Horoscope Paper -->
       <div class="astro-container report-sheet">

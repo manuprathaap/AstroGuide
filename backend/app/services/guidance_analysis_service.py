@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -14,6 +15,64 @@ from app.services.astrology_context_service import AstrologyContextService
 
 # GuidanceExplanationError is imported from app.services.llm_service
 __all__ = ['GuidanceAnalysisService', 'GuidanceAnalysisResult', 'GuidanceExplanationError']
+
+_MARRIAGE_EXPLANATION_FIELDS = (
+    "seventh_house_sign",
+    "seventh_house_lord",
+    "seventh_lord_sign",
+    "seventh_lord_house",
+    "venus_sign",
+    "venus_house",
+    "jupiter_sign",
+    "jupiter_house",
+    "current_mahadasha",
+    "current_antardasha",
+    "factors",
+)
+_MAX_MARRIAGE_TIMING_WINDOWS_FOR_EXPLANATION = 5
+
+
+def _context_for_explanation(context: dict[str, Any]) -> dict[str, Any]:
+    if context.get("question_type") != QuestionType.MARRIAGE_TIMING.value:
+        return context
+
+    specialized = context.get("specialized_analysis")
+    if not isinstance(specialized, dict):
+        return context
+
+    compact_analysis = {
+        key: specialized[key]
+        for key in _MARRIAGE_EXPLANATION_FIELDS
+        if key in specialized
+    }
+
+    timing = specialized.get("timing")
+    if isinstance(timing, dict):
+        compact_timing = {
+            key: timing[key]
+            for key in ("current_period", "supporting_factors", "caution_factors", "limitations")
+            if key in timing
+        }
+        candidate_periods = timing.get("candidate_periods")
+        if not isinstance(candidate_periods, list) or not candidate_periods:
+            candidate_periods = specialized.get("timing_windows")
+        if isinstance(candidate_periods, list):
+            compact_timing["candidate_periods"] = candidate_periods[
+                :_MAX_MARRIAGE_TIMING_WINDOWS_FOR_EXPLANATION
+            ]
+        compact_analysis["timing"] = compact_timing
+    elif isinstance(specialized.get("timing_windows"), list):
+        compact_analysis["timing"] = {
+            "candidate_periods": specialized["timing_windows"][
+                :_MAX_MARRIAGE_TIMING_WINDOWS_FOR_EXPLANATION
+            ]
+        }
+
+    return {
+        key: value
+        for key, value in context.items()
+        if key != "specialized_analysis"
+    } | {"specialized_analysis": compact_analysis}
 
 
 @dataclass(frozen=True)
@@ -95,7 +154,7 @@ class GuidanceAnalysisService:
                 message = llm_service.generate_conversational_response(
                     question=problem,
                     language=language,
-                    astrology_context=context,
+                    astrology_context=_context_for_explanation(context),
                     conversation_history=history,
                 )
             except GuidanceExplanationError:

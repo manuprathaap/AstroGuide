@@ -59,7 +59,7 @@ def test_horoscope_calculator_direct():
     assert res_ml.chapters[1].title == "താങ്കളുടെ സ്വഭാവ സവിശേഷതകൾ"
 
 
-def test_horoscope_generate_endpoint_public():
+def test_horoscope_generate_endpoint_requires_authentication():
     payload = {
         "name": "Manu Prathap",
         "gender": "Male",
@@ -73,14 +73,7 @@ def test_horoscope_generate_endpoint_public():
         "language": "Malayalam",
     }
     response = client.post("/api/v1/horoscope/generate", json=payload)
-    assert response.status_code == 200
-    data = response.json()
-    assert data["personal_info"]["name"] == "Manu Prathap"
-    assert data["sun_sign"]["name"] == "AQUARIUS"
-    assert data["moon_sign"]["malayalam"] == "മീനം"
-    assert len(data["rashi_chart"]["boxes"]) == 12
-    assert len(data["navamsha_chart"]["boxes"]) == 12
-    assert len(data["planetary_positions"]) >= 9
+    assert response.status_code == 401
 
 
 def test_anuradha_nakshatra_reference():
@@ -134,4 +127,3 @@ def test_horoscope_lagna_and_nakshatra_consistency():
     assert len(ch3.items) == 12
     asc_sign_mal = res.ascendant["sign_malayalam"]
     assert asc_sign_mal in ch3.items[0].prediction_text
-

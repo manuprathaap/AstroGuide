@@ -15,6 +15,7 @@ from app.astrology.question_classifier import QuestionType
 from app.models.birth_detail import BirthDetail
 from app.services.guidance_analysis_service import GuidanceAnalysisService
 from app.services.guidance_analysis_service import GuidanceExplanationError
+from app.services.guidance_analysis_service import _context_for_explanation
 from app.schemas.guidance import GuidanceCreate, GuidanceUpdate
 
 
@@ -111,10 +112,61 @@ def test_marriage_timing_guidance_sends_real_question_language_and_analysis(
         language="Malayalam",
         astrology_context={
             "question_type": "MARRIAGE_TIMING",
-            "specialized_analysis": analysis,
+            "specialized_analysis": {
+                "timing": {"candidate_periods": ["2027-2028"]}
+            },
         },
         conversation_history=[],
     )
+    assert result.analysis == analysis
+
+
+def test_explanation_context_deduplicates_and_limits_marriage_timing_windows():
+    windows = [{"start": f"period-{index}"} for index in range(40)]
+    full_context = {
+        "question_type": "MARRIAGE_TIMING",
+        "specialized_analysis": {
+            "seventh_house_sign": "Taurus",
+            "seventh_house_lord": "Venus",
+            "timing_windows": windows,
+            "timing": {
+                "candidate_periods": windows,
+                "current_period": {"mahadasha_lord": "Jupiter"},
+                "limitations": ["Use only calculated periods."],
+            },
+        },
+    }
+
+    compact_context = _context_for_explanation(full_context)
+    compact_analysis = compact_context["specialized_analysis"]
+
+    assert compact_analysis["seventh_house_sign"] == "Taurus"
+    assert "timing_windows" not in compact_analysis
+    assert compact_analysis["timing"]["candidate_periods"] == windows[:5]
+    assert full_context["specialized_analysis"]["timing_windows"] == windows
+
+
+def test_explanation_context_uses_top_level_timing_windows_as_fallback():
+    full_context = {
+        "question_type": "MARRIAGE_TIMING",
+        "specialized_analysis": {"timing_windows": ["2027-2028", "2029-2030"]},
+    }
+
+    compact_context = _context_for_explanation(full_context)
+
+    assert compact_context["specialized_analysis"]["timing"]["candidate_periods"] == [
+        "2027-2028",
+        "2029-2030",
+    ]
+
+
+def test_explanation_context_preserves_non_marriage_analysis():
+    context = {
+        "question_type": "CAREER",
+        "specialized_analysis": {"career_factors": ["factor"]},
+    }
+
+    assert _context_for_explanation(context) is context
 
 
 def test_explanation_failure_is_mapped_to_502(monkeypatch):

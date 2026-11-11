@@ -33,8 +33,8 @@ export class LanguageSelectionComponent implements OnInit {
     { id: 1, code: 'en', name: 'English', native_name: 'English' },
     { id: 2, code: 'ml', name: 'Malayalam', native_name: 'മലയാളം' },
     { id: 3, code: 'hi', name: 'Hindi', native_name: 'हिन्दी' },
-    { id: 4, code: 'te', name: 'Telugu', native_name: 'తెలుగు' },
-    { id: 5, code: 'ta', name: 'Tamil', native_name: 'தமிழ்' },
+    { id: 4, code: 'ta', name: 'Tamil', native_name: 'தமிழ்' },
+    { id: 5, code: 'te', name: 'Telugu', native_name: 'తెలుగు' },
     { id: 6, code: 'kn', name: 'Kannada', native_name: 'ಕನ್ನಡ' }
   ];
 
@@ -104,9 +104,10 @@ export class LanguageSelectionComponent implements OnInit {
           this.navigateNext(returnUrl);
         },
         error: () => {
-          // Even if backend call fails, keep local state and proceed
           this.isSaving.set(false);
-          this.navigateNext(returnUrl);
+          this.saveErrorMessage.set(
+            'Unable to save your language preference. Please try again.'
+          );
         }
       });
     } else {
@@ -119,7 +120,7 @@ export class LanguageSelectionComponent implements OnInit {
     if (returnUrl) {
       this.router.navigateByUrl(returnUrl);
     } else {
-      this.router.navigate(['/explore']);
+      this.router.navigate(['/dashboard']);
     }
   }
 }

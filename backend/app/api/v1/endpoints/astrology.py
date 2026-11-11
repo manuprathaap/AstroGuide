@@ -131,7 +131,9 @@ def analyze_marriage(
 # --------------------------------------------------
 
 @router.get("/test-llm")
-def test_llm():
+def test_llm(
+    current_user: User = Depends(get_current_user),
+):
     llm_service = LLMService()
 
     response = llm_service.generate_response(
@@ -148,7 +150,9 @@ def test_llm():
 # --------------------------------------------------
 
 @router.post("/test-marriage-llm")
-def test_marriage_llm():
+def test_marriage_llm(
+    current_user: User = Depends(get_current_user),
+):
 
     llm_service = LLMService()
 

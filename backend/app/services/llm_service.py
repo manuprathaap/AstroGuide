@@ -29,85 +29,100 @@ class GuidanceExplanationError(RuntimeError):
 LLMServiceError = GuidanceExplanationError
 
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
 class LLMService:
     PRIMARY_MODEL = "gemini-3.6-flash"
+    GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+    DEFAULT_GROQ_MODEL = "openai/gpt-oss-120b"
     MAX_RETRIES = 2
     INITIAL_BACKOFF_SECONDS = 0.5
+    MAX_CONVERSATION_TURNS = 2
+    MAX_HISTORY_QUESTION_CHARS = 500
+    MAX_HISTORY_RESPONSE_CHARS = 1200
 
     def __init__(self):
-        self.provider = os.getenv("LLM_PROVIDER", "gemini").lower()
-        self.ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
-        self.ollama_model = os.getenv("OLLAMA_MODEL", "llama3")
+        self.provider = os.getenv("LLM_PROVIDER", "groq").strip().lower()
+        self.groq_model = os.getenv("GROQ_MODEL", self.DEFAULT_GROQ_MODEL)
+        self.groq_api_key = os.getenv("GROQ_API_KEY")
+        self.client = None
 
-        api_key = os.getenv("GEMINI_API_KEY")
-        if api_key and self.provider != "ollama":
+        if self.provider == "groq":
+            if not self.groq_api_key:
+                raise GuidanceExplanationError("GROQ_API_KEY is not configured.")
+            self.model = self.groq_model
+        elif self.provider == "gemini":
+            api_key = os.getenv("GEMINI_API_KEY")
+            if not api_key:
+                raise GuidanceExplanationError("GEMINI_API_KEY is not configured.")
             try:
                 self.client = genai.Client(api_key=api_key)
                 self.model = self.PRIMARY_MODEL
             except Exception as e:
-                logger.warning("Could not initialize Gemini client: %s. Falling back to Ollama.", e)
-                self.client = None
-                self.provider = "ollama"
-                self.model = self.ollama_model
+                raise GuidanceExplanationError(
+                    f"Could not initialize Gemini client: {e}"
+                ) from e
         else:
-            self.client = None
-            self.provider = "ollama"
-            self.model = self.ollama_model
+            raise GuidanceExplanationError(
+                f"Unsupported LLM_PROVIDER: {self.provider}"
+            )
 
     def generate_response(self, prompt: str, system_prompt: str | None = None) -> str:
         sys_prompt = system_prompt or ASTROLOGY_SYSTEM_PROMPT
-        # If provider is explicitly ollama, use ollama directly
-        if self.provider == "ollama" or not self.client:
-            return self._generate_ollama(prompt, sys_prompt)
+        if self.provider == "groq":
+            return self._generate_groq(prompt, sys_prompt)
+        return self._generate_gemini(prompt, sys_prompt)
 
-        # Try Gemini, and automatically fall back to Ollama if Gemini quota or connection fails
-        try:
-            return self._generate_gemini(prompt, sys_prompt)
-        except Exception as exc:
-            logger.warning(
-                "Gemini service failed (%s). Automatically falling back to local Ollama (%s).",
-                exc,
-                self.ollama_model,
-            )
-            try:
-                return self._generate_ollama(prompt, sys_prompt)
-            except Exception as ollama_exc:
-                raise GuidanceExplanationError(
-                    f"Gemini failed ({exc}) and local Ollama fallback also failed: {ollama_exc}"
-                ) from ollama_exc
-
-    def _generate_ollama(self, prompt: str, system_prompt: str) -> str:
-        url = f"{self.ollama_base_url}/api/chat"
+    def _generate_groq(self, prompt: str, system_prompt: str) -> str:
         payload = {
-            "model": self.ollama_model,
+            "model": self.groq_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            "stream": False,
         }
-        try:
-            with httpx.Client(timeout=120.0) as client:
-                response = client.post(url, json=payload)
-                response.raise_for_status()
+
+        for attempt in range(self.MAX_RETRIES):
+            try:
+                with httpx.Client(timeout=120.0) as client:
+                    response = client.post(
+                        self.GROQ_API_URL,
+                        headers={"Authorization": f"Bearer {self.groq_api_key}"},
+                        json=payload,
+                    )
+                    response.raise_for_status()
+
                 data = response.json()
-                content = data.get("message", {}).get("content", "").strip()
-                if not content:
-                    raise RuntimeError("Ollama returned an empty response.")
-                return content
-        except httpx.ConnectError as exc:
-            raise GuidanceExplanationError(
-                f"Cannot connect to Ollama at {self.ollama_base_url}. Make sure Ollama is running ('ollama serve')."
-            ) from exc
-        except Exception as exc:
-            raise GuidanceExplanationError(
-                f"Ollama local explanation service failed: {exc}"
-            ) from exc
+                if not isinstance(data, dict):
+                    raise ValueError("Groq returned an invalid response body.")
+
+                choices = data.get("choices")
+                if not isinstance(choices, list) or not choices:
+                    raise ValueError("Groq returned no completion choices.")
+
+                if not isinstance(choices[0], dict):
+                    raise ValueError("Groq returned an invalid completion choice.")
+                message = choices[0].get("message", {})
+                content = message.get("content") if isinstance(message, dict) else None
+                if not isinstance(content, str) or not content.strip():
+                    raise ValueError("Groq returned an empty response.")
+
+                return content.strip()
+            except httpx.HTTPError as exc:
+                if self._is_retryable(exc) and attempt + 1 < self.MAX_RETRIES:
+                    time.sleep(self.INITIAL_BACKOFF_SECONDS * (2**attempt))
+                    continue
+                status_code = getattr(
+                    getattr(exc, "response", None), "status_code", None
+                )
+                status_message = f" (HTTP {status_code})" if status_code else ""
+                raise GuidanceExplanationError(
+                    f"Groq explanation service failed{status_message}: {exc}"
+                ) from exc
+            except (ValueError, TypeError, IndexError) as exc:
+                raise GuidanceExplanationError(
+                    f"Groq explanation service returned an invalid response: {exc}"
+                ) from exc
+
+        raise GuidanceExplanationError("Groq explanation service failed after retries.")
 
     def _generate_gemini(self, prompt: str, system_prompt: str) -> str:
         last_error: Exception | None = None
@@ -143,7 +158,13 @@ class LLMService:
     @staticmethod
     def _is_retryable(error: Exception) -> bool:
         # Check HTTP status codes for transient conditions
-        status = getattr(error, "code", None) or getattr(error, "status", None) or getattr(error, "status_code", None)
+        response = getattr(error, "response", None)
+        status = (
+            getattr(error, "code", None)
+            or getattr(error, "status", None)
+            or getattr(error, "status_code", None)
+            or getattr(response, "status_code", None)
+        )
         if status in (429, 500, 502, 503, 504):
             return True
         if isinstance(error, (TimeoutError, ConnectionError, httpx.TimeoutException, httpx.NetworkError)):
@@ -182,6 +203,7 @@ Do not calculate or invent any astrology information.
         astrology_context: dict,
         conversation_history: list[dict] | None = None,
     ) -> str:
+        recent_history = self._compact_conversation_history(conversation_history)
         prompt = f"""
 CURRENT USER QUESTION:
 {question}
@@ -193,13 +215,49 @@ CALCULATED ASTROLOGY CONTEXT (SOURCE OF TRUTH):
 {json.dumps(astrology_context, ensure_ascii=False, default=str)}
 
 RECENT CONVERSATION:
-{json.dumps(conversation_history or [], ensure_ascii=False, default=str)}
+{json.dumps(recent_history, ensure_ascii=False, default=str)}
+
+LANGUAGE AND CLARITY:
+Write for a reader who may know nothing about astrology. Prefer everyday
+words in {language}. Never leave a technical term unexplained: explain it
+briefly in the same sentence, and do not list a planet and house without
+plainly describing why that detail matters to the question. In Malayalam,
+prefer familiar planet names and explain "ഭാവം" as a life area, "മഹാദശ"
+as a longer planetary period, and "അന്തർദശ" as a shorter period within it.
+Keep paragraphs and bullets short, with one main idea each.
 
 Answer the current question naturally in the requested language. Use the
 conversation only to resolve references such as 'that' or 'why'; use the
 calculated context for every astrology claim. Do not invent missing data.
 """
         return self.generate_response(prompt)
+
+    @classmethod
+    def _compact_conversation_history(
+        cls,
+        conversation_history: list[dict] | None,
+    ) -> list[dict[str, str]]:
+        if not conversation_history:
+            return []
+
+        recent_turns = conversation_history[-cls.MAX_CONVERSATION_TURNS :]
+        compact_history = []
+        for turn in recent_turns:
+            question = str(turn.get("question", ""))[
+                : cls.MAX_HISTORY_QUESTION_CHARS
+            ]
+            response = str(turn.get("response", ""))[
+                : cls.MAX_HISTORY_RESPONSE_CHARS
+            ]
+            category = str(turn.get("category", ""))
+            compact_history.append(
+                {
+                    "question": question,
+                    "response": response,
+                    "category": category,
+                }
+            )
+        return compact_history
 
     def generate_kerala_astrology_profile(
         self,
@@ -233,4 +291,3 @@ Follow all CRITICAL RULES strictly:
    4. Bhava Phalangal (1 to 12 Bhavas starting strictly with the calculated Lagna)
 """
         return self.generate_response(prompt, system_prompt=KERALA_VEDIC_ASTROLOGER_PROMPT)
-

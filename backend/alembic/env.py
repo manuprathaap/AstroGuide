@@ -9,6 +9,7 @@ from app.models import (  # noqa: F401
     BirthDetail,
     Guidance,
     Language,
+    PalmAnonymousUsage,
     PasswordResetToken,
     User,
 )

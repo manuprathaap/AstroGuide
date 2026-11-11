@@ -36,7 +36,6 @@ export const routes: Routes = [
   {
     path: 'language',
     loadComponent: () => import('./features/language/language-selection/language-selection.component').then(m => m.LanguageSelectionComponent),
-    canActivate: [authGuard],
     title: 'Select Language — AstroGuide'
   },
   {
@@ -54,7 +53,8 @@ export const routes: Routes = [
   {
     path: 'horoscope',
     loadComponent: () => import('./features/horoscope/horoscope.component').then(m => m.HoroscopeComponent),
-    title: 'Free Horoscope & Kundli — AstroGuide'
+    canActivate: [authGuard],
+    title: 'Birth Chart — AstroGuide'
   },
   {
     path: 'palmistry',

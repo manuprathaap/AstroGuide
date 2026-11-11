@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PalmAnalysisRequest, PalmAnalysisResponse } from '../models/palmistry.model';
 
@@ -11,6 +11,7 @@ export class PalmistryService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
   private readonly storageKey = 'astroguide_current_palm_reading';
+  private readonly guestTokenKey = 'astroguide_palm_guest_token';
 
   readonly currentReading = signal<PalmAnalysisResponse | null>(this.getStoredReading());
   readonly isAnalyzing = signal<boolean>(false);
@@ -40,7 +41,10 @@ export class PalmistryService {
     this.isAnalyzing.set(true);
     this.error.set(null);
 
-    return this.http.post<PalmAnalysisResponse>(`${this.apiUrl}/palmistry/analyze`, req).pipe(
+    return this.postGuestAnalysis(
+      `${this.apiUrl}/palmistry/analyze`,
+      req,
+    ).pipe(
       tap({
         next: (res) => {
           this.isAnalyzing.set(false);
@@ -59,7 +63,10 @@ export class PalmistryService {
     this.isAnalyzing.set(true);
     this.error.set(null);
 
-    return this.http.post<PalmAnalysisResponse>(`${this.apiUrl}/palmistry/upload-and-analyze`, formData).pipe(
+    return this.postGuestAnalysis(
+      `${this.apiUrl}/palmistry/upload-and-analyze`,
+      formData,
+    ).pipe(
       tap({
         next: (res) => {
           this.isAnalyzing.set(false);
@@ -96,5 +103,32 @@ export class PalmistryService {
   clear(): void {
     this.saveReading(null);
     this.error.set(null);
+  }
+
+  private postGuestAnalysis(
+    url: string,
+    body: PalmAnalysisRequest | FormData,
+  ): Observable<PalmAnalysisResponse> {
+    const token = localStorage.getItem(this.guestTokenKey);
+    const headers = token
+      ? new HttpHeaders({ 'X-Palm-Guest-Token': token })
+      : new HttpHeaders();
+
+    return this.http.post<PalmAnalysisResponse>(url, body, {
+      headers,
+      observe: 'response',
+    }).pipe(
+      map((response: HttpResponse<PalmAnalysisResponse>) => {
+        const nextToken = response.headers.get('X-Palm-Guest-Token');
+        if (nextToken) {
+          localStorage.setItem(this.guestTokenKey, nextToken);
+        }
+
+        if (!response.body) {
+          throw new Error('Palm analysis returned an empty response.');
+        }
+        return response.body;
+      }),
+    );
   }
 }

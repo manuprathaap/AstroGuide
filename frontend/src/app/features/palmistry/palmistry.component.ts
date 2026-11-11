@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -57,6 +58,7 @@ export class PalmistryComponent implements OnInit {
   readonly activeMountKey = signal<string | null>(null);
 
   readonly isDownloadingPdf = signal<boolean>(false);
+  readonly requiresLogin = signal<boolean>(false);
 
   readonly languages = [
     { id: 'English', label: 'English' },
@@ -148,6 +150,7 @@ export class PalmistryComponent implements OnInit {
       return;
     }
 
+    this.requiresLogin.set(false);
     const val = this.form.value;
     const req: PalmAnalysisRequest = {
       name: val.name || 'Seeker',
@@ -168,9 +171,16 @@ export class PalmistryComponent implements OnInit {
         this.activeView.set('result');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
-      error: () => {
+      error: (error: HttpErrorResponse) => {
         this.activeView.set('form');
+        this.requiresLogin.set(error.status === 403);
       },
+    });
+  }
+
+  signInForAnotherAnalysis(): void {
+    this.router.navigate(['/auth/login'], {
+      queryParams: { returnUrl: '/palmistry' },
     });
   }
 

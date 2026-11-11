@@ -28,6 +28,14 @@
             <span>{{ error() }}</span>
           </div>
         }
+        @if (requiresLogin()) {
+          <div class="palm-login-prompt">
+            <p>Your free palm analysis has been used. Sign in to continue.</p>
+            <button type="button" class="btn-action-primary" (click)="signInForAnotherAnalysis()">
+              Sign in to continue
+            </button>
+          </div>
+        }
 
         <!-- Dual Palm Uploader Grid -->
         <div class="dual-uploader-section">
@@ -235,9 +243,8 @@
             <svg class="hand-svg-scanner" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M 60 230 C 50 180 30 160 20 130 C 15 110 30 95 42 110 C 48 118 52 135 55 145 C 55 110 50 70 65 60 C 75 55 82 70 82 95 C 85 70 88 35 102 30 C 115 28 118 55 118 90 C 122 70 128 48 140 45 C 152 45 152 70 150 105 C 155 90 165 80 175 85 C 185 92 180 120 170 145 C 160 175 160 200 145 230 Z"
-                stroke="rgba(217, 119, 6, 0.6)"
+                class="hand-silhouette"
                 stroke-width="2"
-                fill="rgba(217, 119, 6, 0.04)"
               />
               <!-- Laser Scanning Bar -->
               <line x1="10" y1="30" x2="190" y2="30" class="laser-beam" />
@@ -282,7 +289,7 @@
           <div class="top-bar-actions">
             <!-- Language Picker -->
             <div class="result-lang-picker" title="Change Language">
-              <span class="result-lang-icon" aria-hidden="true">🌐</span>
+              <span class="result-lang-icon" aria-hidden="true">✦</span>
               <select
                 id="result-lang-select"
                 class="result-lang-dropdown"
